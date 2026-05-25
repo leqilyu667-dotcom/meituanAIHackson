@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-neutral-50 pb-20">
+  <div class="phone-shell bg-neutral-50 pb-20">
     <header class="bg-white shadow-soft sticky top-0 z-40">
       <div class="px-4 py-4 flex items-center justify-between">
         <button @click="goBack" class="w-8 h-8 flex items-center justify-center">

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-neutral-50 pb-20">
+  <div class="phone-shell bg-neutral-50 pb-20">
     <header class="bg-gradient-to-br from-primary-400 to-primary-600 pt-8 pb-20 px-4">
       <div class="flex items-center gap-4">
         <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-2xl font-bold">
