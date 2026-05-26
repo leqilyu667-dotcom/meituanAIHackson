@@ -12,6 +12,11 @@ const routes = [
     component: () => import('../views/TryOn.vue')
   },
   {
+    path: '/tryon-history',
+    name: 'TryOnHistory',
+    component: () => import('../views/TryOnHistory.vue')
+  },
+  {
     path: '/salon',
     name: 'Salon',
     component: () => import('../views/Salon.vue')
@@ -32,15 +37,58 @@ const routes = [
     component: () => import('../views/SalonDetail.vue')
   },
   {
-    path: '/design',
-    name: 'Design',
-    component: () => import('../views/Design.vue')
+    path: '/nail-detail/:id',
+    name: 'NailDetail',
+    component: () => import('../views/NailDetail.vue')
+  },
+  {
+    path: '/chat/:id',
+    name: 'ChatDetail',
+    component: () => import('../views/ChatDetail.vue')
+  },
+  {
+    path: '/booking/:salonId',
+    name: 'Booking',
+    component: () => import('../views/Booking.vue')
+  },
+  {
+    path: '/search',
+    name: 'SearchResult',
+    component: () => import('../views/SearchResult.vue')
+  },
+  {
+    path: '/orders',
+    name: 'Orders',
+    component: () => import('../views/Orders.vue')
+  },
+  {
+    path: '/coupons',
+    name: 'Coupons',
+    component: () => import('../views/Coupons.vue')
+  },
+  {
+    path: '/settings',
+    name: 'Settings',
+    component: () => import('../views/Settings.vue')
+  },
+  {
+    path: '/about',
+    name: 'About',
+    component: () => import('../views/About.vue')
+  },
+  {
+    path: '/reservations',
+    name: 'Reservations',
+    component: () => import('../views/Reservations.vue')
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  scrollBehavior() {
+    return { top: 0 }
+  }
 })
 
 export default router
