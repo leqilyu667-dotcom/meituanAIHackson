@@ -43,7 +43,7 @@
       <section class="card flex flex-col p-5">
         <h3 class="text-sm font-medium text-ink">站外热门素材</h3>
         <p class="mt-1 text-xs text-cocoa">小红书高互动美甲笔记，点击填入标签</p>
-        <div class="mt-3 grid flex-1 gap-4 sm:grid-cols-3">
+        <div class="mt-3 grid flex-1 auto-rows-fr gap-4 sm:grid-cols-3">
           <div
             v-for="item in xhsInspirations"
             :key="item.id"
@@ -51,12 +51,12 @@
           >
             <img :src="item.image" class="aspect-[4/3] w-full object-cover" />
             <div class="flex flex-1 flex-col p-3">
-              <div class="flex items-center gap-3 text-[11px] text-cocoa">
+              <div class="flex items-center gap-2 text-[11px] text-cocoa">
                 <span>👍 {{ item.likes }}</span>
                 <span>⭐ {{ item.collects }}</span>
                 <span>💬 {{ item.comments }}</span>
               </div>
-              <div class="mt-2">
+              <div class="mt-2 flex min-h-[28px] items-center">
                 <TagBadge :tags="item.aiTags" />
               </div>
               <button
