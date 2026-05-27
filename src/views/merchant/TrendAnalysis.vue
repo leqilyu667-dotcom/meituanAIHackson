@@ -10,34 +10,50 @@
     <section class="card mb-6 p-6">
       <div class="mb-5 flex items-center justify-between">
         <h2 class="text-lg font-medium text-ink">站内最热试戴标签</h2>
-        <div class="flex gap-1 rounded-full bg-cream p-1">
-          <button
-            v-for="dim in ['门店', '平台']"
-            :key="dim"
-            @click="scope = dim"
-            class="rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-300"
-            :class="scope === dim ? 'bg-white text-ink shadow-soft' : 'text-cocoa'"
-          >
-            {{ dim }}
-          </button>
+        <div class="flex items-center gap-3">
+          <div class="flex gap-1 rounded-full bg-cream p-1 text-xs">
+            <button
+              v-for="g in granularities"
+              :key="g.key"
+              @click="granularity = g.key"
+              class="rounded-full px-3 py-1.5 font-medium transition-all duration-300"
+              :class="granularity === g.key ? 'bg-white text-ink shadow-soft' : 'text-cocoa'"
+            >
+              {{ g.label }}
+            </button>
+          </div>
+          <div class="flex gap-1 rounded-full bg-cream p-1">
+            <button
+              v-for="dim in ['门店', '平台']"
+              :key="dim"
+              @click="scope = dim"
+              class="rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-300"
+              :class="scope === dim ? 'bg-white text-ink shadow-soft' : 'text-cocoa'"
+            >
+              {{ dim }}
+            </button>
+          </div>
         </div>
       </div>
 
-      <p class="mb-4 text-sm font-medium text-cocoa">热门标签组合 TOP10 · 近7天</p>
+      <p class="mb-4 text-sm font-medium text-cocoa">
+        按{{ granularityLabel }}聚合 · TOP{{ displayList.length }} · 近7天
+      </p>
+
       <div class="overflow-hidden rounded-2xl border border-divider">
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-divider bg-cream/50 text-left text-xs text-cocoa">
-              <th class="px-4 py-2.5 font-medium">排名</th>
+              <th class="px-4 py-2.5 font-medium w-14">排名</th>
               <th class="px-4 py-2.5 font-medium">标签组合</th>
               <th class="px-4 py-2.5 font-medium text-right">试戴量</th>
               <th class="px-4 py-2.5 font-medium text-right">订单量</th>
-              <th class="px-4 py-2.5 font-medium text-right">热度分</th>
+              <th class="px-4 py-2.5 font-medium text-right">综合热度分</th>
             </tr>
           </thead>
           <tbody>
             <tr
-              v-for="(item, i) in hotTags"
+              v-for="(item, i) in displayList"
               :key="i"
               class="border-b border-divider last:border-0 transition hover:bg-cream/30"
             >
@@ -50,7 +66,28 @@
                 </span>
               </td>
               <td class="px-4 py-3">
-                <TagBadge :tags="item.tags" />
+                <div class="flex items-center gap-2">
+                  <span class="font-medium text-ink">
+                    <template v-if="granularity === 'L1'">
+                      {{ item.tags.shape }} · {{ item.tags.tone }}
+                    </template>
+                    <template v-else>
+                      {{ item.tags.shape }} · {{ item.tags.tone }}
+                      <span class="text-cocoa/60"> · </span>
+                      <span :class="item.tags.craft ? 'text-ink' : 'text-cocoa/40'">{{ item.tags.craft || '—' }}</span>
+                      <span class="text-cocoa/60"> · </span>
+                      <span :class="item.tags.decor ? 'text-ink' : 'text-cocoa/40'">{{ item.tags.decor || '—' }}</span>
+                    </template>
+                  </span>
+                  <span
+                    v-if="isBasic(item)"
+                    class="shrink-0 rounded-full bg-cream px-1.5 py-0.5 text-[10px] text-cocoa"
+                  >基础款</span>
+                  <span
+                    v-if="item.tags.style === '未标注风格'"
+                    class="shrink-0 rounded-full bg-cream px-1.5 py-0.5 text-[10px] text-cocoa/60"
+                  >未标注风格</span>
+                </div>
               </td>
               <td class="px-4 py-3 text-right text-cocoa">{{ item.tryOnCount }}</td>
               <td class="px-4 py-3 text-right text-cocoa">{{ item.orderCount }}</td>
@@ -59,10 +96,12 @@
                   <div class="h-1.5 w-16 overflow-hidden rounded-full bg-cream">
                     <div
                       class="h-full rounded-full bg-primary-500"
-                      :style="{ width: item.score + '%' }"
+                      :style="{ width: scorePercent(item) + '%' }"
                     />
                   </div>
-                  <span class="w-7 text-right text-xs font-medium text-primary-600">{{ item.score }}</span>
+                  <span class="w-16 text-right text-xs font-medium text-primary-600">
+                    {{ formatScore(heatScore(item)) }}
+                  </span>
                 </div>
               </td>
             </tr>
@@ -209,7 +248,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import TagBadge from '../../components/merchant/TagBadge.vue'
 import TrendChart from '../../components/merchant/TrendChart.vue'
 import ReviewModal from '../../components/merchant/ReviewModal.vue'
@@ -218,12 +257,74 @@ import {
   hotTags as hotTagsData,
   trendData as trendMockData,
   peerComparison,
-  xhsPendingMaterials as xhsMockMaterials
+  xhsPendingMaterials as xhsMockMaterials,
+  calcHeatScore
 } from '../../data/merchantMockData'
 
 const scope = ref('门店')
+const granularity = ref('L1')
+const granularities = [
+  { key: 'L1', label: '一级聚合' },
+  { key: 'L2', label: '二级聚合' }
+]
+
+const granularityLabel = computed(() => {
+  return granularity.value === 'L1' ? '甲型+色调' : '甲型+色调+工艺+装饰'
+})
+
 const hotTags = ref(hotTagsData)
 const trendData = ref(trendMockData)
+
+// L1 aggregation: group by shape+tone
+const aggregatedL1 = computed(() => {
+  const map = new Map()
+  for (const item of hotTags.value) {
+    const key = `${item.tags.shape}|${item.tags.tone}`
+    const existing = map.get(key)
+    if (existing) {
+      existing.tryOnCount += item.tryOnCount
+      existing.orderCount += item.orderCount
+    } else {
+      map.set(key, {
+        tags: { shape: item.tags.shape, tone: item.tags.tone, craft: '', decor: '', style: item.tags.style === '未标注风格' ? '未标注风格' : '' },
+        tryOnCount: item.tryOnCount,
+        orderCount: item.orderCount,
+        _items: [item]
+      })
+    }
+  }
+  return Array.from(map.values())
+    .sort((a, b) => calcHeatScore(b) - calcHeatScore(a))
+    .slice(0, 10)
+})
+
+// L2: keep original items, sort by heat score
+const aggregatedL2 = computed(() => {
+  return [...hotTags.value]
+    .sort((a, b) => calcHeatScore(b) - calcHeatScore(a))
+    .slice(0, 10)
+})
+
+const displayList = computed(() => {
+  return granularity.value === 'L1' ? aggregatedL1.value : aggregatedL2.value
+})
+
+const isBasic = (item) => {
+  return !item.tags.craft || !item.tags.decor
+}
+
+const heatScore = (item) => calcHeatScore(item)
+
+const scorePercent = (item) => {
+  const max = displayList.value.length > 0 ? calcHeatScore(displayList.value[0]) : 1
+  return Math.min((calcHeatScore(item) / max) * 100, 100)
+}
+
+const formatScore = (s) => {
+  if (s >= 10000) return (s / 10000).toFixed(1) + '万'
+  if (s >= 1000) return (s / 1000).toFixed(1) + 'k'
+  return String(s)
+}
 
 const comparisonMetrics = [
   { label: '营收总额', my: '5.62万', peer: '4.82万', unit: '', compare: 17 },
@@ -232,7 +333,6 @@ const comparisonMetrics = [
   { label: '订单完成率', my: '90', peer: '87', unit: '%', compare: 3 }
 ]
 
-// XHS materials
 const xhsMaterials = ref([...xhsMockMaterials])
 const reviewVisible = ref(false)
 const currentMaterial = ref({})

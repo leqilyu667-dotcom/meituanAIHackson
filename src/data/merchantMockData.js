@@ -74,19 +74,47 @@ export const anomalyAlerts = [
   { id: 2, metric: '预约爽约率', change: 42, period: '本周 vs 上周', reason: '近7天爽约率从8%升至11.4%，主要集中在周末时段', link: '/merchant/appointment' }
 ]
 
-// 爆款趋势 - 站内标签热度
+// 各维度单项热度（用于综合热度分计算）
+export const dimensionHeat = {
+  shape: { '杏仁甲': 88, '方圆甲': 78, '梯形甲': 72, '圆甲': 68, '尖甲': 60, '建构延长': 52 },
+  tone: { '裸色': 92, '红色系': 82, '冷色': 75, '亮色': 70, '金属': 62, '魔镜粉': 56, '透色': 55 },
+  craft: { '渐变': 75, '猫眼': 70, '纯色': 88, '手绘': 58, '晕染': 52, '跳色': 48, '魔镜粉': 42 },
+  decor: { '碎钻': 62, '金/银碎箔': 55, '立体雕花': 42, '珍珠/铆钉': 38, '贴纸': 35, '波点': 30, '手绘': 28 },
+  style: { '温柔风': 78, '法式': 72, 'ins风': 68, '日式': 65, '甜酷风': 55, '简约风': 50, '欧美风': 42, '未标注风格': 0 }
+}
+
+// 爆款趋势 - 站内标签热度（含基础款：工艺/装饰为空）
 export const hotTags = [
-  { tags: { shape: '杏仁甲', tone: '裸色', craft: '渐变', decor: '碎钻', style: '温柔风' }, tryOnCount: 520, orderCount: 64, score: 98 },
-  { tags: { shape: '方圆甲', tone: '红色系', craft: '纯色', decor: '无装饰', style: '法式' }, tryOnCount: 480, orderCount: 52, score: 95 },
-  { tags: { shape: '梯形甲', tone: '冷色', craft: '猫眼', decor: '金/银碎箔', style: 'ins风' }, tryOnCount: 430, orderCount: 41, score: 91 },
-  { tags: { shape: '建构延长', tone: '魔镜粉', craft: '魔镜粉', decor: '立体雕花', style: '欧美风' }, tryOnCount: 380, orderCount: 36, score: 87 },
-  { tags: { shape: '圆甲', tone: '亮色', craft: '手绘', decor: '贴纸', style: '甜酷风' }, tryOnCount: 350, orderCount: 35, score: 84 },
-  { tags: { shape: '尖甲', tone: '金属', craft: '纯色', decor: '金/银碎箔', style: 'ins风' }, tryOnCount: 310, orderCount: 30, score: 79 },
-  { tags: { shape: '杏仁甲', tone: '透色', craft: '晕染', decor: '珍珠/铆钉', style: '日式' }, tryOnCount: 280, orderCount: 24, score: 75 },
-  { tags: { shape: '方圆甲', tone: '裸色', craft: '跳色', decor: '波点', style: '简约风' }, tryOnCount: 250, orderCount: 20, score: 70 },
-  { tags: { shape: '梯形甲', tone: '红色系', craft: '渐变', decor: '碎钻', style: '温柔风' }, tryOnCount: 200, orderCount: 16, score: 64 },
-  { tags: { shape: '圆甲', tone: '冷色', craft: '纯色', decor: '无装饰', style: '简约风' }, tryOnCount: 160, orderCount: 12, score: 58 }
+  { tags: { shape: '杏仁甲', tone: '裸色', craft: '渐变', decor: '碎钻', style: '温柔风' }, tryOnCount: 520, orderCount: 64 },
+  { tags: { shape: '方圆甲', tone: '红色系', craft: '纯色', decor: '', style: '法式' }, tryOnCount: 480, orderCount: 52 },
+  { tags: { shape: '梯形甲', tone: '冷色', craft: '猫眼', decor: '金/银碎箔', style: 'ins风' }, tryOnCount: 430, orderCount: 41 },
+  { tags: { shape: '圆甲', tone: '裸色', craft: '', decor: '', style: '未标注风格' }, tryOnCount: 380, orderCount: 36 },
+  { tags: { shape: '建构延长', tone: '魔镜粉', craft: '魔镜粉', decor: '立体雕花', style: '欧美风' }, tryOnCount: 360, orderCount: 34 },
+  { tags: { shape: '杏仁甲', tone: '亮色', craft: '手绘', decor: '贴纸', style: '甜酷风' }, tryOnCount: 350, orderCount: 35 },
+  { tags: { shape: '方圆甲', tone: '裸色', craft: '', decor: '', style: '简约风' }, tryOnCount: 310, orderCount: 28 },
+  { tags: { shape: '尖甲', tone: '金属', craft: '纯色', decor: '金/银碎箔', style: 'ins风' }, tryOnCount: 300, orderCount: 30 },
+  { tags: { shape: '梯形甲', tone: '红色系', craft: '', decor: '', style: '未标注风格' }, tryOnCount: 260, orderCount: 22 },
+  { tags: { shape: '圆甲', tone: '冷色', craft: '纯色', decor: '', style: '简约风' }, tryOnCount: 240, orderCount: 20 },
+  { tags: { shape: '杏仁甲', tone: '透色', craft: '晕染', decor: '珍珠/铆钉', style: '日式' }, tryOnCount: 280, orderCount: 24 },
+  { tags: { shape: '方圆甲', tone: '亮色', craft: '跳色', decor: '波点', style: '简约风' }, tryOnCount: 250, orderCount: 20 }
 ]
+
+// 计算综合热度分
+export const calcHeatScore = (item) => {
+  const { shape, tone, craft, decor, style } = item.tags
+  const getHeat = (dim, key) => (dimensionHeat[dim] && dimensionHeat[dim][key]) || 0
+
+  const shapeScore = getHeat('shape', shape) * 0.30
+  const toneScore = getHeat('tone', tone) * 0.30
+  const craftScore = craft ? getHeat('craft', craft) * 0.20 : 0
+  const decorScore = decor ? getHeat('decor', decor) * 0.15 : 0
+  const styleScore = getHeat('style', style) * 0.05
+
+  const dimScore = shapeScore + toneScore + craftScore + decorScore + styleScore
+  const behaviorScore = item.tryOnCount * 0.6 + item.orderCount * 0.4
+
+  return Math.round(dimScore * behaviorScore)
+}
 
 // 近7天趋势数据（用于图表）
 export const trendData = [
