@@ -9,48 +9,48 @@
     <!-- 1. 站内 & 站外推荐（并列） -->
     <div class="mb-6 grid gap-6 lg:grid-cols-2">
       <!-- 站内爆款标签 -->
-      <section class="card p-5">
+      <section class="card flex flex-col p-5">
         <h3 class="text-sm font-medium text-ink">站内爆款标签 TOP5</h3>
         <p class="mt-1 text-xs text-cocoa">近7天高热标签组合，点击快速填入</p>
-        <div class="mt-3 space-y-2">
+        <div class="mt-3 flex flex-1 flex-col gap-2">
           <button
             v-for="(item, i) in topHotTags"
             :key="i"
             @click="fillTags(item.tags)"
-            class="w-full rounded-xl border border-divider bg-white p-3 text-left transition hover:border-primary-300 hover:shadow-soft"
+            class="flex w-full flex-1 items-center rounded-xl border border-divider bg-white px-4 py-3 text-left transition hover:border-primary-300 hover:shadow-soft"
           >
-            <div class="flex items-center gap-2">
-              <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold"
-                :class="i < 3 ? 'bg-primary-500 text-white' : 'bg-cream text-cocoa'"
-              >{{ i + 1 }}</span>
+            <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold"
+              :class="i < 3 ? 'bg-primary-500 text-white' : 'bg-cream text-cocoa'"
+            >{{ i + 1 }}</span>
+            <span class="ml-3">
               <TagBadge :tags="item.tags" />
-            </div>
-            <div class="mt-1.5 flex items-center gap-3 text-[11px] text-cocoa">
+            </span>
+            <span class="ml-auto flex items-center gap-3 text-[11px] text-cocoa">
               <span>试戴 {{ item.tryOnCount }}</span>
               <span>订单 {{ item.orderCount }}</span>
-              <span
-                class="ml-auto rounded-full px-1.5 py-0.5 text-primary-600"
-                :class="isTagFilled(item.tags) ? 'bg-primary-50' : 'bg-cream'"
-              >
-                {{ isTagFilled(item.tags) ? '已填入' : '点击填入' }}
-              </span>
-            </div>
+            </span>
+            <span
+              class="ml-3 shrink-0 rounded-full px-2 py-0.5 text-[11px] text-primary-600"
+              :class="isTagFilled(item.tags) ? 'bg-primary-50' : 'bg-cream'"
+            >
+              {{ isTagFilled(item.tags) ? '已填入' : '点击填入' }}
+            </span>
           </button>
         </div>
       </section>
 
       <!-- 站外热门素材 -->
-      <section class="card p-5">
+      <section class="card flex flex-col p-5">
         <h3 class="text-sm font-medium text-ink">站外热门素材</h3>
         <p class="mt-1 text-xs text-cocoa">小红书高互动美甲笔记，点击填入标签</p>
-        <div class="mt-3 grid gap-4 sm:grid-cols-3">
+        <div class="mt-3 grid flex-1 gap-4 sm:grid-cols-3">
           <div
             v-for="item in xhsInspirations"
             :key="item.id"
-            class="overflow-hidden rounded-2xl border border-divider bg-white transition hover:shadow-soft"
+            class="flex flex-col overflow-hidden rounded-2xl border border-divider bg-white transition hover:shadow-soft"
           >
             <img :src="item.image" class="aspect-[4/3] w-full object-cover" />
-            <div class="p-3">
+            <div class="flex flex-1 flex-col p-3">
               <div class="flex items-center gap-3 text-[11px] text-cocoa">
                 <span>👍 {{ item.likes }}</span>
                 <span>⭐ {{ item.collects }}</span>
@@ -61,7 +61,7 @@
               </div>
               <button
                 @click="fillTags(item.aiTags)"
-                class="mt-3 w-full rounded-[14px] border py-2 text-xs font-medium transition"
+                class="mt-auto w-full rounded-[14px] border py-2 text-xs font-medium transition"
                 :class="isTagFilled(item.aiTags)
                   ? 'border-primary-300 bg-primary-50 text-primary-600'
                   : 'border-primary-300 text-primary-600 hover:bg-primary-50'"
