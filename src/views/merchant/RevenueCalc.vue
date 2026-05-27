@@ -115,7 +115,7 @@
                         v-model.number="item.discount"
                         type="number"
                         min="0"
-                        :max="item.discountType === 'percent' ? 10 : undefined"
+                        :max="item.discountType === 'percent' ? 100 : undefined"
                         step="0.01"
                         class="flex-1 bg-transparent outline-none"
                       />
@@ -362,7 +362,7 @@ const itemSubtotal = (item) => {
   const original = (item.price || 0) * (item.quantity || 1)
   const discount = item.discount || 0
   if (item.discountType === 'percent') {
-    return original * (discount / 10)
+    return original * (discount / 100)
   }
   return original - discount
 }
@@ -407,7 +407,7 @@ const validate = () => {
     if (item.price == null || item.price < 0) return `项目 ${i + 1}：请输入合法金额`
     if (item.quantity < 1 || !Number.isInteger(item.quantity)) return `项目 ${i + 1}：请输入合法数量`
     if (item.discount < 0) return `项目 ${i + 1}：折扣不能为负数`
-    if (item.discountType === 'percent' && item.discount > 10) return `项目 ${i + 1}：折扣不能超过10折`
+    if (item.discountType === 'percent' && item.discount > 100) return `项目 ${i + 1}：折扣不能超过原价`
     if (item.discountType === 'amount' && item.discount > item.price * item.quantity) {
       return `项目 ${i + 1}：减免金额不能超过原价`
     }
