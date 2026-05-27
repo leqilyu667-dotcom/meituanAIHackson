@@ -34,10 +34,40 @@
         </div>
       </div>
 
-      <!-- 商品名预览 -->
-      <div class="mt-4 rounded-xl bg-cream/40 p-3">
-        <span class="text-xs text-cocoa">商品名预览：</span>
-        <span class="text-sm font-medium text-ink">{{ productName || '—' }}</span>
+      <!-- 商品名编辑 & 平台建议 -->
+      <div class="mt-4 rounded-xl bg-cream/40 p-4">
+        <label class="text-xs text-cocoa">商品名称</label>
+        <div class="mt-1.5 flex items-center gap-2">
+          <input
+            v-model="customName"
+            type="text"
+            class="input-field flex-1 text-sm"
+            placeholder="请输入或选择建议名称"
+          />
+          <button
+            v-if="customName !== autoName"
+            @click="customName = autoName"
+            class="shrink-0 text-xs text-primary-600 underline"
+          >
+            恢复默认
+          </button>
+        </div>
+        <div v-if="nameSuggestions.length" class="mt-3">
+          <p class="mb-2 text-xs text-cocoa">平台建议名称：</p>
+          <div class="flex flex-wrap gap-2">
+            <button
+              v-for="(s, i) in nameSuggestions"
+              :key="i"
+              @click="customName = s"
+              class="rounded-full border px-3 py-1.5 text-xs transition"
+              :class="customName === s
+                ? 'border-primary-500 bg-primary-50 text-primary-600'
+                : 'border-divider text-cocoa hover:border-primary-300'"
+            >
+              {{ s }}
+            </button>
+          </div>
+        </div>
       </div>
 
       <div class="mt-4 flex items-center gap-3">
@@ -87,7 +117,13 @@
         <div class="p-4">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm font-medium text-ink">{{ generatedItem.name }}</p>
+              <div class="flex items-center gap-2">
+                <input
+                  v-model="generatedItem.name"
+                  type="text"
+                  class="text-sm font-medium text-ink bg-transparent outline-none border-b border-transparent hover:border-divider focus:border-primary-300"
+                />
+              </div>
               <div class="mt-1.5">
                 <TagBadge :tags="generatedItem.tags" />
               </div>
@@ -155,7 +191,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import TagBadge from '../../components/merchant/TagBadge.vue'
 import { labelSystem } from '../../data/merchantMockData'
 
@@ -169,6 +205,7 @@ const tagDimensions = [
 
 const emptyTags = () => ({ shape: '', tone: '', style: '', craft: '', decor: '' })
 const tags = ref(emptyTags())
+const customName = ref('')
 const generating = ref(false)
 const timeoutError = ref('')
 const generatedItem = ref(null)
@@ -179,10 +216,38 @@ const canGenerate = computed(() => {
   return tags.value.shape && tags.value.tone && tags.value.style
 })
 
-const productName = computed(() => {
-  const { tone, craft, shape, style } = tags.value
-  const parts = [tone, craft, shape, style].filter(Boolean)
-  return parts.length ? `「${parts.join(' · ')}」` : ''
+const autoName = computed(() => {
+  const { tone, craft, shape } = tags.value
+  const parts = [tone, craft, shape].filter(Boolean)
+  return parts.length ? parts.join('') + '甲' : ''
+})
+
+// 平台建议名称：多种排列组合
+const nameSuggestions = computed(() => {
+  const { tone, craft, shape, style, decor } = tags.value
+  if (!tone || !shape) return []
+  const names = new Set()
+  // 不同命名公式
+  const formulas = [
+    [tone, craft, shape],
+    [tone, style, shape],
+    [craft, tone, shape],
+    [tone, decor, craft, shape],
+    [tone, craft, style, shape],
+    [style, tone, craft, shape]
+  ]
+  for (const parts of formulas) {
+    const filtered = parts.filter(Boolean)
+    if (filtered.length >= 2) names.add(filtered.join('') + '甲')
+  }
+  return Array.from(names).slice(0, 4)
+})
+
+// 标签变化时自动更新名称
+watch([() => tags.value.shape, () => tags.value.tone, () => tags.value.craft, () => tags.value.style], () => {
+  if (autoName.value) {
+    customName.value = autoName.value
+  }
 })
 
 const gradientMap = {
@@ -199,12 +264,6 @@ const generatedGradient = computed(() => {
   return gradientMap[tags.value.tone] || 'linear-gradient(135deg, #f5e6d8, #dcc5b0, #f0dcc8)'
 })
 
-const generateName = () => {
-  const { tone, craft, shape } = tags.value
-  const parts = [tone, craft, shape].filter(Boolean)
-  return parts.join('') + '甲'
-}
-
 const generate = () => {
   timeoutError.value = ''
   generating.value = true
@@ -218,7 +277,7 @@ const generate = () => {
       return
     }
     generatedItem.value = {
-      name: generateName(),
+      name: customName.value || autoName.value,
       tags: { ...tags.value },
       gradient: gradientMap[tags.value.tone] || 'linear-gradient(135deg, #f5e6d8, #dcc5b0, #f0dcc8)',
       published: false
