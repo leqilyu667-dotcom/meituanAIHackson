@@ -1,5 +1,5 @@
 <template>
-  <span class="inline-flex items-center gap-1 rounded-full bg-primary-50 px-2.5 py-1 text-xs font-medium text-primary-700">
+  <span class="inline-flex items-center gap-0.5 whitespace-nowrap rounded-full bg-primary-50 px-2 py-0.5 text-[11px] font-medium text-primary-700">
     <template v-for="(key, idx) in displayKeys" :key="key">
       <span v-if="tags[key]">
         {{ tags[key] }}
