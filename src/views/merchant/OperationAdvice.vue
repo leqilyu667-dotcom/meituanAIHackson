@@ -13,9 +13,9 @@
           <svg class="h-5 w-5 text-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="20 6 9 17 4 12"/>
           </svg>
-          <h2 class="text-lg font-medium text-ink">敌有我优 · 放大优势</h2>
+          <h2 class="text-lg font-medium text-ink">放大优势</h2>
         </div>
-        <p class="mb-4 text-xs text-cocoa">本店转化率高于平台均值 ≥ 20% 的标签组合</p>
+        <p class="mb-4 text-xs text-cocoa">敌有我优 · 本店转化率高于平台均值 ≥ 20% 的标签组合</p>
 
         <div v-if="!advantageAdvice.length" class="py-8 text-center text-cocoa">
           <p>暂无优势建议</p>
@@ -68,9 +68,9 @@
             <circle cx="12" cy="12" r="10"/>
             <path d="M12 8v4M12 16h.01"/>
           </svg>
-          <h2 class="text-lg font-medium text-ink">敌有我无 · 弥补缺口</h2>
+          <h2 class="text-lg font-medium text-ink">弥补缺口</h2>
         </div>
-        <p class="mb-4 text-xs text-cocoa">平台热度上涨 ≥ 20% 且本店缺失的热门标签</p>
+        <p class="mb-4 text-xs text-cocoa">敌有我无 · 平台热度上涨 ≥ 20% 且本店缺失的热门标签</p>
 
         <div v-if="!gapAdvice.length" class="py-8 text-center text-cocoa">
           <p>暂无缺口建议</p>
