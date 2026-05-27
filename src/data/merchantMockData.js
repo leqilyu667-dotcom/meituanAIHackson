@@ -194,7 +194,7 @@ export const xhsPendingMaterials = [
     likes: 5600,
     collects: 3200,
     comments: 890,
-    aiTags: { shape: '方圆形', tone: '金属', craft: '魔镜粉', decor: '金/银碎箔', style: 'ins风' },
+    aiTags: { shape: '方圆甲', tone: '金属', craft: '魔镜粉', decor: '金/银碎箔', style: 'ins风' },
     status: 'pending'
   },
   {
@@ -205,6 +205,36 @@ export const xhsPendingMaterials = [
     collects: 980,
     comments: 234,
     aiTags: { shape: '圆甲', tone: '透色', craft: '纯色', decor: '无装饰', style: '日式' },
+    status: 'pending'
+  },
+  {
+    id: 4,
+    image: 'https://neeko-copilot.bytedance.net/api/text2image?prompt=cherry%20blossom%20gradient%20nails%20romantic%20pink&image_size=square',
+    source: 'https://www.xiaohongshu.com/explore/jkl012',
+    likes: 4800,
+    collects: 2600,
+    comments: 567,
+    aiTags: { shape: '尖甲', tone: '红色系', craft: '渐变', decor: '碎钻', style: '甜酷风' },
+    status: 'pending'
+  },
+  {
+    id: 5,
+    image: 'https://neeko-copilot.bytedance.net/api/text2image?prompt=cat%20eye%20magnetic%20nails%20deep%20green%20elegant&image_size=square',
+    source: 'https://www.xiaohongshu.com/explore/mno345',
+    likes: 3900,
+    collects: 2100,
+    comments: 432,
+    aiTags: { shape: '梯形甲', tone: '冷色', craft: '猫眼', decor: '金/银碎箔', style: '欧美风' },
+    status: 'pending'
+  },
+  {
+    id: 6,
+    image: 'https://neeko-copilot.bytedance.net/api/text2image?prompt=pearl%20white%20elegant%20wedding%20nails%20french%20tips&image_size=square',
+    source: 'https://www.xiaohongshu.com/explore/pqr678',
+    likes: 6200,
+    collects: 4100,
+    comments: 789,
+    aiTags: { shape: '方圆甲', tone: '裸色', craft: '晕染', decor: '珍珠/铆钉', style: '法式' },
     status: 'pending'
   }
 ]

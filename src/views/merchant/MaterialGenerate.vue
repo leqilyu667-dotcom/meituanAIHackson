@@ -287,7 +287,7 @@ const topHotTags = computed(() => {
 })
 
 const xhsInspirations = computed(() => {
-  return xhsPendingMaterials.slice(0, 3)
+  return xhsPendingMaterials.slice(0, 6)
 })
 
 const canGenerate = computed(() => {
