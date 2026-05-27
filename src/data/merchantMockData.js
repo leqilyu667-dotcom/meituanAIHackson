@@ -107,10 +107,11 @@ export const styleRecommendMap = {
 export const hotTags = [
   // === 五维完整（工艺+装饰双有）===
   { tags: { shape: '杏仁甲', tone: '裸色', craft: '渐变', decor: '碎钻', style: '温柔风' }, tryOnCount: 520, orderCount: 64 },
-  { tags: { shape: '梯形甲', tone: '冷色', craft: '猫眼', decor: '金/银碎箔', style: 'ins风' }, tryOnCount: 430, orderCount: 41 },
+  { tags: { shape: '方圆甲', tone: '红色系', craft: '猫眼', decor: '金/银碎箔', style: '法式' }, tryOnCount: 470, orderCount: 50 },
+  { tags: { shape: '梯形甲', tone: '冷色', craft: '猫眼', decor: '金/银碎箔', style: 'ins风' }, tryOnCount: 460, orderCount: 47 },
   { tags: { shape: '杏仁甲', tone: '亮色', craft: '手绘', decor: '贴纸', style: '甜酷风' }, tryOnCount: 350, orderCount: 35 },
-  { tags: { shape: '建构延长', tone: '魔镜粉', craft: '魔镜粉', decor: '立体雕花', style: '欧美风' }, tryOnCount: 360, orderCount: 34 },
-  { tags: { shape: '尖甲', tone: '金属', craft: '纯色', decor: '金/银碎箔', style: 'ins风' }, tryOnCount: 300, orderCount: 30 },
+  { tags: { shape: '建构延长', tone: '魔镜粉', craft: '魔镜粉', decor: '立体雕花', style: '欧美风' }, tryOnCount: 380, orderCount: 39 },
+  { tags: { shape: '尖甲', tone: '金属', craft: '纯色', decor: '金/银碎箔', style: 'ins风' }, tryOnCount: 380, orderCount: 38 },
   { tags: { shape: '杏仁甲', tone: '透色', craft: '晕染', decor: '珍珠/铆钉', style: '日式' }, tryOnCount: 280, orderCount: 24 },
   { tags: { shape: '方圆甲', tone: '亮色', craft: '跳色', decor: '波点', style: '简约风' }, tryOnCount: 250, orderCount: 20 },
 
