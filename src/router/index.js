@@ -35,6 +35,41 @@ const routes = [
     path: '/design',
     name: 'Design',
     component: () => import('../views/Design.vue')
+  },
+  // --- Merchant Routes ---
+  {
+    path: '/merchant',
+    redirect: '/merchant/daily-report'
+  },
+  {
+    path: '/merchant/daily-report',
+    name: 'MerchantDashboard',
+    component: () => import('../views/merchant/Dashboard.vue')
+  },
+  {
+    path: '/merchant/trend-analysis',
+    name: 'MerchantTrendAnalysis',
+    component: () => import('../views/merchant/TrendAnalysis.vue')
+  },
+  {
+    path: '/merchant/operation-advice',
+    name: 'MerchantOperationAdvice',
+    component: () => import('../views/merchant/OperationAdvice.vue')
+  },
+  {
+    path: '/merchant/revenue-calc',
+    name: 'MerchantRevenueCalc',
+    component: () => import('../views/merchant/RevenueCalc.vue')
+  },
+  {
+    path: '/merchant/material-generate',
+    name: 'MerchantMaterialGenerate',
+    component: () => import('../views/merchant/MaterialGenerate.vue')
+  },
+  {
+    path: '/merchant/appointment',
+    name: 'MerchantAppointment',
+    component: () => import('../views/merchant/Appointment.vue')
   }
 ]
 
