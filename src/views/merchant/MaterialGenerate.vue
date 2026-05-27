@@ -47,11 +47,13 @@
           <div
             v-for="item in xhsInspirations"
             :key="item.id"
-            class="flex flex-col overflow-hidden rounded-2xl border border-divider bg-white transition hover:shadow-soft"
+            class="flex h-full flex-col overflow-hidden rounded-2xl border border-divider bg-white transition hover:shadow-soft"
           >
-            <img :src="item.image" class="aspect-[4/3] w-full object-cover" />
+            <div class="aspect-[4/3] w-full shrink-0 overflow-hidden">
+              <img :src="item.image" class="h-full w-full object-cover" />
+            </div>
             <div class="flex flex-1 flex-col p-3">
-              <div class="flex items-center gap-2 text-[11px] text-cocoa">
+              <div class="flex items-center justify-between text-[11px] text-cocoa">
                 <span>👍 {{ item.likes }}</span>
                 <span>⭐ {{ item.collects }}</span>
                 <span>💬 {{ item.comments }}</span>
