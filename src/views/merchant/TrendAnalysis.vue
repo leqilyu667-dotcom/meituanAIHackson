@@ -157,7 +157,7 @@
       </div>
 
       <p class="mb-3 text-sm font-medium text-cocoa">
-        待审素材（{{ xhsPendingMaterials.length }}）
+        待审素材（{{ xhsMaterials.length }}）
       </p>
 
       <div v-if="!xhsMaterials.length" class="py-8 text-center text-cocoa">
