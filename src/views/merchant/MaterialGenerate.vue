@@ -3,197 +3,268 @@
     <div class="mb-6">
       <p class="eyebrow">OPERATIONS ASSISTANT</p>
       <h1 class="mt-1 text-2xl font-semibold text-ink">爆款素材生成</h1>
-      <p class="mt-2 text-sm text-cocoa">选择热门标签组合，AI 自动生成美甲款式素材，一键上架至门店</p>
+      <p class="mt-2 text-sm text-cocoa">基于平台爆款分析与小红书热门素材，AI 一键生成美甲款式并上架</p>
     </div>
 
-    <!-- 标签选择 -->
-    <section class="card mb-6 p-6">
-      <h2 class="mb-4 text-lg font-medium text-ink">标签组合</h2>
-      <p class="mb-4 text-xs text-cocoa">选择标签后自动生成商品名称，核心三维必选</p>
+    <div class="grid gap-6 lg:grid-cols-3">
+      <!-- 左侧：生成区 -->
+      <div class="lg:col-span-2">
+        <!-- 标签选择 -->
+        <section class="card mb-6 p-6">
+          <h2 class="mb-4 text-lg font-medium text-ink">标签组合</h2>
+          <p class="mb-4 text-xs text-cocoa">核心三维必选，点击下方推荐可快速填入</p>
 
-      <div class="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
-        <div v-for="dim in tagDimensions" :key="dim.key">
-          <label class="text-xs font-medium text-cocoa">
-            {{ dim.name }}
-            <span v-if="dim.required" class="text-error">*</span>
-            <span v-else class="text-cocoa/40">（可选）</span>
-          </label>
-          <select
-            v-model="tags[dim.key]"
-            class="input-field mt-1 w-full text-sm"
-          >
-            <option value="">{{ dim.required ? '请选择' : '不限' }}</option>
-            <option
-              v-for="opt in labelSystem[dim.key]"
-              :key="opt"
-              :value="opt"
-            >
-              {{ opt }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <!-- 商品名编辑 & 平台建议 -->
-      <div class="mt-4 rounded-xl bg-cream/40 p-4">
-        <label class="text-xs text-cocoa">商品名称</label>
-        <div class="mt-1.5 flex items-center gap-2">
-          <input
-            v-model="customName"
-            type="text"
-            class="input-field flex-1 text-sm"
-            placeholder="请输入或选择建议名称"
-          />
-          <button
-            v-if="customName !== autoName"
-            @click="customName = autoName"
-            class="shrink-0 text-xs text-primary-600 underline"
-          >
-            恢复默认
-          </button>
-        </div>
-        <div v-if="nameSuggestions.length" class="mt-3">
-          <p class="mb-2 text-xs text-cocoa">平台建议名称：</p>
-          <div class="flex flex-wrap gap-2">
-            <button
-              v-for="(s, i) in nameSuggestions"
-              :key="i"
-              @click="customName = s"
-              class="rounded-full border px-3 py-1.5 text-xs transition"
-              :class="customName === s
-                ? 'border-primary-500 bg-primary-50 text-primary-600'
-                : 'border-divider text-cocoa hover:border-primary-300'"
-            >
-              {{ s }}
-            </button>
+          <div class="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            <div v-for="dim in tagDimensions" :key="dim.key">
+              <label class="text-xs font-medium text-cocoa">
+                {{ dim.name }}
+                <span v-if="dim.required" class="text-error">*</span>
+                <span v-else class="text-cocoa/40">（可选）</span>
+              </label>
+              <select
+                v-model="tags[dim.key]"
+                class="input-field mt-1 w-full text-sm"
+              >
+                <option value="">{{ dim.required ? '请选择' : '不限' }}</option>
+                <option
+                  v-for="opt in labelSystem[dim.key]"
+                  :key="opt"
+                  :value="opt"
+                >
+                  {{ opt }}
+                </option>
+              </select>
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div class="mt-4 flex items-center gap-3">
-        <button
-          @click="generate"
-          :disabled="!canGenerate || generating"
-          class="btn-primary rounded-[18px] px-8 py-2.5 text-sm font-medium"
-          :class="(canGenerate && !generating) ? '' : 'cursor-not-allowed opacity-50'"
-        >
-          <span v-if="generating" class="flex items-center gap-2">
-            <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" class="opacity-30"/>
-              <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-            </svg>
-            AI 生成中...
-          </span>
-          <span v-else>AI 生成素材</span>
-        </button>
-        <button
-          v-if="generating"
-          @click="cancelGenerate"
-          class="text-xs text-cocoa underline transition hover:text-error"
-        >
-          取消
-        </button>
-      </div>
-      <p v-if="timeoutError" class="mt-2 text-xs text-error">{{ timeoutError }}</p>
-    </section>
-
-    <!-- 生成结果 -->
-    <section v-if="generatedItem" class="card mb-6 p-6">
-      <h2 class="mb-4 text-lg font-medium text-ink">生成结果</h2>
-
-      <div class="mx-auto max-w-sm overflow-hidden rounded-3xl border border-divider bg-white shadow-soft">
-        <div
-          class="relative flex aspect-square w-full items-center justify-center"
-          :style="{ background: generatedGradient }"
-        >
-          <div class="absolute inset-0 flex items-center justify-center">
-            <div class="w-32 h-48 rounded-full bg-white/30 blur-3xl"></div>
-          </div>
-          <div class="relative text-center">
-            <p class="text-4xl">💅</p>
-            <p class="mt-2 text-xs text-ink/50">AI 生成预览图</p>
-          </div>
-        </div>
-        <div class="p-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <div class="flex items-center gap-2">
-                <input
-                  v-model="generatedItem.name"
-                  type="text"
-                  class="text-sm font-medium text-ink bg-transparent outline-none border-b border-transparent hover:border-divider focus:border-primary-300"
-                />
-              </div>
-              <div class="mt-1.5">
-                <TagBadge :tags="generatedItem.tags" />
+          <!-- 商品名编辑 & 平台建议 -->
+          <div class="mt-4 rounded-xl bg-cream/40 p-4">
+            <label class="text-xs text-cocoa">商品名称</label>
+            <div class="mt-1.5 flex items-center gap-2">
+              <input
+                v-model="customName"
+                type="text"
+                class="input-field flex-1 text-sm"
+                placeholder="请输入或选择建议名称"
+              />
+              <button
+                v-if="customName !== autoName"
+                @click="customName = autoName"
+                class="shrink-0 text-xs text-primary-600 underline"
+              >
+                恢复默认
+              </button>
+            </div>
+            <div v-if="nameSuggestions.length" class="mt-3">
+              <p class="mb-2 text-xs text-cocoa">平台建议名称：</p>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  v-for="(s, i) in nameSuggestions"
+                  :key="i"
+                  @click="customName = s"
+                  class="rounded-full border px-3 py-1.5 text-xs transition"
+                  :class="customName === s
+                    ? 'border-primary-500 bg-primary-50 text-primary-600'
+                    : 'border-divider text-cocoa hover:border-primary-300'"
+                >
+                  {{ s }}
+                </button>
               </div>
             </div>
-            <span
-              class="shrink-0 rounded-full px-2 py-1 text-[11px] font-medium"
-              :class="generatedItem.published ? 'bg-success/10 text-success' : 'bg-cream text-cocoa'"
-            >
-              {{ generatedItem.published ? '已上架' : '待上架' }}
-            </span>
           </div>
 
-          <div class="mt-4 flex gap-3">
+          <div class="mt-4 flex items-center gap-3">
             <button
-              @click="regenerate"
-              class="flex-1 rounded-[18px] border border-divider bg-white py-2 text-sm text-cocoa transition hover:bg-cream"
+              @click="generate"
+              :disabled="!canGenerate || generating"
+              class="btn-primary rounded-[18px] px-8 py-2.5 text-sm font-medium"
+              :class="(canGenerate && !generating) ? '' : 'cursor-not-allowed opacity-50'"
             >
-              重新生成
+              <span v-if="generating" class="flex items-center gap-2">
+                <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" class="opacity-30"/>
+                  <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+                AI 生成中...
+              </span>
+              <span v-else>AI 生成素材</span>
             </button>
             <button
-              v-if="!generatedItem.published"
-              @click="publish"
-              class="flex-1 rounded-[18px] bg-success py-2 text-sm font-medium text-white transition hover:opacity-90"
+              v-if="generating"
+              @click="cancelGenerate"
+              class="text-xs text-cocoa underline transition hover:text-error"
             >
-              一键上架
+              取消
             </button>
-            <span
-              v-else
-              class="flex-1 rounded-[18px] bg-success/10 py-2 text-center text-sm font-medium text-success"
-            >
-              已上架至门店
-            </span>
           </div>
-        </div>
-      </div>
-    </section>
+          <p v-if="timeoutError" class="mt-2 text-xs text-error">{{ timeoutError }}</p>
+        </section>
 
-    <!-- 历史生成记录 -->
-    <section v-if="publishedItems.length" class="card p-6">
-      <h2 class="mb-4 text-lg font-medium text-ink">
-        最近上架
-        <span class="text-sm font-normal text-cocoa">（{{ publishedItems.length }}）</span>
-      </h2>
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div
-          v-for="(item, i) in publishedItems"
-          :key="i"
-          class="overflow-hidden rounded-2xl border border-divider bg-white shadow-soft"
-        >
-          <div
-            class="flex aspect-square items-center justify-center"
-            :style="{ background: item.gradient }"
-          >
-            <p class="text-3xl">💅</p>
+        <!-- 生成结果 -->
+        <section v-if="generatedItem" class="card mb-6 p-6">
+          <h2 class="mb-4 text-lg font-medium text-ink">生成结果</h2>
+
+          <div class="mx-auto max-w-sm overflow-hidden rounded-3xl border border-divider bg-white shadow-soft">
+            <div
+              class="relative flex aspect-square w-full items-center justify-center"
+              :style="{ background: generatedGradient }"
+            >
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="w-32 h-48 rounded-full bg-white/30 blur-3xl"></div>
+              </div>
+              <div class="relative text-center">
+                <p class="text-4xl">💅</p>
+                <p class="mt-2 text-xs text-ink/50">AI 生成预览图</p>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <input
+                      v-model="generatedItem.name"
+                      type="text"
+                      class="text-sm font-medium text-ink bg-transparent outline-none border-b border-transparent hover:border-divider focus:border-primary-300"
+                    />
+                  </div>
+                  <div class="mt-1.5">
+                    <TagBadge :tags="generatedItem.tags" />
+                  </div>
+                </div>
+                <span
+                  class="shrink-0 rounded-full px-2 py-1 text-[11px] font-medium"
+                  :class="generatedItem.published ? 'bg-success/10 text-success' : 'bg-cream text-cocoa'"
+                >
+                  {{ generatedItem.published ? '已上架' : '待上架' }}
+                </span>
+              </div>
+
+              <div class="mt-4 flex gap-3">
+                <button
+                  @click="regenerate"
+                  class="flex-1 rounded-[18px] border border-divider bg-white py-2 text-sm text-cocoa transition hover:bg-cream"
+                >
+                  重新生成
+                </button>
+                <button
+                  v-if="!generatedItem.published"
+                  @click="publish"
+                  class="flex-1 rounded-[18px] bg-success py-2 text-sm font-medium text-white transition hover:opacity-90"
+                >
+                  一键上架
+                </button>
+                <span
+                  v-else
+                  class="flex-1 rounded-[18px] bg-success/10 py-2 text-center text-sm font-medium text-success"
+                >
+                  已上架至门店
+                </span>
+              </div>
+            </div>
           </div>
-          <div class="p-3">
-            <p class="text-xs font-medium text-ink truncate">{{ item.name }}</p>
-            <TagBadge :tags="item.tags" />
-            <p class="mt-1 text-[11px] text-success">已上架</p>
+        </section>
+
+        <!-- 历史生成记录 -->
+        <section v-if="publishedItems.length" class="card p-6">
+          <h2 class="mb-4 text-lg font-medium text-ink">
+            最近上架
+            <span class="text-sm font-normal text-cocoa">（{{ publishedItems.length }}）</span>
+          </h2>
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div
+              v-for="(item, i) in publishedItems"
+              :key="i"
+              class="overflow-hidden rounded-2xl border border-divider bg-white shadow-soft"
+            >
+              <div
+                class="flex aspect-square items-center justify-center"
+                :style="{ background: item.gradient }"
+              >
+                <p class="text-3xl">💅</p>
+              </div>
+              <div class="p-3">
+                <p class="text-xs font-medium text-ink truncate">{{ item.name }}</p>
+                <TagBadge :tags="item.tags" />
+                <p class="mt-1 text-[11px] text-success">已上架</p>
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
       </div>
-    </section>
+
+      <!-- 右侧：分析建议 -->
+      <div class="lg:col-span-1">
+        <!-- 站内爆款标签 -->
+        <section class="card mb-6 p-5">
+          <h3 class="text-sm font-medium text-ink">站内爆款标签 TOP5</h3>
+          <p class="mt-1 text-xs text-cocoa">近7天高热标签组合，点击快速填入</p>
+          <div class="mt-3 space-y-2">
+            <button
+              v-for="(item, i) in topHotTags"
+              :key="i"
+              @click="fillTags(item.tags)"
+              class="w-full rounded-xl border border-divider bg-white p-3 text-left transition hover:border-primary-300 hover:shadow-soft"
+            >
+              <div class="flex items-center gap-2">
+                <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold"
+                  :class="i < 3 ? 'bg-primary-500 text-white' : 'bg-cream text-cocoa'"
+                >{{ i + 1 }}</span>
+                <TagBadge :tags="item.tags" />
+              </div>
+              <div class="mt-1.5 flex items-center gap-3 text-[11px] text-cocoa">
+                <span>试戴 {{ item.tryOnCount }}</span>
+                <span>订单 {{ item.orderCount }}</span>
+                <span
+                  class="ml-auto rounded-full px-1.5 py-0.5 text-primary-600"
+                  :class="isTagFilled(item.tags) ? 'bg-primary-50' : 'bg-cream'"
+                >
+                  {{ isTagFilled(item.tags) ? '已填入' : '点击填入' }}
+                </span>
+              </div>
+            </button>
+          </div>
+        </section>
+
+        <!-- 小红书热门素材 -->
+        <section class="card p-5">
+          <h3 class="text-sm font-medium text-ink">小红书热门素材</h3>
+          <p class="mt-1 text-xs text-cocoa">高互动美甲笔记，点击填入标签</p>
+          <div class="mt-3 space-y-3">
+            <div
+              v-for="item in xhsInspirations"
+              :key="item.id"
+              class="overflow-hidden rounded-2xl border border-divider bg-white transition hover:shadow-soft"
+            >
+              <div class="relative">
+                <img :src="item.image" class="aspect-[4/3] w-full object-cover" />
+                <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/40 to-transparent p-2">
+                  <div class="flex items-center gap-2 text-[11px] text-white">
+                    <span>👍 {{ item.likes }}</span>
+                    <span>⭐ {{ item.collects }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="p-3">
+                <TagBadge :tags="item.aiTags" />
+                <button
+                  @click="fillTags(item.aiTags)"
+                  class="mt-2 w-full rounded-[14px] border border-primary-300 py-1.5 text-xs text-primary-600 transition hover:bg-primary-50"
+                >
+                  {{ isTagFilled(item.aiTags) ? '已填入' : '填入此标签' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
 import TagBadge from '../../components/merchant/TagBadge.vue'
-import { labelSystem } from '../../data/merchantMockData'
+import { labelSystem, hotTags, xhsPendingMaterials, calcHeatScore } from '../../data/merchantMockData'
 
 const tagDimensions = [
   { key: 'shape', name: '甲型', required: true },
@@ -212,6 +283,18 @@ const generatedItem = ref(null)
 const publishedItems = ref([])
 let timer = null
 
+// 站内爆款 TOP5
+const topHotTags = computed(() => {
+  return [...hotTags]
+    .sort((a, b) => calcHeatScore(b) - calcHeatScore(a))
+    .slice(0, 5)
+})
+
+// 小红书素材（取前3条）
+const xhsInspirations = computed(() => {
+  return xhsPendingMaterials.slice(0, 3)
+})
+
 const canGenerate = computed(() => {
   return tags.value.shape && tags.value.tone && tags.value.style
 })
@@ -219,15 +302,14 @@ const canGenerate = computed(() => {
 const autoName = computed(() => {
   const { tone, craft, shape } = tags.value
   const parts = [tone, craft, shape].filter(Boolean)
-  return parts.length ? parts.join('') + '甲' : ''
+  return parts.length ? parts.join('') : ''
 })
 
-// 平台建议名称：多种排列组合
+// 平台建议名称
 const nameSuggestions = computed(() => {
   const { tone, craft, shape, style, decor } = tags.value
   if (!tone || !shape) return []
   const names = new Set()
-  // 不同命名公式
   const formulas = [
     [tone, craft, shape],
     [tone, style, shape],
@@ -238,7 +320,7 @@ const nameSuggestions = computed(() => {
   ]
   for (const parts of formulas) {
     const filtered = parts.filter(Boolean)
-    if (filtered.length >= 2) names.add(filtered.join('') + '甲')
+    if (filtered.length >= 2) names.add(filtered.join(''))
   }
   return Array.from(names).slice(0, 4)
 })
@@ -249,6 +331,18 @@ watch([() => tags.value.shape, () => tags.value.tone, () => tags.value.craft, ()
     customName.value = autoName.value
   }
 })
+
+const fillTags = (newTags) => {
+  tags.value = { ...tags.value, ...newTags }
+}
+
+const isTagFilled = (t) => {
+  return tags.value.shape === t.shape
+    && tags.value.tone === t.tone
+    && tags.value.style === t.style
+    && tags.value.craft === t.craft
+    && tags.value.decor === t.decor
+}
 
 const gradientMap = {
   '裸色': 'linear-gradient(135deg, #f5e6d8, #dcc5b0, #f0dcc8)',
@@ -268,7 +362,6 @@ const generate = () => {
   timeoutError.value = ''
   generating.value = true
 
-  // Simulate AI generation with 2-3s delay
   const delay = 2000 + Math.random() * 1000
   timer = setTimeout(() => {
     generating.value = false
