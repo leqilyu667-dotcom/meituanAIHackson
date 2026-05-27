@@ -114,23 +114,24 @@ export const hotTags = [
   { tags: { shape: '杏仁甲', tone: '透色', craft: '晕染', decor: '珍珠/铆钉', style: '日式' }, tryOnCount: 280, orderCount: 24 },
   { tags: { shape: '方圆甲', tone: '亮色', craft: '跳色', decor: '波点', style: '简约风' }, tryOnCount: 250, orderCount: 20 },
 
-  // === 仅工艺有值、装饰为空（如纯色无装饰款）===
+  // === 仅工艺有值、装饰为空（纯色零装饰款）===
   { tags: { shape: '方圆甲', tone: '红色系', craft: '纯色', decor: '', style: '法式' }, tryOnCount: 480, orderCount: 52 },
+  { tags: { shape: '杏仁甲', tone: '红色系', craft: '渐变', decor: '', style: '温柔风' }, tryOnCount: 320, orderCount: 28 },
   { tags: { shape: '圆甲', tone: '冷色', craft: '纯色', decor: '', style: '简约风' }, tryOnCount: 240, orderCount: 20 },
   { tags: { shape: '梯形甲', tone: '亮色', craft: '猫眼', decor: '', style: '甜酷风' }, tryOnCount: 220, orderCount: 18 },
-  { tags: { shape: '杏仁甲', tone: '红色系', craft: '渐变', decor: '', style: '温柔风' }, tryOnCount: 190, orderCount: 16 },
 
-  // === 装饰有值、工艺为空（如贴纸款无工艺）===
+  // === 装饰有值、工艺为空（贴纸/碎钻裸甲款）===
   { tags: { shape: '圆甲', tone: '透色', craft: '', decor: '金/银碎箔', style: '日式' }, tryOnCount: 210, orderCount: 18 },
   { tags: { shape: '方圆甲', tone: '裸色', craft: '', decor: '波点', style: '简约风' }, tryOnCount: 180, orderCount: 14 },
   { tags: { shape: '尖甲', tone: '亮色', craft: '', decor: '碎钻', style: '甜酷风' }, tryOnCount: 160, orderCount: 12 },
+  { tags: { shape: '建构延长', tone: '裸色', craft: '', decor: '立体雕花', style: '欧美风' }, tryOnCount: 190, orderCount: 14 },
 
-  // === 工艺+装饰双空（纯色本甲基础款）===
-  { tags: { shape: '方圆甲', tone: '裸色', craft: '', decor: '', style: '简约风' }, tryOnCount: 380, orderCount: 36 },
+  // === 工艺+装饰双空（纯色本甲基础款，体量大，确保进 TOP10）===
+  { tags: { shape: '方圆甲', tone: '裸色', craft: '', decor: '', style: '简约风' }, tryOnCount: 420, orderCount: 42 },
+  { tags: { shape: '杏仁甲', tone: '裸色', craft: '', decor: '', style: '温柔风' }, tryOnCount: 400, orderCount: 38 },
   { tags: { shape: '圆甲', tone: '裸色', craft: '', decor: '', style: '简约风' }, tryOnCount: 340, orderCount: 28 },
   { tags: { shape: '梯形甲', tone: '红色系', craft: '', decor: '', style: '温柔风' }, tryOnCount: 260, orderCount: 22 },
   { tags: { shape: '建构延长', tone: '裸色', craft: '', decor: '', style: '欧美风' }, tryOnCount: 200, orderCount: 16 },
-  { tags: { shape: '杏仁甲', tone: '裸色', craft: '', decor: '', style: '温柔风' }, tryOnCount: 370, orderCount: 32 },
   { tags: { shape: '尖甲', tone: '冷色', craft: '', decor: '', style: 'ins风' }, tryOnCount: 150, orderCount: 10 }
 ]
 
