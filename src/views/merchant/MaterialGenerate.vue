@@ -39,32 +39,34 @@
         </div>
       </section>
 
-      <!-- 站外小红书素材 -->
+      <!-- 站外热门素材 -->
       <section class="card p-5">
-        <h3 class="text-sm font-medium text-ink">站外小红书热门素材</h3>
-        <p class="mt-1 text-xs text-cocoa">高互动美甲笔记，点击填入标签</p>
-        <div class="mt-3 grid gap-3 sm:grid-cols-3">
+        <h3 class="text-sm font-medium text-ink">站外热门素材</h3>
+        <p class="mt-1 text-xs text-cocoa">小红书高互动美甲笔记，点击填入标签</p>
+        <div class="mt-3 grid gap-4 sm:grid-cols-3">
           <div
             v-for="item in xhsInspirations"
             :key="item.id"
             class="overflow-hidden rounded-2xl border border-divider bg-white transition hover:shadow-soft"
           >
-            <div class="relative">
-              <img :src="item.image" class="aspect-square w-full object-cover" />
-              <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/40 to-transparent p-2">
-                <div class="flex items-center gap-2 text-[11px] text-white">
-                  <span>👍 {{ item.likes }}</span>
-                  <span>⭐ {{ item.collects }}</span>
-                </div>
+            <img :src="item.image" class="aspect-[4/3] w-full object-cover" />
+            <div class="p-3">
+              <div class="flex items-center gap-3 text-[11px] text-cocoa">
+                <span>👍 {{ item.likes }}</span>
+                <span>⭐ {{ item.collects }}</span>
+                <span>💬 {{ item.comments }}</span>
               </div>
-            </div>
-            <div class="p-2.5">
-              <TagBadge :tags="item.aiTags" />
+              <div class="mt-2">
+                <TagBadge :tags="item.aiTags" />
+              </div>
               <button
                 @click="fillTags(item.aiTags)"
-                class="mt-2 w-full rounded-[14px] border border-primary-300 py-1.5 text-xs text-primary-600 transition hover:bg-primary-50"
+                class="mt-3 w-full rounded-[14px] border py-2 text-xs font-medium transition"
+                :class="isTagFilled(item.aiTags)
+                  ? 'border-primary-300 bg-primary-50 text-primary-600'
+                  : 'border-primary-300 text-primary-600 hover:bg-primary-50'"
               >
-                {{ isTagFilled(item.aiTags) ? '已填入' : '填入此标签' }}
+                {{ isTagFilled(item.aiTags) ? '✓ 已填入标签' : '填入此标签' }}
               </button>
             </div>
           </div>
