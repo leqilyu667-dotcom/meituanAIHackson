@@ -80,11 +80,11 @@
                     </template>
                   </span>
                   <span
-                    v-if="isBasic(item)"
+                    v-if="granularity === 'L2' && isBasic(item)"
                     class="shrink-0 rounded-full bg-cream px-1.5 py-0.5 text-[10px] text-cocoa"
                   >基础款</span>
                   <span
-                    v-if="item.tags.style === '未标注风格'"
+                    v-if="granularity === 'L2' && item.tags.style === '未标注风格'"
                     class="shrink-0 rounded-full bg-cream px-1.5 py-0.5 text-[10px] text-cocoa/60"
                   >未标注风格</span>
                 </div>
