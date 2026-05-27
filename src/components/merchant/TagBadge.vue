@@ -1,9 +1,11 @@
 <template>
-  <span class="inline-flex flex-wrap items-center gap-x-1 gap-y-0.5 rounded-full bg-primary-50 px-2.5 py-1 text-xs font-medium text-primary-700">
-    <span v-for="(val, key) in tags" :key="key">
-      {{ val }}
-      <span v-if="!isLast(key)" class="text-primary-300">·</span>
-    </span>
+  <span class="inline-flex items-center gap-1 rounded-full bg-primary-50 px-2.5 py-1 text-xs font-medium text-primary-700">
+    <template v-for="(key, idx) in displayKeys" :key="key">
+      <span v-if="tags[key]">
+        {{ tags[key] }}
+        <span v-if="!isLast(idx)" class="text-primary-300">·</span>
+      </span>
+    </template>
   </span>
 </template>
 
@@ -12,9 +14,13 @@ const props = defineProps({
   tags: { type: Object, required: true }
 })
 
-const keys = ['shape', 'tone', 'craft', 'decor', 'style']
+const displayKeys = ['tone', 'craft', 'decor']
 
-const isLast = (key) => {
-  return keys.indexOf(key) === keys.length - 1
+const isLast = (idx) => {
+  // Check if any subsequent displayKey has a non-empty value
+  for (let i = idx + 1; i < displayKeys.length; i++) {
+    if (props.tags[displayKeys[i]]) return false
+  }
+  return true
 }
 </script>
