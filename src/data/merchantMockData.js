@@ -80,37 +80,72 @@ export const dimensionHeat = {
   tone: { '裸色': 92, '红色系': 82, '冷色': 75, '亮色': 70, '金属': 62, '魔镜粉': 56, '透色': 55 },
   craft: { '渐变': 75, '猫眼': 70, '纯色': 88, '手绘': 58, '晕染': 52, '跳色': 48, '魔镜粉': 42 },
   decor: { '碎钻': 62, '金/银碎箔': 55, '立体雕花': 42, '珍珠/铆钉': 38, '贴纸': 35, '波点': 30, '手绘': 28 },
-  style: { '温柔风': 78, '法式': 72, 'ins风': 68, '日式': 65, '甜酷风': 55, '简约风': 50, '欧美风': 42, '未标注风格': 0 }
+  style: { '温柔风': 78, '法式': 72, 'ins风': 68, '日式': 65, '甜酷风': 55, '简约风': 50, '欧美风': 42 }
 }
 
-// 爆款趋势 - 站内标签热度（含基础款：工艺/装饰为空）
+// AI 风格推荐映射（甲型 × 色调 × 工艺 → Top 3 推荐风格）
+export const styleRecommendMap = {
+  '杏仁甲|裸色|渐变': [{ style: '温柔风', confidence: 78 }, { style: '简约风', confidence: 12 }, { style: '日式', confidence: 6 }],
+  '杏仁甲|裸色|': [{ style: '简约风', confidence: 55 }, { style: '温柔风', confidence: 30 }, { style: '日式', confidence: 10 }],
+  '杏仁甲|亮色|手绘': [{ style: '甜酷风', confidence: 65 }, { style: 'ins风', confidence: 22 }, { style: '日式', confidence: 8 }],
+  '方圆甲|红色系|纯色': [{ style: '法式', confidence: 68 }, { style: '简约风', confidence: 20 }, { style: '温柔风', confidence: 7 }],
+  '方圆甲|裸色|': [{ style: '简约风', confidence: 60 }, { style: '法式', confidence: 25 }, { style: '温柔风', confidence: 10 }],
+  '方圆甲|亮色|跳色': [{ style: '简约风', confidence: 50 }, { style: '甜酷风', confidence: 30 }, { style: 'ins风', confidence: 12 }],
+  '梯形甲|冷色|猫眼': [{ style: 'ins风', confidence: 72 }, { style: '欧美风', confidence: 18 }, { style: '甜酷风', confidence: 5 }],
+  '梯形甲|红色系|': [{ style: '温柔风', confidence: 48 }, { style: '法式', confidence: 32 }, { style: '简约风', confidence: 12 }],
+  '圆甲|裸色|': [{ style: '简约风', confidence: 58 }, { style: '日式', confidence: 22 }, { style: '温柔风', confidence: 15 }],
+  '圆甲|冷色|纯色': [{ style: '简约风', confidence: 52 }, { style: 'ins风', confidence: 30 }, { style: '日式', confidence: 12 }],
+  '建构延长|魔镜粉|魔镜粉': [{ style: '欧美风', confidence: 75 }, { style: 'ins风', confidence: 15 }, { style: '甜酷风', confidence: 5 }],
+  '尖甲|金属|纯色': [{ style: 'ins风', confidence: 60 }, { style: '欧美风', confidence: 25 }, { style: '甜酷风', confidence: 10 }],
+  '杏仁甲|透色|晕染': [{ style: '日式', confidence: 70 }, { style: '温柔风', confidence: 18 }, { style: '简约风', confidence: 8 }]
+}
+
+// 爆款趋势 - 站内标签热度（风格必填，覆盖多种组合场景）
+// 工艺/装饰覆盖：双有、仅工艺、仅装饰、双空
+// 风格覆盖：温柔风、法式、ins风、日式、甜酷风、简约风、欧美风
+// 甲型覆盖：杏仁甲、方圆甲、梯形甲、圆甲、尖甲、建构延长
 export const hotTags = [
+  // === 五维完整（工艺+装饰双有）===
   { tags: { shape: '杏仁甲', tone: '裸色', craft: '渐变', decor: '碎钻', style: '温柔风' }, tryOnCount: 520, orderCount: 64 },
-  { tags: { shape: '方圆甲', tone: '红色系', craft: '纯色', decor: '', style: '法式' }, tryOnCount: 480, orderCount: 52 },
   { tags: { shape: '梯形甲', tone: '冷色', craft: '猫眼', decor: '金/银碎箔', style: 'ins风' }, tryOnCount: 430, orderCount: 41 },
-  { tags: { shape: '圆甲', tone: '裸色', craft: '', decor: '', style: '未标注风格' }, tryOnCount: 380, orderCount: 36 },
-  { tags: { shape: '建构延长', tone: '魔镜粉', craft: '魔镜粉', decor: '立体雕花', style: '欧美风' }, tryOnCount: 360, orderCount: 34 },
   { tags: { shape: '杏仁甲', tone: '亮色', craft: '手绘', decor: '贴纸', style: '甜酷风' }, tryOnCount: 350, orderCount: 35 },
-  { tags: { shape: '方圆甲', tone: '裸色', craft: '', decor: '', style: '简约风' }, tryOnCount: 310, orderCount: 28 },
+  { tags: { shape: '建构延长', tone: '魔镜粉', craft: '魔镜粉', decor: '立体雕花', style: '欧美风' }, tryOnCount: 360, orderCount: 34 },
   { tags: { shape: '尖甲', tone: '金属', craft: '纯色', decor: '金/银碎箔', style: 'ins风' }, tryOnCount: 300, orderCount: 30 },
-  { tags: { shape: '梯形甲', tone: '红色系', craft: '', decor: '', style: '未标注风格' }, tryOnCount: 260, orderCount: 22 },
-  { tags: { shape: '圆甲', tone: '冷色', craft: '纯色', decor: '', style: '简约风' }, tryOnCount: 240, orderCount: 20 },
   { tags: { shape: '杏仁甲', tone: '透色', craft: '晕染', decor: '珍珠/铆钉', style: '日式' }, tryOnCount: 280, orderCount: 24 },
-  { tags: { shape: '方圆甲', tone: '亮色', craft: '跳色', decor: '波点', style: '简约风' }, tryOnCount: 250, orderCount: 20 }
+  { tags: { shape: '方圆甲', tone: '亮色', craft: '跳色', decor: '波点', style: '简约风' }, tryOnCount: 250, orderCount: 20 },
+
+  // === 仅工艺有值、装饰为空（如纯色无装饰款）===
+  { tags: { shape: '方圆甲', tone: '红色系', craft: '纯色', decor: '', style: '法式' }, tryOnCount: 480, orderCount: 52 },
+  { tags: { shape: '圆甲', tone: '冷色', craft: '纯色', decor: '', style: '简约风' }, tryOnCount: 240, orderCount: 20 },
+  { tags: { shape: '梯形甲', tone: '亮色', craft: '猫眼', decor: '', style: '甜酷风' }, tryOnCount: 220, orderCount: 18 },
+  { tags: { shape: '杏仁甲', tone: '红色系', craft: '渐变', decor: '', style: '温柔风' }, tryOnCount: 190, orderCount: 16 },
+
+  // === 装饰有值、工艺为空（如贴纸款无工艺）===
+  { tags: { shape: '圆甲', tone: '透色', craft: '', decor: '金/银碎箔', style: '日式' }, tryOnCount: 210, orderCount: 18 },
+  { tags: { shape: '方圆甲', tone: '裸色', craft: '', decor: '波点', style: '简约风' }, tryOnCount: 180, orderCount: 14 },
+  { tags: { shape: '尖甲', tone: '亮色', craft: '', decor: '碎钻', style: '甜酷风' }, tryOnCount: 160, orderCount: 12 },
+
+  // === 工艺+装饰双空（纯色本甲基础款）===
+  { tags: { shape: '方圆甲', tone: '裸色', craft: '', decor: '', style: '简约风' }, tryOnCount: 380, orderCount: 36 },
+  { tags: { shape: '圆甲', tone: '裸色', craft: '', decor: '', style: '简约风' }, tryOnCount: 340, orderCount: 28 },
+  { tags: { shape: '梯形甲', tone: '红色系', craft: '', decor: '', style: '温柔风' }, tryOnCount: 260, orderCount: 22 },
+  { tags: { shape: '建构延长', tone: '裸色', craft: '', decor: '', style: '欧美风' }, tryOnCount: 200, orderCount: 16 },
+  { tags: { shape: '杏仁甲', tone: '裸色', craft: '', decor: '', style: '温柔风' }, tryOnCount: 370, orderCount: 32 },
+  { tags: { shape: '尖甲', tone: '冷色', craft: '', decor: '', style: 'ins风' }, tryOnCount: 150, orderCount: 10 }
 ]
 
-// 计算综合热度分
+// 计算综合热度分（风格权重10%，工艺/装饰各15%）
 export const calcHeatScore = (item) => {
   const { shape, tone, craft, decor, style } = item.tags
   const getHeat = (dim, key) => (dimensionHeat[dim] && dimensionHeat[dim][key]) || 0
 
   const shapeScore = getHeat('shape', shape) * 0.30
   const toneScore = getHeat('tone', tone) * 0.30
-  const craftScore = craft ? getHeat('craft', craft) * 0.20 : 0
+  const styleScore = getHeat('style', style) * 0.10
+  const craftScore = craft ? getHeat('craft', craft) * 0.15 : 0
   const decorScore = decor ? getHeat('decor', decor) * 0.15 : 0
-  const styleScore = getHeat('style', style) * 0.05
 
-  const dimScore = shapeScore + toneScore + craftScore + decorScore + styleScore
+  const dimScore = shapeScore + toneScore + styleScore + craftScore + decorScore
   const behaviorScore = item.tryOnCount * 0.6 + item.orderCount * 0.4
 
   return Math.round(dimScore * behaviorScore)

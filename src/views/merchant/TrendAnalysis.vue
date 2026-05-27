@@ -44,11 +44,11 @@
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-divider bg-cream/50 text-left text-xs text-cocoa">
-              <th class="px-4 py-2.5 font-medium w-14">排名</th>
+              <th class="w-14 px-4 py-2.5 font-medium">排名</th>
               <th class="px-4 py-2.5 font-medium">标签组合</th>
-              <th class="px-4 py-2.5 font-medium text-right">试戴量</th>
-              <th class="px-4 py-2.5 font-medium text-right">订单量</th>
-              <th class="px-4 py-2.5 font-medium text-right">综合热度分</th>
+              <th class="px-4 py-2.5 text-right font-medium">试戴量</th>
+              <th class="px-4 py-2.5 text-right font-medium">订单量</th>
+              <th class="px-4 py-2.5 text-right font-medium">综合热度分</th>
             </tr>
           </thead>
           <tbody>
@@ -67,26 +67,22 @@
               </td>
               <td class="px-4 py-3">
                 <div class="flex items-center gap-2">
-                  <span class="font-medium text-ink">
-                    <template v-if="granularity === 'L1'">
-                      {{ item.tags.shape }} · {{ item.tags.tone }}
-                    </template>
-                    <template v-else>
-                      {{ item.tags.shape }} · {{ item.tags.tone }}
-                      <span class="text-cocoa/60"> · </span>
-                      <span :class="item.tags.craft ? 'text-ink' : 'text-cocoa/40'">{{ item.tags.craft || '—' }}</span>
-                      <span class="text-cocoa/60"> · </span>
-                      <span :class="item.tags.decor ? 'text-ink' : 'text-cocoa/40'">{{ item.tags.decor || '—' }}</span>
-                    </template>
+                  <!-- L1: shape + tone + style (3 core dims) -->
+                  <span v-if="granularity === 'L1'" class="font-medium text-ink">
+                    {{ item.tags.shape }} · {{ item.tags.tone }} · {{ item.tags.style }}
+                  </span>
+                  <!-- L2: all 5 dims, craft/decor optional -->
+                  <span v-else class="font-medium text-ink">
+                    {{ item.tags.shape }} · {{ item.tags.tone }} · {{ item.tags.style }}
+                    <span class="text-cocoa/60"> · </span>
+                    <span :class="item.tags.craft ? 'text-ink' : 'text-cocoa/40'">{{ item.tags.craft || '—' }}</span>
+                    <span class="text-cocoa/60"> · </span>
+                    <span :class="item.tags.decor ? 'text-ink' : 'text-cocoa/40'">{{ item.tags.decor || '—' }}</span>
                   </span>
                   <span
                     v-if="granularity === 'L2' && isBasic(item)"
                     class="shrink-0 rounded-full bg-cream px-1.5 py-0.5 text-[10px] text-cocoa"
                   >基础款</span>
-                  <span
-                    v-if="granularity === 'L2' && item.tags.style === '未标注风格'"
-                    class="shrink-0 rounded-full bg-cream px-1.5 py-0.5 text-[10px] text-cocoa/60"
-                  >未标注风格</span>
                 </div>
               </td>
               <td class="px-4 py-3 text-right text-cocoa">{{ item.tryOnCount }}</td>
@@ -265,31 +261,30 @@ const scope = ref('门店')
 const granularity = ref('L1')
 const granularities = [
   { key: 'L1', label: '一级聚合' },
-  { key: 'L2', label: '二级聚合' }
+  { key: 'L2', label: '全维度明细' }
 ]
 
 const granularityLabel = computed(() => {
-  return granularity.value === 'L1' ? '甲型+色调' : '甲型+色调+工艺+装饰'
+  return granularity.value === 'L1' ? '甲型+色调+风格' : '全维度（甲型+色调+风格+工艺+装饰）'
 })
 
 const hotTags = ref(hotTagsData)
 const trendData = ref(trendMockData)
 
-// L1 aggregation: group by shape+tone
+// L1: group by shape + tone + style (core 3 dims)
 const aggregatedL1 = computed(() => {
   const map = new Map()
   for (const item of hotTags.value) {
-    const key = `${item.tags.shape}|${item.tags.tone}`
+    const key = `${item.tags.shape}|${item.tags.tone}|${item.tags.style}`
     const existing = map.get(key)
     if (existing) {
       existing.tryOnCount += item.tryOnCount
       existing.orderCount += item.orderCount
     } else {
       map.set(key, {
-        tags: { shape: item.tags.shape, tone: item.tags.tone, craft: '', decor: '', style: item.tags.style === '未标注风格' ? '未标注风格' : '' },
+        tags: { shape: item.tags.shape, tone: item.tags.tone, style: item.tags.style, craft: '', decor: '' },
         tryOnCount: item.tryOnCount,
-        orderCount: item.orderCount,
-        _items: [item]
+        orderCount: item.orderCount
       })
     }
   }
@@ -298,7 +293,7 @@ const aggregatedL1 = computed(() => {
     .slice(0, 10)
 })
 
-// L2: keep original items, sort by heat score
+// L2: original items, sorted by heat score
 const aggregatedL2 = computed(() => {
   return [...hotTags.value]
     .sort((a, b) => calcHeatScore(b) - calcHeatScore(a))
