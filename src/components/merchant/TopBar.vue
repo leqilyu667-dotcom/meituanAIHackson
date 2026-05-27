@@ -34,7 +34,7 @@ const route = useRoute()
 
 const breadcrumbMap = {
   '/merchant/daily-report': ['数据小二', '经营日报'],
-  '/merchant/trend-analysis': ['数据小二', '爆款趋势'],
+  '/merchant/trend-analysis': ['数据小二', '爆款报告'],
   '/merchant/operation-advice': ['数据小二', '运营建议'],
   '/merchant/revenue-calc': ['运营小二', '营收计算器'],
   '/merchant/material-generate': ['运营小二', '爆款素材生成'],

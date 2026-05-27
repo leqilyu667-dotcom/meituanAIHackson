@@ -54,7 +54,7 @@ const menuGroups = [
     name: '数据小二',
     items: [
       { label: '经营日报', path: '/merchant/daily-report' },
-      { label: '爆款趋势', path: '/merchant/trend-analysis' },
+      { label: '爆款报告', path: '/merchant/trend-analysis' },
       { label: '运营建议', path: '/merchant/operation-advice' }
     ]
   },
