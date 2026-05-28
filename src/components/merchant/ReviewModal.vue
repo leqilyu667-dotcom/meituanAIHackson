@@ -18,8 +18,6 @@
                 <p class="text-xs text-cocoa">来源：<a :href="material.source" target="_blank" class="text-primary-600 underline">小红书链接</a></p>
                 <div class="mt-2 flex items-center gap-4 text-xs text-cocoa">
                   <span>点赞 {{ material.likes }}</span>
-                  <span>收藏 {{ material.collects }}</span>
-                  <span>评论 {{ material.comments }}</span>
                 </div>
 
                 <div class="mt-3">
@@ -110,8 +108,9 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { labelSystem, labelDimensions } from '../../data/merchantMockData'
+import { ref, watch, onMounted } from 'vue'
+import { labelDimensions as LabelDimensions, labelSystem as fallbackLabels } from '../../data/merchantMockData'
+import { fetchLabelSystem, createLabel as apiCreateLabel } from '../../data/api'
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
@@ -126,6 +125,20 @@ const editableTags = ref({})
 const editingDim = ref(null)
 const newTagValue = ref('')
 const tagError = ref('')
+const labelSystem = ref({ ...fallbackLabels })
+const labelDimensions = ref([...LabelDimensions])
+const saving = ref(false)
+
+// Load label system from API on mount
+onMounted(async () => {
+  try {
+    const result = await fetchLabelSystem()
+    labelSystem.value = result.system
+    labelDimensions.value = result.dimensions
+  } catch (err) {
+    console.warn('Failed to load labels from API, using fallback:', err.message)
+  }
+})
 
 watch(() => props.visible, (val) => {
   if (val) {
@@ -134,11 +147,12 @@ watch(() => props.visible, (val) => {
     editingDim.value = null
     newTagValue.value = ''
     tagError.value = ''
+    saving.value = false
     editableTags.value = { ...props.material.aiTags }
   }
 })
 
-const labelOptions = (dim) => labelSystem[dim] || []
+const labelOptions = (dim) => labelSystem.value[dim] || []
 
 const startEditTag = (dim) => {
   editingDim.value = dim
@@ -146,18 +160,34 @@ const startEditTag = (dim) => {
   tagError.value = ''
 }
 
-const addNewTag = () => {
+const addNewTag = async () => {
   const val = newTagValue.value.trim()
   if (!val) return
-  if (labelSystem[editingDim.value]?.includes(val)) {
+  if (labelSystem.value[editingDim.value]?.includes(val)) {
     tagError.value = '标签已存在，请重新选择'
     return
   }
-  labelSystem[editingDim.value].push(val)
-  editableTags.value[editingDim.value] = val
-  editingDim.value = null
-  newTagValue.value = ''
-  tagError.value = ''
+
+  try {
+    // Create via API
+    await apiCreateLabel({
+      dimension: editingDim.value,
+      labelName: val,
+      sourceMaterialId: props.material.id
+    })
+
+    // Update local state
+    if (!labelSystem.value[editingDim.value]) {
+      labelSystem.value[editingDim.value] = []
+    }
+    labelSystem.value[editingDim.value].push(val)
+    editableTags.value[editingDim.value] = val
+    editingDim.value = null
+    newTagValue.value = ''
+    tagError.value = ''
+  } catch (err) {
+    tagError.value = err.response?.data?.message || '标签创建失败'
+  }
 }
 
 const confirmReview = (type) => {
@@ -169,6 +199,7 @@ const confirmReview = (type) => {
     id: props.material.id,
     status,
     reason: status === 'reject' ? rejectReason.value : '',
+    reasonCategory: '',
     tags: { ...editableTags.value }
   })
   close()

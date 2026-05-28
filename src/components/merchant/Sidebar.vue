@@ -5,8 +5,8 @@
         N
       </div>
       <div class="min-w-0">
-        <p class="truncate text-sm font-semibold text-ink">Nail Moment</p>
-        <p class="text-xs text-cocoa">商家经营平台</p>
+        <p class="truncate text-sm font-semibold text-ink">妙手</p>
+        <p class="text-xs text-cocoa">智慧经营平台</p>
       </div>
     </div>
 
@@ -30,7 +30,7 @@
       </div>
     </nav>
 
-    <div class="border-t border-divider px-5 py-4">
+    <router-link to="/merchant/profile" class="border-t border-divider px-5 py-4 block transition hover:bg-cream/50">
       <div class="flex items-center gap-3">
         <div class="grid h-8 w-8 place-items-center rounded-full bg-primary-100 text-xs font-bold text-primary-600">
           商
@@ -40,7 +40,7 @@
           <p class="text-xs text-cocoa">全部功能权限</p>
         </div>
       </div>
-    </div>
+    </router-link>
   </aside>
 </template>
 
@@ -62,12 +62,15 @@ const menuGroups = [
     name: '运营小二',
     items: [
       { label: '营收计算器', path: '/merchant/revenue-calc' },
-      { label: '爆款素材生成', path: '/merchant/material-generate' }
+      { label: '爆款素材生成', path: '/merchant/material-generate' },
+      { label: '货架管理', path: '/merchant/product-manage' },
+      { label: '订单记录', path: '/merchant/order-history' }
     ]
   },
   {
     name: '客服小二',
     items: [
+      { label: '消息管理', path: '/merchant/messages' },
       { label: '预约管理', path: '/merchant/appointment' }
     ]
   }

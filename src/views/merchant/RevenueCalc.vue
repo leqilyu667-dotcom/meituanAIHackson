@@ -115,7 +115,7 @@
                         v-model.number="item.discount"
                         type="number"
                         min="0"
-                        :max="item.discountType === 'percent' ? 100 : undefined"
+                        :max="item.discountType === 'percent' ? 10 : undefined"
                         step="0.01"
                         class="flex-1 bg-transparent outline-none"
                       />
@@ -127,30 +127,47 @@
                 </div>
               </div>
 
-              <!-- 标签选择 -->
+              <!-- 款式图片上传 + AI 识别标签 -->
               <div class="mt-3 border-t border-divider pt-3">
                 <p class="mb-2 text-xs font-medium text-cocoa">
-                  款式标签 <span class="text-cocoa/50">（对齐全平台标签体系）</span>
+                  款式图片 <span class="text-cocoa/50">（上传后自动识别标签，存入作品集）</span>
                 </p>
-                <div class="grid gap-2 sm:grid-cols-3">
-                  <div v-for="dim in tagDimensions" :key="dim.key">
-                    <label class="text-xs text-cocoa">
-                      {{ dim.name }}
-                      <span v-if="dim.required" class="text-error">*</span>
-                    </label>
-                    <select
-                      v-model="item.tags[dim.key]"
-                      class="input-field mt-1 w-full text-sm"
+
+                <!-- Upload area or detected tags -->
+                <div v-if="!item.imageUrl" class="flex items-center gap-3">
+                  <label
+                    class="flex h-24 w-24 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-divider bg-cream/20 text-cocoa transition hover:border-primary-300 hover:text-primary-600"
+                  >
+                    <svg class="h-6 w-6 mb-1" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    <span class="text-[10px]">上传图片</span>
+                    <input
+                      type="file"
+                      accept=".jpg,.jpeg,.png"
+                      class="hidden"
+                      @change="(e) => handleItemImage(e, item)"
+                    />
+                  </label>
+                  <span v-if="item.detecting" class="text-xs text-cocoa">AI 识别中...</span>
+                </div>
+
+                <!-- Detected result -->
+                <div v-else class="flex items-start gap-3 rounded-xl bg-cream/30 p-3">
+                  <img :src="item.imageUrl" class="h-20 w-20 shrink-0 rounded-xl object-cover" />
+                  <div class="min-w-0 flex-1">
+                    <div class="mb-1">
+                      <TagBadge :tags="item.tags" />
+                    </div>
+                    <div class="flex flex-wrap gap-1 text-[10px] text-cocoa/60">
+                      <span v-if="item.confidence">置信度：{{ item.confidence.shape }}% / {{ item.confidence.tone }}% / {{ item.confidence.style }}%</span>
+                    </div>
+                    <button
+                      @click="clearItemImage(item)"
+                      class="mt-1.5 text-[11px] text-cocoa underline hover:text-error"
                     >
-                      <option value="">{{ dim.required ? '请选择' : '不限' }}</option>
-                      <option
-                        v-for="opt in labelSystem[dim.key]"
-                        :key="opt"
-                        :value="opt"
-                      >
-                        {{ opt }}
-                      </option>
-                    </select>
+                      重新上传
+                    </button>
                   </div>
                 </div>
               </div>
@@ -270,12 +287,90 @@
         </div>
       </transition>
     </Teleport>
+
+    <!-- AI 标签识别弹窗 -->
+    <Teleport to="body">
+      <div
+        v-if="tagModal.visible"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-ink/30 backdrop-blur-sm"
+      >
+        <div class="mx-4 w-full max-w-md rounded-3xl bg-white shadow-card max-h-[90vh] overflow-y-auto">
+          <div class="px-6 py-5">
+            <h3 class="text-lg font-semibold text-ink">AI 识别标签</h3>
+            <p class="mt-1 text-xs text-cocoa">
+              {{ tagModal.done ? '识别完成，确认或修改后保存' : 'AI 正在识别图片标签，请稍候...' }}
+            </p>
+          </div>
+
+          <!-- Image preview -->
+          <div class="mx-6 mb-4 flex items-center gap-4 rounded-xl bg-cream/30 p-3">
+            <img :src="tagModal.imageUrl" class="h-20 w-20 shrink-0 rounded-xl object-cover" />
+
+            <!-- Loading state -->
+            <div v-if="!tagModal.done" class="flex items-center gap-3">
+              <svg class="h-5 w-5 animate-spin text-primary-500" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" class="opacity-30"/>
+                <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+              </svg>
+              <span class="text-sm text-cocoa">AI 识别中...</span>
+            </div>
+
+          </div>
+
+          <!-- Editable tags (only when done) -->
+          <div v-if="tagModal.done" class="mx-6 grid grid-cols-2 gap-3 mb-5">
+            <div v-for="dim in tagDimensions" :key="dim.key">
+              <label class="text-[11px] text-cocoa">
+                {{ dim.name }}<span v-if="dim.required" class="text-error">*</span>
+              </label>
+              <select v-model="tagModal.tags[dim.key]" class="input-field mt-1 w-full text-sm">
+                <option value="">{{ dim.required ? '请选择' : '不限' }}</option>
+                <option v-for="opt in labelOptions[dim.key]" :key="opt" :value="opt">{{ opt }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Hint when waiting -->
+          <div v-if="!tagModal.done" class="mx-6 mb-5 rounded-xl bg-warning/10 px-4 py-3">
+            <p class="text-xs text-cocoa leading-relaxed">
+              建议等待 AI 识别完成后确认标签再提交，确保作品信息完整。如急需结算，可跳过识别直接提交。
+            </p>
+          </div>
+
+          <div class="flex gap-3 border-t border-divider px-6 py-4">
+            <button
+              @click="cancelTagModal"
+              class="flex-1 rounded-[18px] border border-divider bg-white py-2.5 text-sm text-cocoa transition hover:bg-cream"
+            >
+              重新上传
+            </button>
+            <button
+              v-if="tagModal.done"
+              @click="confirmTags"
+              :disabled="!tagModal.tags.shape || !tagModal.tags.tone || !tagModal.tags.style"
+              class="flex-1 rounded-[18px] bg-primary-500 py-2.5 text-sm font-medium text-white transition hover:opacity-90 disabled:opacity-40"
+            >
+              确认标签
+            </button>
+            <button
+              v-else
+              @click="skipAndConfirm"
+              class="flex-1 rounded-[18px] border border-warning/50 bg-white py-2.5 text-sm text-warning transition hover:bg-warning/5"
+            >
+              仍要提交（跳过识别）
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { serviceItems, appointments, labelSystem, labelDimensions } from '../../data/merchantMockData'
+import { ref, reactive, computed } from 'vue'
+import TagBadge from '../../components/merchant/TagBadge.vue'
+import { serviceItems, appointments, labelSystem } from '../../data/merchantMockData'
+import { detectTags, saveWork, createOrder, updateOrder } from '../../data/api'
 
 const tagDimensions = [
   { key: 'shape', name: '甲型', required: true },
@@ -285,13 +380,23 @@ const tagDimensions = [
   { key: 'decor', name: '装饰元素', required: false }
 ]
 
+const labelOptions = labelSystem
+
 const items = ref([])
+
+// Tag confirmation modal
+const tagModal = reactive({
+  visible: false,
+  done: false,
+  imageUrl: '',
+  tags: { shape: '', tone: '', style: '', craft: '', decor: '' },
+  confidence: {},
+  itemIndex: null
+})
 const linkedAppointmentId = ref(null)
 const linkedCustomer = ref('')
 const linkedPhone = ref('')
 const paymentMethods = ref([
-  { key: 'wechat', label: '微信', amount: null },
-  { key: 'alipay', label: '支付宝', amount: null },
   { key: 'cash', label: '现金', amount: null },
   { key: 'card', label: '储值卡', amount: null }
 ])
@@ -326,7 +431,9 @@ const onAppointmentChange = () => {
         quantity: 1,
         discountType: 'amount',
         discount: 0,
-        tags: { shape: '', tone: '', style: '', craft: '', decor: '' }
+        tags: { shape: '', tone: '', style: '', craft: '', decor: '' },
+        imageUrl: null, detecting: false, confidence: null,
+        aiPending: false, detectFile: null, savedOrderId: null
       }]
     }
   } else {
@@ -344,12 +451,117 @@ const addItem = () => {
     quantity: 1,
     discountType: 'amount',
     discount: 0,
-    tags: emptyTags()
+    tags: emptyTags(),
+    imageUrl: null,
+    detecting: false,
+    confidence: null,
+    aiPending: false,
+    detectFile: null,
+    savedOrderId: null
   })
 }
 
 const removeItem = (i) => {
   items.value.splice(i, 1)
+}
+
+async function runBackgroundAI(item) {
+  if (!item.detectFile || !item.aiPending) return
+  try {
+    const result = await detectTags(item.detectFile)
+    item.imageUrl = result.url
+    item.tags = { ...result.tags }
+    item.confidence = result.confidence
+    item.aiPending = false
+    // If order was already saved, update in DB
+    if (item.savedOrderId) {
+      await updateOrder(item.savedOrderId, { tags: result.tags }).catch(() => {})
+    }
+  } catch (err) {
+    console.error('Background AI failed:', err.message)
+  }
+}
+
+async function handleItemImage(e, item) {
+  const file = e.target.files?.[0]
+  if (!file) return
+
+  const ext = file.name.split('.').pop()?.toLowerCase()
+  if (!['jpg', 'jpeg', 'png'].includes(ext)) {
+    alert('仅支持 JPG/PNG 格式图片')
+    return
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    alert('图片大小不能超过 10MB')
+    return
+  }
+
+  item.detecting = true
+  item.detectFile = file
+  const idx = items.value.indexOf(item)
+
+  // Show modal immediately in loading state
+  tagModal.imageUrl = URL.createObjectURL(file)
+  tagModal.tags = { shape: '', tone: '', style: '', craft: '', decor: '' }
+  tagModal.confidence = {}
+  tagModal.itemIndex = idx
+  tagModal.done = false
+  tagModal.visible = true
+
+  try {
+    const result = await detectTags(file)
+    tagModal.imageUrl = result.url
+    tagModal.tags = { ...result.tags }
+    tagModal.confidence = result.confidence
+    tagModal.done = true
+  } catch (err) {
+    console.error('Detect tags failed:', err.message)
+    tagModal.done = false
+  } finally {
+    item.detecting = false
+  }
+}
+
+function confirmTags() {
+  const item = items.value[tagModal.itemIndex]
+  if (!item) return
+  item.imageUrl = tagModal.imageUrl
+  item.tags = { ...tagModal.tags }
+  item.confidence = tagModal.confidence
+  item.aiPending = false
+  tagModal.visible = false
+}
+
+function skipAndConfirm() {
+  const item = items.value[tagModal.itemIndex]
+  if (!item) return
+  item.imageUrl = tagModal.imageUrl
+  item.tags = emptyTags()
+  item.confidence = null
+  item.aiPending = true  // Mark for background processing
+  tagModal.visible = false
+  // Start background AI
+  runBackgroundAI(item)
+}
+
+function cancelTagModal() {
+  const item = items.value[tagModal.itemIndex]
+  if (item) {
+    item.imageUrl = null
+    item.tags = emptyTags()
+    item.confidence = null
+    item.detecting = false
+    item.aiPending = false
+    item.detectFile = null
+  }
+  tagModal.visible = false
+  tagModal.done = false
+}
+
+function clearItemImage(item) {
+  item.imageUrl = null
+  item.tags = emptyTags()
+  item.confidence = null
 }
 
 const onServiceChange = (i) => {
@@ -362,7 +574,7 @@ const itemSubtotal = (item) => {
   const original = (item.price || 0) * (item.quantity || 1)
   const discount = item.discount || 0
   if (item.discountType === 'percent') {
-    return original * (discount / 100)
+    return original * (discount / 10)
   }
   return original - discount
 }
@@ -407,15 +619,13 @@ const validate = () => {
     if (item.price == null || item.price < 0) return `项目 ${i + 1}：请输入合法金额`
     if (item.quantity < 1 || !Number.isInteger(item.quantity)) return `项目 ${i + 1}：请输入合法数量`
     if (item.discount < 0) return `项目 ${i + 1}：折扣不能为负数`
-    if (item.discountType === 'percent' && item.discount > 100) return `项目 ${i + 1}：折扣不能超过原价`
+    if (item.discountType === 'percent' && item.discount > 10) return `项目 ${i + 1}：折扣不能超过10折`
     if (item.discountType === 'amount' && item.discount > item.price * item.quantity) {
       return `项目 ${i + 1}：减免金额不能超过原价`
     }
     if (itemSubtotal(item) < 0) return `项目 ${i + 1}：小计金额不能为负数`
-    // 标签校验：核心三维必填
-    if (!item.tags.shape) return `项目 ${i + 1}：请选择甲型`
-    if (!item.tags.tone) return `项目 ${i + 1}：请选择色调`
-    if (!item.tags.style) return `项目 ${i + 1}：请选择风格`
+    // 图片上传校验（标签非必填，跳过识别也可提交）
+    if (!item.imageUrl) return `项目 ${i + 1}：请上传款式图片`
   }
   for (const m of paymentMethods.value) {
     if (m.amount != null && m.amount < 0) return `${m.label}支付金额不能为负数`
@@ -423,7 +633,7 @@ const validate = () => {
   return null
 }
 
-const settle = () => {
+const settle = async () => {
   const err = validate()
   if (err) {
     errorMsg.value = err
@@ -435,12 +645,66 @@ const settle = () => {
     const apt = appointments.find(a => a.id === linkedAppointmentId.value)
     if (apt) apt.status = 'completed'
   }
+  // 保存订单
+  for (const item of items.value) {
+    const svc = serviceItems.find(s => s.id === item.serviceId)
+    try {
+      // Get nail artist from linked appointment
+      const apt = appointments.find(a => a.id === linkedAppointmentId.value)
+      const result = await createOrder({
+        orderNo: orderNo.value,
+        customerName: linkedCustomer.value || '',
+        customerPhone: linkedPhone.value || '',
+        appointmentId: linkedAppointmentId.value || null,
+        nailArtist: apt?.nailArtist || '',
+        serviceItem: svc?.name || '',
+        price: item.price || 0,
+        quantity: item.quantity || 1,
+        discountType: item.discountType,
+        discount: item.discount || 0,
+        subtotal: itemSubtotal(item),
+        workImage: item.imageUrl || null,
+        tags: item.tags,
+        confidence: item.confidence,
+        paymentCash: paymentMethods.value.find(m => m.key === 'cash')?.amount || 0,
+        paymentCard: paymentMethods.value.find(m => m.key === 'card')?.amount || 0,
+        totalReceivable: totalReceivable.value,
+        totalDiscount: totalDiscount.value,
+        actualReceivable: actualReceivable.value,
+        changeAmount: change.value
+      })
+      // Store order ID for background AI updates
+      item.savedOrderId = result.id
+    } catch (e) {
+      console.error('Failed to save order:', e.message)
+    }
+  }
+  // 将作品存入作品集
+  for (const item of items.value) {
+    if (item.imageUrl) {
+      try {
+        const svc = serviceItems.find(s => s.id === item.serviceId)
+        await saveWork({
+          imageUrl: item.imageUrl,
+          name: [item.tags.tone, item.tags.craft, item.tags.shape].filter(Boolean).join('') || (svc?.name || '美甲款式'),
+          tags: item.tags,
+          confidence: item.confidence,
+          serviceItem: svc?.name || '',
+          price: item.price || 0,
+          customerName: linkedCustomer.value || '',
+          orderNo: orderNo.value
+        })
+      } catch (e) {
+        console.error('Failed to save work:', e.message)
+      }
+    }
+  }
   orderSeq.value++
   items.value = []
   linkedAppointmentId.value = null
   linkedCustomer.value = ''
   linkedPhone.value = ''
   paymentMethods.value.forEach(m => m.amount = null)
-  alert(`收款成功！订单 ${orderNo.value} 已入库。`)
+  alert(`收款成功！订单 ${orderNo.value} 已入库，作品已存入作品集。`)
 }
 </script>

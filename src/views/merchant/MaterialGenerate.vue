@@ -42,10 +42,10 @@
       <!-- 站外热门素材 -->
       <section class="card flex flex-col p-5">
         <h3 class="text-sm font-medium text-ink">站外热门素材</h3>
-        <p class="mt-1 text-xs text-cocoa">小红书高互动美甲笔记，点击填入标签</p>
+        <p class="mt-1 text-xs text-cocoa">小红书高互动美甲笔记，点击填入标签（{{ totalItems }} 条，第 {{ currentPage }}/{{ totalPages }} 页）</p>
         <div class="mt-3 grid flex-1 auto-rows-fr gap-4 sm:grid-cols-3">
           <div
-            v-for="item in xhsInspirations"
+            v-for="item in paginatedItems"
             :key="item.id"
             class="flex h-full flex-col overflow-hidden rounded-2xl border border-divider bg-white transition hover:shadow-soft"
           >
@@ -55,8 +55,6 @@
             <div class="flex flex-1 flex-col p-3">
               <div class="flex items-center justify-between text-[11px] text-cocoa">
                 <span>👍 {{ item.likes }}</span>
-                <span>⭐ {{ item.collects }}</span>
-                <span>💬 {{ item.comments }}</span>
               </div>
               <div class="mt-2 flex min-h-[28px] items-center">
                 <TagBadge :tags="item.aiTags" />
@@ -72,6 +70,58 @@
               </button>
             </div>
           </div>
+
+          <!-- Empty placeholder cards to keep grid stable -->
+          <div
+            v-for="n in (6 - paginatedItems.length)"
+            :key="'empty-' + n"
+            class="flex h-full flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-divider bg-cream/30 text-xs text-cocoa/50"
+          >
+            <p>暂无素材</p>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="totalPages > 1" class="mt-4 flex items-center justify-center gap-1.5">
+          <button
+            @click="changePage(1)"
+            :disabled="currentPage <= 1"
+            class="rounded-lg px-2.5 py-1.5 text-xs text-cocoa transition hover:bg-cream disabled:opacity-30"
+          >
+            首页
+          </button>
+          <button
+            @click="changePage(currentPage - 1)"
+            :disabled="currentPage <= 1"
+            class="rounded-lg px-2.5 py-1.5 text-xs text-cocoa transition hover:bg-cream disabled:opacity-30"
+          >
+            ‹
+          </button>
+          <button
+            v-for="p in visiblePages"
+            :key="p"
+            @click="changePage(p)"
+            class="h-7 w-7 rounded-lg text-xs font-medium transition"
+            :class="p === currentPage
+              ? 'bg-primary-500 text-white shadow-sm'
+              : 'text-cocoa hover:bg-cream'"
+          >
+            {{ p }}
+          </button>
+          <button
+            @click="changePage(currentPage + 1)"
+            :disabled="currentPage >= totalPages"
+            class="rounded-lg px-2.5 py-1.5 text-xs text-cocoa transition hover:bg-cream disabled:opacity-30"
+          >
+            ›
+          </button>
+          <button
+            @click="changePage(totalPages)"
+            :disabled="currentPage >= totalPages"
+            class="rounded-lg px-2.5 py-1.5 text-xs text-cocoa transition hover:bg-cream disabled:opacity-30"
+          >
+            末页
+          </button>
         </div>
       </section>
     </div>
@@ -261,9 +311,10 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import TagBadge from '../../components/merchant/TagBadge.vue'
-import { labelSystem, hotTags, xhsPendingMaterials, calcHeatScore } from '../../data/merchantMockData'
+import { labelSystem, hotTags, calcHeatScore } from '../../data/merchantMockData'
+import { fetchXhsMaterials } from '../../data/api'
 
 const tagDimensions = [
   { key: 'shape', name: '甲型', required: true },
@@ -288,8 +339,53 @@ const topHotTags = computed(() => {
     .slice(0, 5)
 })
 
-const xhsInspirations = computed(() => {
-  return xhsPendingMaterials.slice(0, 6)
+const pageSize = 6
+const maxPages = 10
+const currentPage = ref(1)
+const allXhsItems = ref([])
+
+const totalItems = computed(() => allXhsItems.value.length)
+const totalPages = computed(() => Math.min(Math.ceil(allXhsItems.value.length / pageSize) || 1, maxPages))
+
+const paginatedItems = computed(() => {
+  const start = (currentPage.value - 1) * pageSize
+  return allXhsItems.value.slice(start, start + pageSize)
+})
+
+const visiblePages = computed(() => {
+  const pages = []
+  const start = Math.max(1, currentPage.value - 2)
+  const end = Math.min(totalPages.value, start + 4)
+  for (let i = start; i <= end; i++) pages.push(i)
+  return pages
+})
+
+function changePage(p) {
+  if (p >= 1 && p <= totalPages.value) {
+    currentPage.value = p
+  }
+}
+
+async function loadXhsInspirations() {
+  try {
+    // Fetch all approved materials sorted by likes, up to 60 (10 pages × 6)
+    const result = await fetchXhsMaterials({ reviewStatus: 'approved', limit: pageSize * maxPages, sort: 'likes' })
+    allXhsItems.value = result.materials.map(m => ({
+      id: m.id,
+      image: m.image || m.thumbnail,
+      likes: m.likes,
+      aiTags: m.aiTags
+    }))
+    // Reset to page 1 on fresh load
+    currentPage.value = 1
+  } catch (err) {
+    console.warn('Failed to load XHS inspirations:', err.message)
+    allXhsItems.value = []
+  }
+}
+
+onMounted(() => {
+  loadXhsInspirations()
 })
 
 const canGenerate = computed(() => {

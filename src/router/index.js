@@ -39,7 +39,8 @@ const routes = [
   // --- Merchant Routes ---
   {
     path: '/merchant',
-    redirect: '/merchant/daily-report'
+    name: 'MerchantHome',
+    component: () => import('../views/merchant/Home.vue')
   },
   {
     path: '/merchant/daily-report',
@@ -70,6 +71,31 @@ const routes = [
     path: '/merchant/appointment',
     name: 'MerchantAppointment',
     component: () => import('../views/merchant/Appointment.vue')
+  },
+  {
+    path: '/merchant/product-manage',
+    name: 'MerchantProductManage',
+    component: () => import('../views/merchant/ProductManage.vue')
+  },
+  {
+    path: '/merchant/product-manage/:id',
+    name: 'MerchantProductDetail',
+    component: () => import('../views/merchant/ProductDetail.vue')
+  },
+  {
+    path: '/merchant/messages',
+    name: 'MerchantMessages',
+    component: () => import('../views/merchant/Messages.vue')
+  },
+  {
+    path: '/merchant/profile',
+    name: 'MerchantProfile',
+    component: () => import('../views/merchant/Profile.vue')
+  },
+  {
+    path: '/merchant/order-history',
+    name: 'MerchantOrderHistory',
+    component: () => import('../views/merchant/OrderHistory.vue')
   }
 ]
 
