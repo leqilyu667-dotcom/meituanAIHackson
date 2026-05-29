@@ -1,55 +1,172 @@
+export const nailArtists = [
+  {
+    id: 1,
+    name: 'Luna',
+    title: '高级美甲师',
+    avatarBg: 'linear-gradient(135deg, #D9B8A0, #B98D72)',
+    reviews: 512,
+    rating: 4.9,
+    specialty: '日式 / 法式',
+    salonId: 1,
+    salonName: 'Nail Moment',
+    badge: { text: '上次美甲师', style: 'last' },
+    bio: '从业 8 年，擅长日式精细美甲与法式经典系列，注重每一处细节与质感，曾获省级美甲大赛金奖。',
+    tags: ['日式', '法式', '精细', '花卉'],
+    certificates: ['高级美甲师认证', '日式美甲资质证书'],
+    works: [
+      '/images/nails/nail-01.jpg',
+      '/images/nails/nail-02.png',
+      '/images/nails/nail-03.png',
+      '/images/nails/nail-05.png'
+    ],
+    availability: '周一至周五 10:00–20:00，周末 10:00–19:00',
+    reviewList: [
+      { name: '小美', rating: 5, content: '手法非常细腻，做出来的款式和参考图一模一样！', date: '3天前', styleImage: '/images/nails/nail-01.jpg', resultImage: '/images/nails/nail-03.png' },
+      { name: '花花', rating: 5, content: 'Luna 姐人超好，会根据手型推荐合适款式，非常专业。', date: '1周前', styleImage: '/images/nails/nail-03.png', resultImage: '/images/nails/nail-01.jpg' },
+      { name: '娜娜', rating: 5, content: '每次来都很放心，效果稳定，已经做了半年了。', date: '2周前', styleImage: '/images/nails/nail-02.png', resultImage: '/images/nails/nail-02.png' }
+    ]
+  },
+  {
+    id: 2,
+    name: '小雨',
+    title: '资深美甲师',
+    avatarBg: 'linear-gradient(135deg, #c4a882, #9c725a)',
+    reviews: 289,
+    rating: 4.8,
+    specialty: '渐变 / 闪粉',
+    salonId: 1,
+    salonName: 'Nail Moment',
+    badge: { text: '最近空闲', style: 'available' },
+    bio: '从业 5 年，色彩感极强，尤擅渐变晕染与闪粉叠层工艺，作品在小红书获超 10 万收藏。',
+    tags: ['渐变', '闪粉', '延长甲', '创意'],
+    certificates: ['美甲设计师认证', '光疗甲专项证书'],
+    works: [
+      '/images/nails/nail-04.png',
+      '/images/nails/nail-06.png',
+      '/images/nails/nail-01.jpg',
+      '/images/nails/nail-02.png'
+    ],
+    availability: '周二至周日 11:00–21:00',
+    reviewList: [
+      { name: '晴晴', rating: 5, content: '渐变做得超好看，颜色过渡自然，朋友都问我在哪做的！', date: '2天前', styleImage: '/images/nails/nail-04.png', resultImage: '/images/nails/nail-06.png' },
+      { name: '小橙', rating: 4, content: '闪粉款很闪耀，就是等了一会儿，效果值得等。', date: '5天前', styleImage: '/images/nails/nail-06.png', resultImage: '/images/nails/nail-04.png' },
+      { name: '白白', rating: 5, content: '第二次来找小雨，手艺稳定，很满意！', date: '3周前', styleImage: '/images/nails/nail-01.jpg', resultImage: '/images/nails/nail-01.jpg' }
+    ]
+  },
+  {
+    id: 3,
+    name: 'Nicole',
+    title: '美甲设计师',
+    avatarBg: 'linear-gradient(135deg, #bfa98e, #8B6D5A)',
+    reviews: 356,
+    rating: 4.9,
+    specialty: '复古 / 艺术',
+    salonId: 1,
+    salonName: 'Nail Moment',
+    badge: { text: '好评率高', style: 'top' },
+    bio: '毕业于设计专业，将插画艺术融入美甲创作，专精复古色调与几何线条设计，每款均为定制。',
+    tags: ['复古', '艺术', '几何', '定制'],
+    certificates: ['国际美甲设计师认证', '美甲艺术创作证书'],
+    works: [
+      '/images/nails/nail-05.png',
+      '/images/nails/nail-03.png',
+      '/images/nails/nail-06.png',
+      '/images/nails/nail-04.png'
+    ],
+    availability: '周三至周日 10:00–20:00',
+    reviewList: [
+      { name: '艾米', rating: 5, content: '太有艺术感了！每次看到自己的指甲都很开心。', date: '1天前', styleImage: '/images/nails/nail-05.png', resultImage: '/images/nails/nail-03.png' },
+      { name: '橙子', rating: 5, content: 'Nicole 很有耐心听我描述想法，做出来比想象中还美。', date: '1周前', styleImage: '/images/nails/nail-03.png', resultImage: '/images/nails/nail-05.png' },
+      { name: '果果', rating: 4, content: '创意十足，就是预约需要提前一周，很火爆。', date: '2周前', styleImage: '/images/nails/nail-06.png', resultImage: '/images/nails/nail-06.png' }
+    ]
+  },
+  {
+    id: 4,
+    name: 'Mia',
+    title: '美甲师',
+    avatarBg: 'linear-gradient(135deg, #e0cfc4, #C4A882)',
+    reviews: 198,
+    rating: 4.7,
+    specialty: '延长 / 修型',
+    salonId: 1,
+    salonName: 'Nail Moment',
+    badge: { text: '性价比高', style: 'value' },
+    bio: '专攻甲型修正与延长甲工艺，手法轻柔不伤甲床，适合需要纠正甲型或做延长甲的客户。',
+    tags: ['延长甲', '修型', '光疗', '温柔'],
+    certificates: ['美甲师初级认证', '光疗延长甲专项证书'],
+    works: [
+      '/images/nails/nail-02.png',
+      '/images/nails/nail-04.png',
+      '/images/nails/nail-01.jpg',
+      '/images/nails/nail-03.png'
+    ],
+    availability: '周一至周六 10:00–19:00',
+    reviewList: [
+      { name: '糖糖', rating: 5, content: '手很轻，全程不疼，延长甲做完很自然！', date: '4天前', styleImage: '/images/nails/nail-02.png', resultImage: '/images/nails/nail-04.png' },
+      { name: '豆豆', rating: 4, content: '修型很专业，甲型变好看了很多。', date: '2周前', styleImage: '/images/nails/nail-04.png', resultImage: '/images/nails/nail-02.png' },
+      { name: '小鹿', rating: 5, content: '第一次做延长，Mia 讲解很详细，很有安全感。', date: '3周前', styleImage: '/images/nails/nail-01.jpg', resultImage: '/images/nails/nail-03.png' }
+    ]
+  }
+]
+
 export const nailStyles = [
   {
     id: 1,
     name: '春日新款',
-    description: '温柔气质款',
+    description: '温柔气质，粉嫩花卉',
     image: '/images/nails/nail-01.jpg',
     category: '春日',
+    tags: ['日式', '花卉', '粉色'],
     likes: 2341,
     isNew: true
   },
   {
     id: 2,
     name: '冰透裸色',
-    description: '自然百搭',
+    description: '自然百搭，通勤首选',
     image: '/images/nails/nail-02.png',
     category: '裸色',
+    tags: ['裸色', '简约', '日常'],
     likes: 1892,
     isNew: false
   },
   {
     id: 3,
     name: '奶油法式',
-    description: '经典优雅',
+    description: '经典优雅，法式白边',
     image: '/images/nails/nail-03.png',
     category: '法式',
+    tags: ['法式', '经典', '优雅'],
     likes: 3421,
     isNew: false
   },
   {
     id: 4,
     name: '渐变闪粉',
-    description: '闪耀夺目',
+    description: '闪耀夺目，派对必备',
     image: '/images/nails/nail-04.png',
     category: '闪粉',
+    tags: ['渐变', '闪粉', '延长甲'],
     likes: 1567,
     isNew: true
   },
   {
     id: 5,
     name: '复古红棕',
-    description: '显白气质',
+    description: '显白气质，秋冬经典',
     image: '/images/nails/nail-05.png',
     category: '红色',
+    tags: ['复古', '红色', '显白'],
     likes: 2156,
     isNew: false
   },
   {
     id: 6,
     name: '清新薄荷',
-    description: '清凉夏日',
+    description: '清凉夏日，绿意盎然',
     image: '/images/nails/nail-06.png',
     category: '绿色',
+    tags: ['清新', '薄荷', '夏日'],
     likes: 1432,
     isNew: true
   }

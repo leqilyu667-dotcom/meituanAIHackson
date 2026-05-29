@@ -49,6 +49,21 @@
     </header>
 
     <main class="px-5 pt-4">
+      <!-- 试戴款式横幅 -->
+      <div v-if="tryonStyle" class="mb-4 flex items-center gap-3 rounded-3xl bg-white p-3 shadow-soft">
+        <img :src="tryonStyle.image" alt="" class="h-14 w-14 shrink-0 rounded-2xl object-cover"/>
+        <div class="min-w-0 flex-1">
+          <p class="text-[10px] font-medium uppercase tracking-wide text-primary-600">携带款式预约</p>
+          <p class="mt-0.5 truncate text-sm font-medium text-ink">{{ tryonStyle.name }}</p>
+          <p class="text-xs text-cocoa">选择店铺后将自动带入此款式</p>
+        </div>
+        <button @click="clearTryonStyle" class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-cream text-cocoa">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
       <div v-if="filteredSalons.length === 0" class="py-20 text-center">
         <div class="mx-auto mb-4 grid h-20 w-20 place-items-center rounded-full bg-primary-50">
           <svg class="h-10 w-10 text-placeholder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -107,11 +122,23 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { salons } from '../data/mockData'
 
 const router = useRouter()
+
+const tryonStyle = ref(null)
+
+onMounted(() => {
+  const raw = sessionStorage.getItem('tryonStyle')
+  if (raw) tryonStyle.value = JSON.parse(raw)
+})
+
+const clearTryonStyle = () => {
+  sessionStorage.removeItem('tryonStyle')
+  tryonStyle.value = null
+}
 
 const searchQuery = ref('')
 const activeFilter = ref('全部区域')

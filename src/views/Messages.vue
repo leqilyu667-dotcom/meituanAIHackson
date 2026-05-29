@@ -8,7 +8,7 @@
     </header>
 
     <main class="px-5 pt-2">
-      <div class="mb-4">
+      <div class="relative mb-4">
         <input
           v-model="searchQuery"
           class="input-field pl-10"
@@ -19,13 +19,41 @@
         </svg>
       </div>
 
-      <div v-if="filteredMessages.length === 0" class="py-20 text-center">
-        <div class="mx-auto mb-4 grid h-20 w-20 place-items-center rounded-full bg-primary-50">
-          <svg class="h-10 w-10 text-placeholder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <!-- 系统消息（置顶） -->
+      <div class="card mb-3 cursor-pointer" @click="openSystemMessages">
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary-100">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary-600">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+            </div>
+            <span class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-error text-[9px] font-bold text-white">3</span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2">
+              <h3 class="font-medium text-ink">系统消息</h3>
+              <span class="rounded-full bg-primary-200 px-1.5 py-0.5 text-[9px] font-semibold text-primary-700">置顶</span>
+            </div>
+            <p class="mt-0.5 truncate text-sm text-cocoa">预约确认、活动通知和平台公告</p>
+          </div>
+          <svg class="h-5 w-5 text-placeholder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 分隔 -->
+      <p class="mb-2 mt-1 px-1 text-xs text-placeholder">聊天</p>
+
+      <!-- 普通消息 -->
+      <div v-if="filteredMessages.length === 0" class="py-16 text-center">
+        <div class="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-full bg-primary-50">
+          <svg class="h-8 w-8 text-placeholder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 14.5a3 3 0 0 1-3 3H8l-5 3V6.5a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3z"/>
           </svg>
         </div>
-        <p class="text-cocoa">暂无聊天消息</p>
+        <p class="text-sm text-cocoa">暂无聊天消息</p>
       </div>
 
       <div v-else>
@@ -48,24 +76,6 @@
               <path d="M9 18l6-6-6-6"/>
             </svg>
           </div>
-        </div>
-      </div>
-
-      <div class="card mt-4 cursor-pointer" @click="openSystemMessages">
-        <div class="flex items-center gap-3">
-          <div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary-50">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary-600">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-            </svg>
-          </div>
-          <div class="min-w-0 flex-1">
-            <h3 class="font-medium text-ink">系统消息</h3>
-            <p class="mt-1 truncate text-sm text-cocoa">查看系统通知和活动消息</p>
-          </div>
-          <span class="rounded-full bg-error px-2 py-0.5 text-[11px] font-medium text-white">3</span>
-          <svg class="h-5 w-5 text-placeholder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 18l6-6-6-6"/>
-          </svg>
         </div>
       </div>
     </main>
