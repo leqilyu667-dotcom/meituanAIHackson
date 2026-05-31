@@ -1,85 +1,52 @@
 <template>
-  <div class="phone-shell pb-32">
-    <header class="px-5 pb-3 pt-5">
-      <div class="flex items-center gap-3">
-        <button @click="$router.back()" class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white shadow-soft">
-          <svg class="h-5 w-5 text-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M15 18l-6-6 6-6"/>
-          </svg>
+  <div class="phone-shell min-h-screen flex flex-col pb-28">
+    <!-- ═══ Header ═══ -->
+    <header class="shrink-0 px-5 pt-4 pb-2">
+      <div class="flex items-center gap-2">
+        <button @click="$router.back()" class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white shadow-soft">
+          <svg class="h-4 w-4 text-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
         </button>
-        <div class="flex-1">
-          <p class="eyebrow">AI TRY-ON</p>
-          <h1 class="text-[22px] font-medium leading-[30px] text-ink">智能试戴</h1>
-        </div>
-        <!-- 当前款式名 -->
-        <div v-if="selectedStyle" class="rounded-2xl bg-primary-100 px-3 py-1.5 text-center">
-          <p class="text-[11px] text-primary-700 font-medium truncate max-w-[72px]">{{ selectedStyle.name }}</p>
-        </div>
+        <span class="text-xs font-medium text-primary-600 tracking-wide">AI TRY-ON</span>
+        <span class="text-base font-medium text-ink">智能试戴</span>
       </div>
     </header>
 
-    <main class="px-5 space-y-4">
-
-      <!-- ═══ 双图卡片 ═══ -->
-      <section class="grid grid-cols-2 gap-3">
-        <!-- 手/脚照片 -->
-        <div class="overflow-hidden rounded-3xl bg-white shadow-card">
-          <div class="flex items-center justify-between px-3 pt-3">
-            <span class="text-xs font-medium text-primary-600">✋ 我的手</span>
-            <button v-if="handImage" @click="triggerHandUpload" class="rounded-full bg-cream px-2.5 py-1 text-[11px] font-medium text-primary-700">更换</button>
+    <main class="flex-1 flex flex-col px-5 min-h-0">
+      <!-- ═══ Dual Image Cards — compact ═══ -->
+      <section class="shrink-0 grid grid-cols-2 gap-2.5">
+        <!-- Hand -->
+        <div class="overflow-hidden rounded-2xl bg-white shadow-soft">
+          <div class="flex items-center justify-between px-2 pt-2">
+            <span class="text-[11px] font-medium text-primary-600">✋ 我的手</span>
+            <button v-if="handImage" @click="triggerHandUpload" class="text-[10px] text-primary-600">更换</button>
           </div>
-          <div class="flex justify-center pb-3">
-            <div
-              class="relative aspect-[3/4] min-h-[220px] w-[calc(100%-24px)] overflow-hidden rounded-2xl"
-              :class="handImage ? 'bg-cream' : 'border-2 border-dashed border-primary-200 bg-primary-50/40'"
-            >
-              <img v-if="handImage" :src="handImage" alt="" class="h-full w-full object-cover" />
+          <div class="p-2 pt-1.5">
+            <div class="relative aspect-[3/4] max-h-[180px] w-full overflow-hidden rounded-xl"
+              :class="handImage ? 'bg-cream' : 'border-2 border-dashed border-primary-200 bg-primary-50/40'">
+              <img v-if="handImage" :src="handImage" alt="手部照片" class="h-full w-full object-cover" />
               <div v-else class="grid h-full place-items-center p-2">
-                <div class="flex w-full flex-col gap-2">
-                  <button @click="triggerHandCamera" class="flex items-center justify-center gap-1 rounded-xl bg-blush py-2.5 text-xs font-medium text-primary-700 active:scale-95 transition">
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
-                    </svg>
-                    拍照
-                  </button>
-                  <button @click="triggerHandUpload" class="flex items-center justify-center gap-1 rounded-xl bg-blush py-2.5 text-xs font-medium text-primary-700 active:scale-95 transition">
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
-                    </svg>
-                    相册
-                  </button>
+                <div class="flex w-full flex-col gap-1">
+                  <button @click="triggerHandCamera" class="rounded-lg bg-blush py-2 text-[11px] font-medium text-primary-700 active:scale-95 transition">📷 拍照</button>
+                  <button @click="triggerHandUpload" class="rounded-lg bg-blush py-2 text-[11px] font-medium text-primary-700 active:scale-95 transition">🖼️ 相册</button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- 美甲款式 -->
-        <div class="overflow-hidden rounded-3xl bg-white shadow-card">
-          <div class="flex items-center justify-between px-3 pt-3">
-            <span class="text-xs font-medium text-primary-600">💅 美甲款式</span>
-            <button v-if="designImage" @click="openStyleGallery" class="rounded-full bg-cream px-2.5 py-1 text-[11px] font-medium text-cocoa">更换</button>
+        <!-- Design -->
+        <div class="overflow-hidden rounded-2xl bg-white shadow-soft">
+          <div class="flex items-center justify-between px-2 pt-2">
+            <span class="text-[11px] font-medium text-primary-600">💅 美甲款式</span>
+            <button v-if="designImage" @click="clearDesign" class="text-[10px] text-cocoa">更换</button>
           </div>
-          <div class="flex justify-center pb-3">
-            <div
-              class="relative aspect-[3/4] min-h-[220px] w-[calc(100%-24px)] overflow-hidden rounded-2xl"
-              :class="designImage ? 'bg-cream' : 'border-2 border-dashed border-primary-200 bg-primary-50/40'"
-            >
-              <img v-if="designImage" :src="designImage" alt="" class="h-full w-full object-cover" />
+          <div class="p-2 pt-1.5">
+            <div class="relative aspect-[3/4] max-h-[180px] w-full overflow-hidden rounded-xl"
+              :class="designImage ? 'bg-cream' : 'border-2 border-dashed border-primary-200 bg-primary-50/40'">
+              <img v-if="designImage" :src="designImage" alt="美甲款式" class="h-full w-full object-cover" />
               <div v-else class="grid h-full place-items-center p-2">
-                <div class="flex w-full flex-col gap-2">
-                  <button @click="openStyleGallery" class="flex items-center justify-center gap-1.5 rounded-xl bg-blush py-2.5 text-xs font-medium text-primary-700 active:scale-95 transition">
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-                    </svg>
-                    款式库
-                  </button>
-                  <button @click="triggerDesignUpload" class="flex items-center justify-center gap-1.5 rounded-xl bg-blush py-2.5 text-xs font-medium text-primary-700 active:scale-95 transition">
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
-                    </svg>
-                    相册
-                  </button>
+                <div class="flex w-full flex-col gap-1">
+                  <button @click="triggerDesignCamera" class="rounded-lg bg-blush py-2 text-[11px] font-medium text-primary-700 active:scale-95 transition">📷 拍照</button>
+                  <button @click="triggerDesignUpload" class="rounded-lg bg-blush py-2 text-[11px] font-medium text-primary-700 active:scale-95 transition">🖼️ 相册</button>
                 </div>
               </div>
             </div>
@@ -87,192 +54,148 @@
         </div>
       </section>
 
-      <!-- ═══ 美甲师选择（可选）═══ -->
-      <section class="rounded-3xl bg-white p-4 shadow-soft">
-        <button @click="showArtists = !showArtists" class="flex w-full items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="text-sm font-medium text-ink">选择美甲师</span>
-            <span class="rounded-full bg-primary-100 px-2 py-0.5 text-[10px] text-primary-700">可选</span>
-            <span v-if="selectedArtist" class="flex items-center gap-1 text-xs text-cocoa">
-              <span
-                class="rounded-full px-1.5 py-0.5 text-[9px] font-semibold"
-                :class="badgeClass(selectedArtist.badge?.style)"
-              >{{ selectedArtist.badge?.text }}</span>
-              {{ selectedArtist.name }} · {{ selectedArtist.salonName }}
-            </span>
-          </div>
-          <svg class="h-4 w-4 text-cocoa transition-transform" :class="showArtists ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M6 9l6 6 6-6"/>
-          </svg>
-        </button>
-
-        <div v-if="showArtists" class="mt-3 flex gap-2.5 overflow-x-auto scrollbar-hide pb-1">
-          <!-- 随机分配 -->
-          <div
-            @click="selectedArtist = null"
-            class="w-[84px] shrink-0 cursor-pointer rounded-2xl px-2 pb-2.5 pt-2 text-center transition-all active:scale-95"
-            :class="!selectedArtist ? 'bg-primary-100 ring-2 ring-primary-400' : 'bg-cream'"
-          >
-            <!-- 徽标占位，保持高度对齐 -->
-            <div class="h-[18px]"></div>
-            <div class="mx-auto mb-1.5 flex h-12 w-12 items-center justify-center rounded-full bg-primary-200 text-xl">
-              🎲
-            </div>
-            <p class="text-[11px] font-semibold text-ink">随机</p>
-            <p class="mt-0.5 text-[9px] text-cocoa">系统分配</p>
-          </div>
-
-          <!-- 美甲师列表 -->
-          <div
-            v-for="artist in nailArtists"
-            :key="artist.id"
-            @click="selectedArtist = artist"
-            class="w-[84px] shrink-0 cursor-pointer rounded-2xl px-2 pb-2.5 pt-2 text-center transition-all active:scale-95"
-            :class="selectedArtist?.id === artist.id ? 'bg-primary-100 ring-2 ring-primary-400' : 'bg-cream'"
-          >
-            <!-- 徽标 -->
-            <div class="mb-1.5 flex h-[18px] items-center justify-center">
-              <span
-                v-if="artist.badge"
-                class="rounded-full px-1.5 py-[2px] text-[9px] font-semibold leading-tight"
-                :class="badgeClass(artist.badge.style)"
-              >{{ artist.badge.text }}</span>
-            </div>
-            <!-- 头像 -->
-            <div
-              class="mx-auto mb-1.5 flex h-12 w-12 items-center justify-center rounded-full text-base font-semibold text-white"
-              :style="{ background: artist.avatarBg }"
-            >
-              {{ artist.name.charAt(0) }}
-            </div>
-            <!-- 姓名 -->
-            <p class="truncate text-[11px] font-semibold text-ink">{{ artist.name }}</p>
-            <!-- 职位 -->
-            <p class="mt-0.5 truncate text-[10px] text-cocoa">{{ artist.title }}</p>
-            <!-- 所属店铺 -->
-            <p class="mt-0.5 truncate text-[9px] text-placeholder">{{ artist.salonName }}</p>
-          </div>
+      <!-- ═══ Connector + Style Library ═══ -->
+      <div class="shrink-0 flex items-center justify-center gap-2 py-2">
+        <div class="flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[10px] text-cocoa/60 shadow-soft">
+          <span>手部</span><span class="text-primary-300">→</span><span>美甲</span><span class="text-primary-300">→</span><span>试戴</span>
         </div>
-      </section>
-
-      <!-- ═══ 款式切换快捷栏 ═══ -->
-      <div class="flex items-center gap-2">
-        <div class="flex flex-1 items-center gap-2 overflow-hidden rounded-full bg-white px-4 py-1.5 text-xs text-cocoa/60 shadow-soft">
-          <span>手部</span>
-          <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-          <span class="truncate">{{ selectedStyle?.name || '美甲款式' }}</span>
-          <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-          <span>试戴效果</span>
-        </div>
-        <button @click="openStyleGallery" class="flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-primary-600 shadow-soft transition active:scale-95">
-          <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-          </svg>
-          款式库
-        </button>
+        <button @click="openStyleGallery" class="rounded-full bg-white px-2.5 py-1 text-[10px] font-medium text-primary-600 shadow-soft active:scale-95">款式库</button>
       </div>
 
-      <!-- ═══ 款式库 Gallery ═══ -->
-      <section v-if="showStyleGallery">
-        <div class="mb-3 flex items-center justify-between">
-          <h3 class="text-sm font-medium text-ink">选择款式</h3>
-          <button @click="showStyleGallery = false" class="text-xs text-cocoa/60">收起</button>
-        </div>
-        <div class="grid grid-cols-3 gap-2">
-          <button
-            v-for="style in nailStyles"
-            :key="style.id"
-            @click="selectStyle(style)"
-            class="relative overflow-hidden rounded-2xl bg-white shadow-soft transition active:scale-95"
-            :class="selectedStyle?.id === style.id ? 'ring-2 ring-primary-500' : ''"
-          >
+      <!-- ═══ Style Gallery ═══ -->
+      <section v-if="showStyleGallery" class="shrink-0 mb-1">
+        <div class="grid grid-cols-4 gap-1.5">
+          <button v-for="style in nailStyles" :key="style.id" @click="selectStyle(style)"
+            class="overflow-hidden rounded-xl bg-white shadow-soft active:scale-95 transition"
+            :class="selectedStyle.id === style.id ? 'ring-2 ring-primary-500' : ''">
             <img :src="style.image" alt="" class="aspect-square w-full object-cover" />
-            <div class="px-2 pb-2 pt-1.5">
-              <p class="truncate text-[11px] font-medium text-ink">{{ style.name }}</p>
-              <div class="mt-1 flex flex-wrap gap-0.5">
-                <span v-for="tag in style.tags.slice(0, 2)" :key="tag" class="rounded-full bg-primary-50 px-1.5 py-0.5 text-[9px] text-primary-600">{{ tag }}</span>
-              </div>
-            </div>
+            <p class="truncate px-1 pb-1 text-[10px] font-medium text-ink">{{ style.name }}</p>
           </button>
         </div>
       </section>
 
-      <!-- ═══ AI 试戴按钮 ═══ -->
-      <button
-        @click="startTryOn"
-        :disabled="!handImage || isTryOnRunning"
-        class="flex w-full items-center justify-center gap-2 rounded-2xl py-4 text-base font-semibold text-white transition"
-        :class="handImage ? 'bg-gradient-to-r from-primary-500 to-primary-600 shadow-glow active:scale-[0.98]' : 'cursor-not-allowed bg-divider text-cocoa/50'"
-      >
-        <svg v-if="isTryOnRunning" class="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4 31.4" stroke-linecap="round"/>
-        </svg>
-        <span v-else class="text-lg">✨</span>
-        {{ isTryOnRunning ? 'AI 试戴中...' : '开始 AI 试戴' }}
+      <!-- ═══ Try-On Button ═══ -->
+      <button @click="startTryOn" :disabled="!handImage || isTryOnRunning"
+        class="shrink-0 my-1.5 flex w-full items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-semibold text-white transition"
+        :class="handImage ? 'bg-gradient-to-r from-primary-500 to-primary-600 shadow-glow active:scale-[0.98]' : 'bg-divider text-cocoa/50'">
+        <span>✨</span> {{ isTryOnRunning ? 'AI 试戴中...' : '开始 AI 试戴' }}
       </button>
 
-      <!-- ═══ 试戴效果 ═══ -->
-      <section v-if="tryOnResult">
-        <div class="mb-3 flex items-center justify-between">
-          <h3 class="section-title">试戴效果</h3>
-          <span class="text-xs font-medium text-primary-600">{{ matchScore }}% 匹配</span>
-        </div>
-        <div class="relative overflow-hidden rounded-3xl shadow-card">
-          <img :src="tryOnResult" alt="试戴效果" class="w-full object-cover" />
-          <div class="absolute bottom-3 right-3 flex gap-2">
-            <button @click="saveDesign" class="grid h-10 w-10 place-items-center rounded-full bg-white/90 text-primary-600 shadow backdrop-blur">
-              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-            </button>
-            <button @click="showSharePanel = true" class="grid h-10 w-10 place-items-center rounded-full bg-white/90 text-primary-600 shadow backdrop-blur">
-              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
-            </button>
+      <!-- ═══ Result: Left Image + Right Info ═══ -->
+      <section v-if="tryOnResult" class="flex-1 min-h-0 grid grid-cols-[1fr_130px] gap-2.5 pb-2">
+        <!-- LEFT: Result Image -->
+        <div class="overflow-hidden rounded-2xl bg-white shadow-soft flex flex-col">
+          <div class="flex items-center justify-between px-2 pt-2">
+            <span class="text-[11px] font-medium text-primary-600">✨ 试戴效果</span>
+            <span class="text-[10px] font-semibold text-primary-600">{{ matchScore }}% 匹配</span>
           </div>
-        </div>
-        <!-- 去预约 CTA -->
-        <button
-          @click="goToBooking"
-          class="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary-500 to-primary-600 py-3.5 text-[15px] font-semibold text-white shadow-glow transition active:scale-[0.98]"
-        >
-          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
-          </svg>
-          去预约 · 用这个款式
-        </button>
-
-        <!-- 美甲师推荐 -->
-        <div v-if="selectedArtist" class="mt-3 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-soft">
-          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white" :style="{ background: selectedArtist.avatarBg }">
-            {{ selectedArtist.name.charAt(0) }}
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center gap-1.5">
-              <p class="text-sm font-medium text-ink">{{ selectedArtist.name }}</p>
-              <span
-                v-if="selectedArtist.badge"
-                class="rounded-full px-1.5 py-0.5 text-[9px] font-semibold"
-                :class="badgeClass(selectedArtist.badge.style)"
-              >{{ selectedArtist.badge.text }}</span>
+          <div class="flex-1 p-2 pt-1.5 min-h-0">
+            <div class="relative aspect-[3/4] max-h-full w-full overflow-hidden rounded-xl bg-cream mx-auto">
+              <img :src="tryOnResult" alt="试戴效果" class="h-full w-full object-cover" />
             </div>
-            <p class="text-xs text-cocoa">{{ selectedArtist.salonName }} · {{ selectedArtist.specialty }}</p>
-            <p class="text-xs text-cocoa">好评 {{ selectedArtist.reviews }} 条</p>
           </div>
-          <button @click="$router.push(`/artist/${selectedArtist.id}`)" class="rounded-full bg-primary-500 px-3 py-1.5 text-xs font-medium text-white shadow-glow">预约 TA</button>
+        </div>
+
+        <!-- RIGHT: Actions Column -->
+        <div class="flex flex-col gap-2">
+          <div class="flex gap-1.5">
+            <button @click="saveDesign" class="flex-1 rounded-lg bg-white py-2 text-[10px] font-medium text-primary-600 shadow-soft active:scale-95">保存</button>
+            <button @click="showSharePanel = true" class="flex-1 rounded-lg bg-white py-2 text-[10px] font-medium text-primary-600 shadow-soft active:scale-95">分享</button>
+          </div>
+          <div class="rounded-xl bg-white p-2.5 shadow-soft flex-1 flex flex-col justify-center gap-2">
+            <p class="text-xs font-medium text-ink leading-tight">{{ selectedStyle?.name || '试戴款式' }}</p>
+            <div class="space-y-1.5 text-[10px] text-cocoa">
+              <div class="flex items-center gap-1"><span class="h-1.5 w-1.5 rounded-full bg-success"></span>匹配度 {{ matchScore }}%</div>
+              <div class="flex items-center gap-1"><span class="h-1.5 w-1.5 rounded-full bg-primary-400"></span>支持到店调整</div>
+              <div class="flex items-center gap-1"><span class="h-1.5 w-1.5 rounded-full bg-warning"></span>免费卸甲一次</div>
+            </div>
+          </div>
+          <button @click="showBookingModal = true"
+            class="w-full rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 py-2.5 text-xs font-semibold text-white shadow-glow active:scale-[0.97]">
+            📋 一键预约
+          </button>
         </div>
       </section>
-
     </main>
 
-    <!-- 隐藏文件输入 -->
+    <!-- Hidden file inputs -->
     <input ref="handCameraInput" type="file" accept="image/*" capture="environment" class="hidden" @change="onHandFileChange" />
     <input ref="handFileInput" type="file" accept="image/*" class="hidden" @change="onHandFileChange" />
     <input ref="designCameraInput" type="file" accept="image/*" capture="environment" class="hidden" @change="onDesignFileChange" />
     <input ref="designFileInput" type="file" accept="image/*" class="hidden" @change="onDesignFileChange" />
 
-    <!-- 分享面板 -->
+    <!-- Booking Selection Modal -->
     <transition name="sheet">
-      <div v-if="showSharePanel" class="fixed inset-0 z-50 flex flex-col justify-end">
+      <div v-if="showBookingModal" class="fixed inset-0 z-[60] flex flex-col justify-end">
+        <div @click="showBookingModal = false" class="absolute inset-0 bg-ink/40 backdrop-blur-sm"></div>
+        <div class="relative max-h-[80vh] overflow-y-auto rounded-t-4xl bg-cream p-5 shadow-card max-w-md mx-auto w-full">
+          <div class="mx-auto mb-4 h-1 w-10 rounded-full bg-divider"></div>
+
+          <!-- Step 1: 选择店铺 -->
+          <template v-if="bookingStep === 1">
+            <h3 class="mb-1 text-lg font-medium text-ink">选择店铺</h3>
+            <p class="mb-4 text-xs text-cocoa">选择你想预约的美甲店铺</p>
+            <div class="space-y-2.5">
+              <div
+                v-for="salon in salonsWithTags"
+                :key="salon.id"
+                @click="selectBookingSalon(salon)"
+                class="flex cursor-pointer items-center gap-3 rounded-2xl bg-white p-3 shadow-soft transition active:scale-[0.98]"
+                :class="selectedBookingSalon?.id === salon.id ? 'ring-2 ring-primary-400' : ''"
+              >
+                <img :src="salon.image" alt="" class="h-16 w-16 shrink-0 rounded-2xl object-cover" />
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2">
+                    <h4 class="text-sm font-medium text-ink">{{ salon.name }}</h4>
+                    <span v-for="tag in salon.tags" :key="tag" class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold" :class="tagClass(tag)">{{ tag }}</span>
+                  </div>
+                  <div class="mt-1 flex items-center gap-2 text-xs text-cocoa">
+                    <span class="flex items-center gap-0.5"><svg class="h-3 w-3 text-warning" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>{{ salon.rating }}</span>
+                    <span>{{ salon.location }}</span>
+                    <span>{{ salon.distance }}</span>
+                  </div>
+                </div>
+                <svg v-if="selectedBookingSalon?.id === salon.id" class="h-5 w-5 shrink-0 text-primary-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+              </div>
+            </div>
+            <button @click="bookingStep = 2" :disabled="!selectedBookingSalon" class="mt-4 w-full rounded-2xl py-3.5 text-sm font-semibold text-white transition" :class="selectedBookingSalon ? 'bg-primary-500 shadow-glow active:scale-[0.98]' : 'bg-divider text-cocoa/50 cursor-not-allowed'">下一步 · 选择美甲师</button>
+          </template>
+
+          <!-- Step 2: 选择美甲师 -->
+          <template v-if="bookingStep === 2">
+            <div class="flex items-center gap-2 mb-4">
+              <button @click="bookingStep = 1" class="grid h-8 w-8 place-items-center rounded-full bg-white text-ink shadow-soft"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></button>
+              <div><h3 class="text-lg font-medium text-ink">选择美甲师</h3><p class="text-xs text-cocoa">{{ selectedBookingSalon?.name }}</p></div>
+            </div>
+            <div class="space-y-2.5">
+              <div v-for="artist in filteredBookingArtists" :key="artist.id" @click="selectedBookingArtist = artist" class="flex cursor-pointer items-center gap-3 rounded-2xl bg-white p-3 shadow-soft transition active:scale-[0.98]" :class="selectedBookingArtist?.id === artist.id ? 'ring-2 ring-primary-400' : ''">
+                <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary-100 text-lg font-semibold text-primary-600">{{ artist.avatar }}</div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2">
+                    <h4 class="text-sm font-medium text-ink">{{ artist.name }}</h4>
+                    <span class="rounded-full bg-primary-50 px-2 py-0.5 text-[10px] font-medium text-primary-600">{{ artist.role }}</span>
+                    <span v-for="tag in artistBookingTags(artist)" :key="tag" class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold" :class="tagClass(tag)">{{ tag }}</span>
+                  </div>
+                  <div class="mt-1 flex items-center gap-3 text-xs text-cocoa">
+                    <span>{{ artist.specialty }}</span>
+                    <span class="flex items-center gap-0.5"><svg class="h-3 w-3 text-warning" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>{{ artist.goodReviews }}好评</span>
+                  </div>
+                </div>
+                <svg v-if="selectedBookingArtist?.id === artist.id" class="h-5 w-5 shrink-0 text-primary-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+              </div>
+            </div>
+            <div v-if="filteredBookingArtists.length === 0" class="py-8 text-center text-sm text-cocoa">该店铺暂无美甲师</div>
+            <button @click="confirmBookingWithSelection" :disabled="!selectedBookingArtist" class="mt-4 w-full rounded-2xl py-3.5 text-sm font-semibold text-white transition" :class="selectedBookingArtist ? 'bg-primary-500 shadow-glow active:scale-[0.98]' : 'bg-divider text-cocoa/50 cursor-not-allowed'">确认预约 · {{ selectedBookingArtist ? selectedBookingArtist.name : '' }}</button>
+          </template>
+        </div>
+      </div>
+    </transition>
+
+    <!-- Share Panel -->
+    <transition name="sheet">
+      <div v-if="showSharePanel" class="fixed inset-0 z-[60] flex flex-col justify-end">
         <div @click="showSharePanel = false" class="absolute inset-0 bg-ink/40 backdrop-blur-sm"></div>
-        <div class="relative rounded-t-4xl bg-white p-5 shadow-card">
+        <div class="relative rounded-t-4xl bg-white p-5 shadow-card max-w-md mx-auto w-full">
           <div class="mx-auto mb-4 h-1 w-10 rounded-full bg-divider"></div>
           <h3 class="mb-4 text-lg font-medium text-ink">分享试戴效果</h3>
           <div class="grid grid-cols-4 gap-4">
@@ -289,9 +212,9 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { nailStyles, nailArtists } from '../data/mockData'
+import { nailStyles, salons, nailArtists, reservations } from '../data/mockData'
 
 const route = useRoute()
 const router = useRouter()
@@ -301,38 +224,124 @@ const designImage = ref('')
 const isTryOnRunning = ref(false)
 const tryOnResult = ref('')
 const selectedStyle = ref(nailStyles[0])
-const selectedArtist = ref(null)
-const showArtists = ref(false)
-const showStyleGallery = ref(false)
-const showSharePanel = ref(false)
-const matchScore = ref(96)
 
-// 统一入口：支持 styleId / style（款式库）、imageUrl（作品集直接试戴）
+// Pre-load style from query params
+// /tryon?style=2           → 款式库指定款式
+// /tryon?theme=3           → 灵感合集指定主题
+// /tryon?workTitle=...&workImage=...  → 美甲师作品
 onMounted(() => {
-  const imageUrl = route.query.imageUrl
-  if (imageUrl) {
-    designImage.value = decodeURIComponent(imageUrl)
-    selectedStyle.value = null
-    return
-  }
-  const styleId = parseInt(route.query.styleId || route.query.style)
-  if (styleId) {
+  const styleId = parseInt(route.query.style)
+  const themeId = parseInt(route.query.theme)
+  const workImage = route.query.workImage
+  const workTitle = route.query.workTitle
+
+  if (workImage) {
+    // 美甲师作品 → 试戴
+    designImage.value = decodeURIComponent(workImage)
+    selectedStyle.value = { id: 0, name: decodeURIComponent(workTitle || '美甲作品'), image: designImage.value }
+  } else if (themeId) {
+    // 灵感合集 → 试戴（使用对应主题的第一张本地图片）
+    const themeImages = [
+      '/images/nails/nail-01.jpg', '/images/nails/nail-03.png', '/images/nails/nail-04.png',
+      '/images/nails/nail-02.png', '/images/nails/nail-06.png', '/images/nails/nail-05.png',
+      '/images/nails/nail-08.png', '/images/nails/nail-12.png'
+    ]
+    const img = themeImages[(themeId - 1) % themeImages.length]
+    designImage.value = img
+    selectedStyle.value = { id: themeId, name: '灵感款式', image: img }
+  } else if (styleId) {
     const style = nailStyles.find(s => s.id === styleId)
     if (style) {
       selectedStyle.value = style
       designImage.value = style.image
-      showStyleGallery.value = false
     }
-  } else if (selectedStyle.value) {
-    designImage.value = selectedStyle.value.image
   }
 })
+const showStyleGallery = ref(false)
+const showSharePanel = ref(false)
+const matchScore = ref(96)
 
+// ── 预约弹窗 ───────────────────────────────────────────
+const showBookingModal = ref(false)
+const bookingStep = ref(1)
+const selectedBookingSalon = ref(null)
+const selectedBookingArtist = ref(null)
+
+// 用户上次做过的店铺ID（从预约记录取）
+const lastSalonId = computed(() => {
+  const last = reservations.find(r => r.status === 'completed')
+  return last?.salonId || null
+})
+
+// 店铺列表带 tag
+const salonsWithTags = computed(() => {
+  return salons.map(s => {
+    const tags = []
+    if (s.id === lastSalonId.value) tags.push('上次做过')
+    // 按距离排序取最前面几个
+    const sorted = [...salons].sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
+    if (sorted[0]?.id === s.id) tags.push('离你最近')
+    if (s.rating >= 4.8) tags.push('最近好评')
+    if (s.reviews >= 1000) tags.push('人气最高')
+    return { ...s, tags }
+  }).sort((a, b) => {
+    // 上次做过的排最前
+    if (a.id === lastSalonId.value) return -1
+    if (b.id === lastSalonId.value) return 1
+    return parseFloat(a.distance) - parseFloat(b.distance)
+  })
+})
+
+// 当前选中店铺的美甲师
+const filteredBookingArtists = computed(() => {
+  if (!selectedBookingSalon.value) return []
+  return nailArtists.filter(a => a.salonId === selectedBookingSalon.value.id)
+})
+
+// 美甲师 tag
+const artistBookingTags = (artist) => {
+  const tags = []
+  if (lastSalonId.value && artist.salonId === lastSalonId.value && reservations.some(r => r.artistName.includes(artist.name) && r.status === 'completed')) {
+    tags.push('上次做过')
+  }
+  if (artist.goodReviews >= 400) tags.push('最近好评')
+  if (artist.years >= 8) tags.push('资深')
+  return tags
+}
+
+// tag 样式
+const tagClass = (tag) => {
+  const map = {
+    '离你最近': 'bg-success/10 text-success',
+    '上次做过': 'bg-warning/10 text-warning',
+    '最近好评': 'bg-primary-100 text-primary-700',
+    '人气最高': 'bg-error/10 text-error',
+    '资深': 'bg-primary-100 text-primary-700'
+  }
+  return map[tag] || 'bg-primary-50 text-primary-600'
+}
+
+const selectBookingSalon = (salon) => {
+  selectedBookingSalon.value = salon
+  selectedBookingArtist.value = null
+}
+
+const confirmBookingWithSelection = () => {
+  if (!selectedBookingArtist.value || !selectedBookingSalon.value) return
+  const salonId = selectedBookingSalon.value.id
+  const name = selectedStyle.value?.name || '试戴款式'
+  const img = designImage.value || tryOnResult.value
+  showBookingModal.value = false
+  router.push(`/booking/${salonId}?designImage=${encodeURIComponent(img)}&designName=${encodeURIComponent(name)}&artistId=${selectedBookingArtist.value.id}`)
+}
+
+// ── file input refs ────────────────────────────────────
 const handFileInput = ref(null)
 const handCameraInput = ref(null)
 const designFileInput = ref(null)
 const designCameraInput = ref(null)
 
+// ── share config ───────────────────────────────────────
 const sharePlatforms = [
   { name: '微信', icon: '💬' },
   { name: '朋友圈', icon: '🟢' },
@@ -344,38 +353,37 @@ const sharePlatforms = [
   { name: '更多', icon: '⋯' }
 ]
 
+// ── file reader helper ─────────────────────────────────
 const readFile = (file) => new Promise((resolve) => {
   const reader = new FileReader()
   reader.onload = (e) => resolve(e.target.result)
   reader.readAsDataURL(file)
 })
 
+// ── hand photo ─────────────────────────────────────────
 const triggerHandCamera = () => handCameraInput.value?.click()
 const triggerHandUpload = () => handFileInput.value?.click()
-const triggerDesignUpload = () => designFileInput.value?.click()
 
 const onHandFileChange = async (e) => {
   const file = e.target.files?.[0]
   if (!file) return
   handImage.value = await readFile(file)
+  // reset input so same file can be re-selected
   e.target.value = ''
 }
+
+// ── design image ───────────────────────────────────────
+const triggerDesignCamera = () => designCameraInput.value?.click()
+const triggerDesignUpload = () => designFileInput.value?.click()
 
 const onDesignFileChange = async (e) => {
   const file = e.target.files?.[0]
   if (!file) return
   designImage.value = await readFile(file)
-  selectedStyle.value = null
   e.target.value = ''
 }
 
-const badgeClass = (style) => ({
-  last:      'bg-primary-500 text-white',
-  available: 'bg-success/25 text-success',
-  top:       'bg-warning/20 text-warning',
-  value:     'bg-cocoa/15 text-cocoa'
-}[style] ?? 'bg-primary-100 text-primary-700')
-
+// ── style gallery ──────────────────────────────────────
 const openStyleGallery = () => {
   showStyleGallery.value = true
 }
@@ -387,6 +395,12 @@ const selectStyle = (style) => {
   tryOnResult.value = ''
 }
 
+const clearDesign = () => {
+  designImage.value = ''
+  tryOnResult.value = ''
+}
+
+// ── try-on ─────────────────────────────────────────────
 const startTryOn = () => {
   if (!handImage.value || isTryOnRunning.value) return
   isTryOnRunning.value = true
@@ -399,17 +413,21 @@ const startTryOn = () => {
   }, 2000)
 }
 
-const goToBooking = () => {
-  sessionStorage.setItem('tryonStyle', JSON.stringify({
-    image: designImage.value || selectedStyle.value?.image || '',
-    name: selectedStyle.value?.name || '自定义款式',
-    styleId: selectedStyle.value?.id ?? null
-  }))
-  router.push('/salon')
+// ── save / load ────────────────────────────────────────
+const saveDesign = () => {
+  alert('试戴效果已保存')
 }
 
-const saveDesign = () => alert('试戴效果已保存')
+// ── 一键预约弹窗控制 ──────────────────────────────────
+const goToBooking = () => {
+  // Reset modal state
+  bookingStep.value = 1
+  selectedBookingSalon.value = null
+  selectedBookingArtist.value = null
+  showBookingModal.value = true
+}
 
+// ── share ──────────────────────────────────────────────
 const shareTo = (platform) => {
   showSharePanel.value = false
   if (platform === '复制链接') {

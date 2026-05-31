@@ -103,11 +103,23 @@
                   {{ service }}
                 </span>
               </div>
-              <div class="mt-2 flex items-center gap-1 text-xs text-cocoa">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-                </svg>
-                {{ salon.location }}
+              <div class="mt-2 flex items-center gap-2">
+                <div class="flex items-center gap-1 text-xs text-cocoa">
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                  </svg>
+                  {{ salon.location }}
+                </div>
+                <!-- 作品缩略图 -->
+                <div class="ml-auto flex gap-1.5">
+                  <div
+                    v-for="(work, wi) in salon.works"
+                    :key="wi"
+                    class="h-10 w-10 shrink-0 overflow-hidden rounded-xl"
+                  >
+                    <img :src="work" alt="" class="h-full w-full object-cover" />
+                  </div>
+                </div>
               </div>
             </div>
           </div>

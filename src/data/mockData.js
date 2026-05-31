@@ -181,9 +181,14 @@ export const salons = [
     rating: 4.9,
     reviews: 1280,
     services: ['日式美甲', '芭比美甲', '延长甲', '美甲款式'],
-    image: 'https://neeko-copilot.bytedance.net/api/text2image?prompt=luxury%20nail%20salon%20interior%20modern%20elegant%20pink%20decor%20comfortable&image_size=landscape_4_3',
+    image: 'https://picsum.photos/seed/salon1/400/300',
     location: '朝阳区',
-    distance: '1.2km'
+    distance: '1.2km',
+    works: [
+      '/images/nails/nail-01.jpg',
+      '/images/nails/nail-02.png',
+      '/images/nails/nail-03.png'
+    ]
   },
   {
     id: 2,
@@ -191,9 +196,14 @@ export const salons = [
     rating: 4.8,
     reviews: 960,
     services: ['法式美甲', '轻奢风格', '定制款'],
-    image: 'https://neeko-copilot.bytedance.net/api/text2image?prompt=cozy%20nail%20studio%20warm%20lighting%20elegant%20design%20salon&image_size=landscape_4_3',
+    image: 'https://picsum.photos/seed/salon2/400/300',
     location: '海淀区',
-    distance: '2.5km'
+    distance: '2.5km',
+    works: [
+      '/images/nails/nail-04.png',
+      '/images/nails/nail-05.png',
+      '/images/nails/nail-06.png'
+    ]
   },
   {
     id: 3,
@@ -201,44 +211,110 @@ export const salons = [
     rating: 4.7,
     reviews: 780,
     services: ['蛋白矫正', '鎏金美甲', '新娘美甲'],
-    image: 'https://neeko-copilot.bytedance.net/api/text2image?prompt=modern%20nail%20salon%20minimalist%20white%20interior%20professional&image_size=landscape_4_3',
+    image: 'https://picsum.photos/seed/salon3/400/300',
     location: '西城区',
-    distance: '3.1km'
+    distance: '3.1km',
+    works: [
+      '/images/nails/nail-07.png',
+      '/images/nails/nail-08.png',
+      '/images/nails/nail-09.png'
+    ]
+  },
+  {
+    id: 4,
+    name: '指尖花语 Nail Art',
+    rating: 4.9,
+    reviews: 1560,
+    services: ['春日花语', '猫眼美甲', '法式美甲', '定制手绘'],
+    image: 'https://picsum.photos/seed/salon4/400/300',
+    location: '东城区',
+    distance: '2.8km',
+    works: [
+      '/images/nails/nail-10.png',
+      '/images/nails/nail-11.png',
+      '/images/nails/nail-12.png'
+    ]
+  },
+  {
+    id: 5,
+    name: '闪耀美甲坊',
+    rating: 4.6,
+    reviews: 620,
+    services: ['闪粉美甲', '延长甲', '足部美甲', '手部护理'],
+    image: 'https://picsum.photos/seed/salon5/400/300',
+    location: '丰台区',
+    distance: '4.5km',
+    works: [
+      '/images/nails/nail-01.jpg',
+      '/images/nails/nail-04.png',
+      '/images/nails/nail-07.png'
+    ]
+  },
+  {
+    id: 6,
+    name: 'J&J Nail Lounge',
+    rating: 4.8,
+    reviews: 890,
+    services: ['轻奢美甲', '新娘甲', '芭比美甲', '日式美甲'],
+    image: 'https://picsum.photos/seed/salon6/400/300',
+    location: '朝阳区',
+    distance: '1.8km',
+    works: [
+      '/images/nails/nail-02.png',
+      '/images/nails/nail-05.png',
+      '/images/nails/nail-08.png'
+    ]
   }
 ]
 
 export const messages = [
   {
     id: 1,
-    name: 'Nail Moment 美甲坊',
+    name: 'Nail Moment · Luna 群聊',
     avatar: 'N',
-    content: '您好，您的预约已通过，明天下午2点见~',
+    content: 'Luna：您的预约已通过，明天下午2点见~',
     time: '09:21',
-    unread: true
+    unread: true,
+    salonId: 1,
+    artistId: 1,
+    artistName: 'Luna',
+    type: 'group'
   },
   {
     id: 2,
-    name: '美甲师 Luna',
-    avatar: 'L',
-    content: '您好，请问有什么可以帮您？',
+    name: 'Her Nail Studio · 小雨 群聊',
+    avatar: 'H',
+    content: '小雨：您好，请问有什么可以帮您？',
     time: '昨天',
-    unread: false
+    unread: false,
+    salonId: 2,
+    artistId: 2,
+    artistName: '小雨',
+    type: 'group'
   },
   {
     id: 3,
-    name: 'Her Nail Studio',
-    avatar: 'H',
-    content: '感谢您的光临，期待下次再见~',
+    name: 'Mia Nails · Nicole 群聊',
+    avatar: 'M',
+    content: 'Nicole：感谢您的光临，期待下次再见~',
     time: '04/10',
-    unread: false
+    unread: false,
+    salonId: 3,
+    artistId: 3,
+    artistName: 'Nicole',
+    type: 'group'
   },
   {
     id: 4,
-    name: '美甲师小雨',
-    avatar: 'Y',
-    content: '您选的款式我已经记下了，明天见！',
+    name: 'Nail Moment · 小雨 群聊',
+    avatar: 'N',
+    content: '小雨：您选的款式我已经记下了，明天见！',
     time: '04/10',
-    unread: false
+    unread: false,
+    salonId: 1,
+    artistId: 2,
+    artistName: '小雨',
+    type: 'group'
   }
 ]
 
@@ -268,33 +344,36 @@ export const userData = {
 
 export const chatMessages = {
   1: [
-    { id: 1, sender: 'salon', text: '您好，感谢预约 Nail Moment 美甲坊！', time: '09:15' },
-    { id: 2, sender: 'salon', text: '您的预约已通过，明天下午2点见~', time: '09:15' },
-    { id: 3, sender: 'user', text: '好的，谢谢！我想问一下可以改款式吗？', time: '09:18' },
-    { id: 4, sender: 'salon', text: '当然可以，到店后和美甲师沟通就行~', time: '09:20' },
-    { id: 5, sender: 'user', text: '太好了，明天见！', time: '09:21' }
+    { id: 1, sender: 'salon', senderName: 'Nail Moment', text: '欢迎光临 Nail Moment 美甲坊！我是店长，已为您安排美甲师 Luna 为您服务~', time: '09:15' },
+    { id: 2, sender: 'artist', senderName: 'Luna', text: '您好，我是美甲师 Luna，很高兴为您服务！请问有什么偏好的款式吗？', time: '09:16' },
+    { id: 3, sender: 'salon', senderName: 'Nail Moment', text: '您的预约已通过，明天下午2点见~', time: '09:17' },
+    { id: 4, sender: 'user', text: '好的，谢谢！我想做一款日式美甲', time: '09:18' },
+    { id: 5, sender: 'artist', senderName: 'Luna', text: '日式美甲很适合您！到店后我给您看一些款式参考~', time: '09:20' },
+    { id: 6, sender: 'user', text: '太好了，明天见！', time: '09:21' }
   ],
   2: [
-    { id: 1, sender: 'salon', text: '您好，我是美甲师 Luna，很高兴为您服务！', time: '昨天 14:30' },
+    { id: 1, sender: 'artist', senderName: '小雨', text: '您好，我是美甲师小雨！欢迎来到 Her Nail Studio~', time: '昨天 14:30' },
     { id: 2, sender: 'user', text: '你好！我想做一个法式美甲', time: '昨天 14:32' },
-    { id: 3, sender: 'salon', text: '好的，法式美甲很经典，我们有几种款式可以选', time: '昨天 14:33' },
-    { id: 4, sender: 'salon', text: '请问您方便什么时候过来呢？', time: '昨天 14:33' },
+    { id: 3, sender: 'salon', senderName: 'Her Nail Studio', text: '法式美甲是我们店的热门项目，小雨老师很擅长哦~', time: '昨天 14:33' },
+    { id: 4, sender: 'artist', senderName: '小雨', text: '好的，法式美甲很经典，我们有几种款式可以选，请问您方便什么时候过来呢？', time: '昨天 14:33' },
     { id: 5, sender: 'user', text: '这周末下午可以吗？', time: '昨天 14:35' },
-    { id: 6, sender: 'salon', text: '可以的，周六下午2点有空位，帮您预约？', time: '昨天 14:36' },
+    { id: 6, sender: 'salon', senderName: 'Her Nail Studio', text: '可以的，周六下午2点有空位，帮您预约？', time: '昨天 14:36' },
     { id: 7, sender: 'user', text: '好的，就这个时间', time: '昨天 14:38' },
-    { id: 8, sender: 'salon', text: '已为您预约成功，周六下午2点见！', time: '昨天 14:40' }
+    { id: 8, sender: 'artist', senderName: '小雨', text: '已为您预约成功，周六下午2点见！记得带上您喜欢的参考图哦~', time: '昨天 14:40' }
   ],
   3: [
-    { id: 1, sender: 'salon', text: '感谢您的光临！您做的款式真好看~', time: '04/10 16:20' },
-    { id: 2, sender: 'user', text: '谢谢！你们服务很好，我很满意', time: '04/10 16:22' },
-    { id: 3, sender: 'salon', text: '期待下次再见~ 我们会持续上新款式的', time: '04/10 16:25' }
+    { id: 1, sender: 'salon', senderName: 'Mia Nails', text: '感谢您的光临！您做的款式真好看~', time: '04/10 16:20' },
+    { id: 2, sender: 'user', text: '谢谢！Nicole老师服务很好，我很满意', time: '04/10 16:22' },
+    { id: 3, sender: 'artist', senderName: 'Nicole', text: '谢谢夸奖！期待下次再见~ 我们会持续上新款式的', time: '04/10 16:25' },
+    { id: 4, sender: 'salon', senderName: 'Mia Nails', text: '下次可以试试我们新到的鎏金系列，很适合您~', time: '04/10 16:26' }
   ],
   4: [
-    { id: 1, sender: 'salon', text: '您好，我是美甲师小雨', time: '04/10 10:00' },
+    { id: 1, sender: 'artist', senderName: '小雨', text: '您好，我是美甲师小雨，很高兴在 Nail Moment 为您服务！', time: '04/10 10:00' },
     { id: 2, sender: 'user', text: '你好小雨！上次你帮我做的渐变款很好看', time: '04/10 10:05' },
-    { id: 3, sender: 'salon', text: '谢谢喜欢！这次想做什么款式呢？', time: '04/10 10:06' },
-    { id: 4, sender: 'user', text: '我想试试那个春日新款', time: '04/10 10:08' },
-    { id: 5, sender: 'salon', text: '好的，您选的款式我已经记下了，明天见！', time: '04/10 10:10' }
+    { id: 3, sender: 'salon', senderName: 'Nail Moment', text: '小雨老师是我们店的高级美甲师，渐变款是她的招牌~', time: '04/10 10:06' },
+    { id: 4, sender: 'artist', senderName: '小雨', text: '谢谢喜欢！这次想做什么款式呢？', time: '04/10 10:06' },
+    { id: 5, sender: 'user', text: '我想试试那个春日新款', time: '04/10 10:08' },
+    { id: 6, sender: 'artist', senderName: '小雨', text: '好的，您选的款式我已经记下了，明天见！', time: '04/10 10:10' }
   ]
 }
 
@@ -436,6 +515,66 @@ export const reservations = [
     statusText: '已取消',
     location: '海淀区 · 2.5km',
     remark: ''
+  }
+]
+
+
+export const inspirationThemes = [
+  {
+    id: 1,
+    name: '春日花语',
+    coverImage: '/images/nails/nail-01.jpg',
+    count: 24,
+    category: '春日'
+  },
+  {
+    id: 2,
+    name: '法式经典',
+    coverImage: '/images/nails/nail-03.png',
+    count: 18,
+    category: '法式'
+  },
+  {
+    id: 3,
+    name: '闪粉派对',
+    coverImage: '/images/nails/nail-04.png',
+    count: 16,
+    category: '闪粉'
+  },
+  {
+    id: 4,
+    name: '极简裸色',
+    coverImage: '/images/nails/nail-02.png',
+    count: 22,
+    category: '裸色'
+  },
+  {
+    id: 5,
+    name: '渐变星空',
+    coverImage: '/images/nails/nail-06.png',
+    count: 15,
+    category: '渐变'
+  },
+  {
+    id: 6,
+    name: '复古酒红',
+    coverImage: '/images/nails/nail-05.png',
+    count: 20,
+    category: '红色'
+  },
+  {
+    id: 7,
+    name: '几何线条',
+    coverImage: '/images/nails/nail-08.png',
+    count: 12,
+    category: '设计'
+  },
+  {
+    id: 8,
+    name: '樱花物语',
+    coverImage: '/images/nails/nail-12.png',
+    count: 19,
+    category: '日式'
   }
 ]
 

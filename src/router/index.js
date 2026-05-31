@@ -82,7 +82,7 @@ const routes = [
     component: () => import('../views/Reservations.vue')
   },
   {
-    path: '/artist/:id',
+    path: '/artist-detail/:id',
     name: 'ArtistDetail',
     component: () => import('../views/ArtistDetail.vue')
   }
