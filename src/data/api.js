@@ -144,6 +144,12 @@ export async function saveWork(payload) {
   return data.data
 }
 
+/** Generate nail design image via seedream model */
+export async function generateDesignImage(prompt) {
+  const { data } = await api.post('/merchant/design/generate', { prompt }, { timeout: 60000 })
+  return data.data
+}
+
 /** Upload image and auto-detect nail tags */
 export async function detectTags(file) {
   const formData = new FormData()
@@ -239,6 +245,28 @@ export async function updateOrder(id, payload) {
 /** Delete an order */
 export async function deleteOrder(id) {
   const { data } = await api.delete(`/merchant/order/${id}`)
+  return data.data
+}
+
+// ============ Material Library APIs ============
+
+export async function saveToLibrary(payload) {
+  const { data } = await api.post('/merchant/material-library', payload)
+  return data.data
+}
+
+export async function fetchLibrary({ offset, limit } = {}) {
+  const { data } = await api.get('/merchant/material-library/list', { params: { offset, limit } })
+  return data.data
+}
+
+export async function toggleFavorite(id) {
+  const { data } = await api.put(`/merchant/material-library/${id}/favorite`)
+  return data.data
+}
+
+export async function deleteLibraryMaterial(id) {
+  const { data } = await api.delete(`/merchant/material-library/${id}`)
   return data.data
 }
 

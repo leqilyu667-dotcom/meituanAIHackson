@@ -14,7 +14,7 @@ const props = defineProps({
   tags: { type: Object, required: true }
 })
 
-const displayKeys = ['tone', 'craft', 'decor']
+const displayKeys = ['shape', 'tone', 'style', 'craft', 'decor']
 
 const isLast = (idx) => {
   // Check if any subsequent displayKey has a non-empty value

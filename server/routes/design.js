@@ -744,4 +744,54 @@ router.post('/work', (req, res) => {
   return res.json({ code: 0, message: 'ok', data: { id: Number(result.lastInsertRowid) } })
 })
 
+/**
+ * POST /api/merchant/design/generate
+ * Generate nail design image using doubao-seedream model
+ */
+router.post('/generate', async (req, res) => {
+  const { prompt } = req.body
+  if (!prompt) {
+    return res.status(422).json({ code: 'INVALID_PARAMS', message: 'prompt is required' })
+  }
+
+  try {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 60000)
+
+    const resp = await fetch(`${ARK_BASE}/images/generations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${ARK_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'doubao-seedream-5-0-260128',
+        prompt,
+        size: '1920x1920',
+        n: 1
+      }),
+      signal: controller.signal
+    })
+
+    clearTimeout(timeout)
+
+    if (!resp.ok) {
+      const errBody = await resp.text().catch(() => '')
+      throw new Error(`ARK API ${resp.status}: ${errBody.slice(0, 200)}`)
+    }
+
+    const data = await resp.json()
+    const imageUrl = data.data?.[0]?.url || data.data?.[0]?.b64_json
+
+    if (!imageUrl) {
+      throw new Error('No image in response: ' + JSON.stringify(data).slice(0, 200))
+    }
+
+    return res.json({ code: 0, data: { imageUrl } })
+  } catch (err) {
+    console.error('[Generate] Failed:', err.message)
+    return res.status(500).json({ code: 'GENERATE_FAILED', message: '素材生成失败，请重试' })
+  }
+})
+
 export default router

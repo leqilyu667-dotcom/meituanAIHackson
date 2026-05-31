@@ -68,6 +68,12 @@
               >
                 {{ isTagFilled(item.aiTags) ? '✓ 已填入标签' : '填入此标签' }}
               </button>
+              <button
+                @click="fillFromXhs(item)"
+                class="mt-1.5 w-full rounded-[14px] border border-primary-300 bg-primary-50 py-2 text-xs font-medium text-primary-600 transition hover:bg-primary-100"
+              >
+                灵感填入
+              </button>
             </div>
           </div>
 
@@ -126,12 +132,48 @@
       </section>
     </div>
 
-    <!-- 2. 自定义标签组合 -->
+    <!-- 2. 自定义标签组合 + 生成方式 -->
     <section class="card mb-6 p-6">
-      <h2 class="mb-1 text-lg font-medium text-ink">自定义标签组合</h2>
-      <p class="mb-4 text-xs text-cocoa">手动选择五维标签，核心三维必选</p>
+      <div class="mb-4 flex items-center gap-2 rounded-2xl bg-cream/50 p-1 w-fit">
+        <button
+          @click="generateMode = 'formula'"
+          class="rounded-xl px-4 py-2 text-sm font-medium transition-all"
+          :class="generateMode === 'formula' ? 'bg-white text-ink shadow-sm' : 'text-cocoa hover:text-ink'"
+        >爆款配方生成</button>
+        <button
+          @click="generateMode = 'inspire'"
+          class="rounded-xl px-4 py-2 text-sm font-medium transition-all"
+          :class="generateMode === 'inspire' ? 'bg-white text-ink shadow-sm' : 'text-cocoa hover:text-ink'"
+        >灵感同款生成</button>
+      </div>
 
-      <div class="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      <p class="mb-4 text-xs text-cocoa">
+        {{ generateMode === 'formula' ? '选择五维标签组合生成爆款素材，核心三维必选' : '上传参考图或从小红书素材选图，AI 自动识图提取标签后生成同款素材' }}
+      </p>
+
+      <!-- 灵感同款生成：参考图展示 -->
+      <div v-if="generateMode === 'inspire' && inspireImage" class="mb-4 overflow-hidden rounded-2xl border border-divider bg-white">
+        <div class="aspect-[16/9] w-full overflow-hidden bg-cream/30">
+          <img :src="inspireImage" class="h-full w-full object-cover" />
+        </div>
+        <div class="flex items-center justify-between p-3">
+          <p class="text-sm font-medium text-ink">参考图</p>
+          <button
+            @click="inspireImage = null"
+            class="rounded-[14px] border border-divider px-3 py-1 text-xs text-cocoa transition hover:text-error"
+          >移除</button>
+        </div>
+      </div>
+
+      <!-- 灵感同款生成：无图片提示 -->
+      <div v-if="generateMode === 'inspire' && !inspireImage" class="mb-4 rounded-xl bg-cream/30 py-12 text-center">
+        <p class="text-3xl mb-3">🖼️</p>
+        <p class="text-sm text-cocoa">从上方「站外热门素材」点击「灵感填入」选择参考图</p>
+        <p class="mt-1 text-xs text-cocoa/60">直接参考图片样式生成同款美甲素材</p>
+      </div>
+
+      <!-- 标签选择（仅爆款配方模式） -->
+      <div v-if="generateMode === 'formula'" class="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
         <div v-for="dim in tagDimensions" :key="dim.key">
           <label class="text-xs font-medium text-cocoa">
             {{ dim.name }}
@@ -206,13 +248,6 @@
           </span>
           <span v-else>AI 生成素材</span>
         </button>
-        <button
-          v-if="generating"
-          @click="cancelGenerate"
-          class="text-xs text-cocoa underline transition hover:text-error"
-        >
-          取消
-        </button>
       </div>
       <p v-if="timeoutError" class="mt-2 text-xs text-error">{{ timeoutError }}</p>
     </section>
@@ -222,16 +257,10 @@
       <h2 class="mb-4 text-lg font-medium text-ink">生成结果</h2>
 
       <div class="mx-auto max-w-sm overflow-hidden rounded-3xl border border-divider bg-white shadow-soft">
-        <div
-          class="relative flex aspect-square w-full items-center justify-center"
-          :style="{ background: generatedGradient }"
-        >
-          <div class="absolute inset-0 flex items-center justify-center">
-            <div class="w-32 h-48 rounded-full bg-white/30 blur-3xl"></div>
-          </div>
-          <div class="relative text-center">
+        <div class="aspect-square w-full overflow-hidden bg-cream/30">
+          <img v-if="generatedItem.image" :src="generatedItem.image" class="h-full w-full object-cover" />
+          <div v-else class="flex h-full w-full items-center justify-center" :style="{ background: generatedGradient }">
             <p class="text-4xl">💅</p>
-            <p class="mt-2 text-xs text-ink/50">AI 生成预览图</p>
           </div>
         </div>
         <div class="p-4">
@@ -256,12 +285,19 @@
             </span>
           </div>
 
-          <div class="mt-4 flex gap-3">
+          <div class="mt-4 flex gap-2">
             <button
               @click="regenerate"
               class="flex-1 rounded-[18px] border border-divider bg-white py-2 text-sm text-cocoa transition hover:bg-cream"
             >
               重新生成
+            </button>
+            <button
+              @click="toggleFavResult"
+              class="rounded-[18px] border px-3 py-2 text-sm transition"
+              :class="generatedItem.favorited ? 'border-primary-300 bg-primary-50 text-primary-600' : 'border-divider text-cocoa hover:bg-cream'"
+            >
+              {{ generatedItem.favorited ? '★ 已收藏' : '☆ 收藏' }}
             </button>
             <button
               v-if="!generatedItem.published"
@@ -307,6 +343,59 @@
         </div>
       </div>
     </section>
+
+    <!-- 5. 素材库 -->
+    <section class="card p-6">
+      <div class="mb-4 flex items-center justify-between">
+        <h2 class="text-lg font-medium text-ink">
+          素材库
+          <span class="text-sm font-normal text-cocoa">（{{ libraryTotal }}）</span>
+        </h2>
+        <button
+          @click="loadLibrary"
+          class="text-xs text-primary-600 underline"
+        >刷新</button>
+      </div>
+
+      <div v-if="libraryLoading" class="flex justify-center py-8">
+        <svg class="h-5 w-5 animate-spin text-primary-500" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" class="opacity-30"/>
+          <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div v-else-if="libraryItems.length === 0" class="py-8 text-center text-sm text-cocoa">
+        暂无素材，生成后将自动存入此处
+      </div>
+
+      <div v-else class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div
+          v-for="item in libraryItems"
+          :key="item.id"
+          class="overflow-hidden rounded-2xl border border-divider bg-white shadow-soft transition hover:shadow-soft"
+        >
+          <div class="aspect-square w-full overflow-hidden bg-cream/30">
+            <img v-if="item.imageUrl" :src="item.imageUrl" class="h-full w-full object-cover" />
+            <div v-else class="flex h-full w-full items-center justify-center text-3xl">💅</div>
+          </div>
+          <div class="p-3">
+            <p class="text-xs font-medium text-ink truncate">{{ item.name || '未命名' }}</p>
+            <TagBadge :tags="item.tags" />
+            <div class="mt-2 flex gap-1.5">
+              <button
+                @click="libraryPublish(item)"
+                :disabled="item.publishing"
+                class="flex-1 rounded-[12px] bg-success py-1 text-[11px] font-medium text-white transition hover:opacity-90 disabled:opacity-40"
+              >上架</button>
+              <button
+                @click="libraryDelete(item)"
+                class="rounded-[12px] border border-error/20 px-2 py-1 text-[11px] text-cocoa transition hover:text-error"
+              >删除</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -314,7 +403,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import TagBadge from '../../components/merchant/TagBadge.vue'
 import { labelSystem, hotTags, calcHeatScore } from '../../data/merchantMockData'
-import { fetchXhsMaterials } from '../../data/api'
+import { fetchXhsMaterials, generateDesignImage, createDesign, saveToLibrary, fetchLibrary, deleteLibraryMaterial, toggleFavorite } from '../../data/api'
 
 const tagDimensions = [
   { key: 'shape', name: '甲型', required: true },
@@ -327,12 +416,12 @@ const tagDimensions = [
 const emptyTags = () => ({ shape: '', tone: '', style: '', craft: '', decor: '' })
 const tags = ref(emptyTags())
 const customName = ref('')
+const generateMode = ref('formula')
+const inspireImage = ref(null)
 const generating = ref(false)
 const timeoutError = ref('')
 const generatedItem = ref(null)
 const publishedItems = ref([])
-let timer = null
-
 const topHotTags = computed(() => {
   return [...hotTags]
     .sort((a, b) => calcHeatScore(b) - calcHeatScore(a))
@@ -384,11 +473,58 @@ async function loadXhsInspirations() {
   }
 }
 
+// Library
+const libraryItems = ref([])
+const libraryTotal = ref(0)
+const libraryLoading = ref(false)
+
+async function loadLibrary() {
+  libraryLoading.value = true
+  try {
+    const data = await fetchLibrary({ limit: 20 })
+    libraryItems.value = data.materials
+    libraryTotal.value = data.total
+  } catch (err) {
+    console.warn('Failed to load library:', err.message)
+  } finally {
+    libraryLoading.value = false
+  }
+}
+
+async function libraryPublish(item) {
+  item.publishing = true
+  try {
+    await createDesign({
+      name: item.name || '素材库款式',
+      tags: item.tags,
+      coverImage: item.imageUrl
+    })
+    alert('已上架至货架管理')
+  } catch (err) {
+    alert('上架失败: ' + (err.response?.data?.message || err.message))
+  } finally {
+    item.publishing = false
+  }
+}
+
+async function libraryDelete(item) {
+  if (!confirm('确定删除？')) return
+  try {
+    await deleteLibraryMaterial(item.id)
+    libraryItems.value = libraryItems.value.filter(m => m.id !== item.id)
+    libraryTotal.value--
+  } catch (err) {
+    console.error('Delete failed:', err.message)
+  }
+}
+
 onMounted(() => {
   loadXhsInspirations()
+  loadLibrary()
 })
 
 const canGenerate = computed(() => {
+  if (generateMode.value === 'inspire') return !!inspireImage.value
   return tags.value.shape && tags.value.tone && tags.value.style
 })
 
@@ -427,6 +563,11 @@ const fillTags = (newTags) => {
   tags.value = { ...tags.value, ...newTags }
 }
 
+const fillFromXhs = (item) => {
+  generateMode.value = 'inspire'
+  inspireImage.value = item.image
+}
+
 const isTagFilled = (t) => {
   return tags.value.shape === t.shape
     && tags.value.tone === t.tone
@@ -449,30 +590,69 @@ const generatedGradient = computed(() => {
   return gradientMap[tags.value.tone] || 'linear-gradient(135deg, #f5e6d8, #dcc5b0, #f0dcc8)'
 })
 
-const generate = () => {
+function buildPrompt() {
+  const t = tags.value
+  const craftDecor = [t.craft, t.decor].filter(Boolean).join('、') || '简约纯色'
+  return `小红书ins风美甲款式主图，高清商业摄影，奶白色哑光ins风桌面背景，带极淡的肌理质感，暖调柔光打光，带轻微柔焦氛围感，光影柔和通透，无刺眼硬阴影。模特双手平行自然放置、掌心向下，双手不交叉、不重叠，10根手指完整舒展、均匀分开，指缝间距一致，无手指扭曲、粘连、缺失或遮挡；（手部解剖结构完全正确，关节、指骨比例协调自然），无关节肿大、手指畸形、皮肤扭曲；皮肤细腻均匀，无多余纹理或瑕疵。画面焦点100%锁定在美甲款式上，清晰展示美甲细节；甲型为${t.shape}，整体主色调为${t.tone}，风格定位${t.style}，带有${craftDecor}工艺细节；美甲色彩通透还原准确，光泽感自然高级，碎钻/闪粉的反光细腻真实，指甲边缘干净利落，无溢胶、毛边等瑕疵；无多余饰品、水印、文字或杂乱元素，构图居中，画面干净清爽，适配美甲店铺上架与小红书分享场景。`
+}
+
+const generate = async () => {
   timeoutError.value = ''
   generating.value = true
 
-  const delay = 2000 + Math.random() * 1000
-  timer = setTimeout(() => {
-    generating.value = false
-    if (delay > 10000) {
-      timeoutError.value = '素材生成超时，请重新尝试'
-      return
-    }
+  try {
+    const prompt = buildPrompt()
+    const result = await generateDesignImage(prompt)
     generatedItem.value = {
       name: customName.value || autoName.value,
       tags: { ...tags.value },
+      image: result.imageUrl,
       gradient: gradientMap[tags.value.tone] || 'linear-gradient(135deg, #f5e6d8, #dcc5b0, #f0dcc8)',
-      published: false
+      published: false,
+      favorited: false
     }
-  }, Math.min(delay, 10000))
+    // Auto-save to library, store ID for favorite toggle
+    try {
+      const libResult = await saveToLibrary({
+        name: generatedItem.value.name,
+        imageUrl: result.imageUrl,
+        tags: generatedItem.value.tags
+      })
+      generatedItem.value.libraryId = libResult.id
+    } catch (e) { console.warn('Library save failed:', e.message) }
+    loadLibrary()
+  } catch (err) {
+    timeoutError.value = '素材生成失败，请重试'
+    console.error('Generate failed:', err.message)
+  } finally {
+    generating.value = false
+  }
 }
 
-const cancelGenerate = () => {
-  clearTimeout(timer)
-  generating.value = false
-  timeoutError.value = '已取消生成'
+async function toggleFavResult() {
+  const item = generatedItem.value
+  if (!item) return
+  // If not yet saved to library, save now then toggle
+  if (!item.libraryId) {
+    try {
+      const libResult = await saveToLibrary({
+        name: item.name,
+        imageUrl: item.image,
+        tags: item.tags
+      })
+      item.libraryId = libResult.id
+    } catch (err) {
+      alert('收藏失败，素材未入库')
+      return
+    }
+  }
+  try {
+    const result = await toggleFavorite(item.libraryId)
+    item.favorited = result.isFavorite
+    loadLibrary()
+  } catch (err) {
+    console.error('Toggle favorite failed:', err.message)
+  }
 }
 
 const regenerate = () => {
@@ -480,10 +660,20 @@ const regenerate = () => {
   generate()
 }
 
-const publish = () => {
+const publish = async () => {
   if (generatedItem.value) {
-    generatedItem.value.published = true
-    publishedItems.value.unshift({ ...generatedItem.value })
+    try {
+      await createDesign({
+        name: generatedItem.value.name,
+        tags: generatedItem.value.tags,
+        coverImage: generatedItem.value.image,
+        operator: 'ai_generate'
+      })
+      generatedItem.value.published = true
+      publishedItems.value.unshift({ ...generatedItem.value })
+    } catch (err) {
+      alert('上架失败: ' + (err.response?.data?.message || err.message))
+    }
   }
 }
 </script>

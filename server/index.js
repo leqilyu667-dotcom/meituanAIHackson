@@ -12,6 +12,7 @@ import configRoutes from './routes/config.js'
 import designRoutes from './routes/design.js'
 import messagesRoutes from './routes/messages.js'
 import orderRoutes from './routes/order.js'
+import materialLibraryRoutes from './routes/materialLibrary.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PORT = process.env.PORT || 3001
@@ -36,6 +37,7 @@ app.use('/api/merchant', configRoutes)
 app.use('/api/merchant/design', designRoutes)
 app.use('/api/merchant/messages', messagesRoutes)
 app.use('/api/merchant/order', orderRoutes)
+app.use('/api/merchant/material-library', materialLibraryRoutes)
 
 // Health check
 app.get('/api/health', (req, res) => {

@@ -96,6 +96,11 @@ const routes = [
     path: '/merchant/order-history',
     name: 'MerchantOrderHistory',
     component: () => import('../views/merchant/OrderHistory.vue')
+  },
+  {
+    path: '/merchant/material-library',
+    name: 'MerchantMaterialLibrary',
+    component: () => import('../views/merchant/MaterialLibrary.vue')
   }
 ]
 

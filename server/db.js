@@ -226,6 +226,21 @@ export function initDatabase() {
       created_at TEXT NOT NULL DEFAULT (datetime('now','localtime'))
     );
 
+    CREATE TABLE IF NOT EXISTS material_library (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT DEFAULT '',
+      image_url TEXT,
+      tags_json TEXT DEFAULT '{}',
+      tags_shape TEXT DEFAULT '',
+      tags_tone TEXT DEFAULT '',
+      tags_craft TEXT DEFAULT '',
+      tags_decor TEXT DEFAULT '',
+      tags_style TEXT DEFAULT '',
+      is_favorite INTEGER NOT NULL DEFAULT 0,
+      is_deleted INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+    );
+
     CREATE TABLE IF NOT EXISTS nail_work (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       image_url TEXT,
