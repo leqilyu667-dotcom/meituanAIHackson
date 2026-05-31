@@ -48,20 +48,20 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-6">
               <div class="text-center">
-                <p class="text-lg font-semibold text-primary-600">{{ artist?.ratings?.attitude }}</p>
+                <p class="text-lg font-semibold text-primary-600">{{ artist?.rating_attitude }}</p>
                 <p class="text-xs text-cocoa">态度</p>
               </div>
               <div class="text-center">
-                <p class="text-lg font-semibold text-primary-600">{{ artist?.ratings?.effect }}</p>
+                <p class="text-lg font-semibold text-primary-600">{{ artist?.rating_effect }}</p>
                 <p class="text-xs text-cocoa">效果</p>
               </div>
               <div class="text-center">
-                <p class="text-lg font-semibold text-primary-600">{{ artist?.ratings?.appearance }}</p>
+                <p class="text-lg font-semibold text-primary-600">{{ artist?.rating_appearance }}</p>
                 <p class="text-xs text-cocoa">形象</p>
               </div>
             </div>
             <div class="text-right">
-              <p class="text-lg font-semibold text-ink">{{ formatCount(artist?.serviceCount) }}</p>
+              <p class="text-lg font-semibold text-ink">{{ formatCount(artist?.service_count) }}</p>
               <p class="text-xs text-cocoa">服务人次</p>
             </div>
           </div>
@@ -89,7 +89,7 @@
         <h3 class="mb-3 font-medium text-ink">作品展示</h3>
         <div class="space-y-3">
           <div
-            v-for="(work, index) in artist?.works"
+            v-for="(work, index) in works"
             :key="index"
             class="overflow-hidden rounded-2xl bg-white shadow-soft"
           >
@@ -99,7 +99,7 @@
               <div class="relative flex-1 border-r border-divider/50">
                 <div class="aspect-square overflow-hidden">
                   <img
-                    :src="work.customerRef"
+                    :src="work.customer_ref_url"
                     alt="顾客参考图"
                     class="h-full w-full object-cover cursor-pointer"
                     @click="goToTryOn(work)"
@@ -113,7 +113,7 @@
               <div class="relative flex-1">
                 <div class="aspect-square overflow-hidden">
                   <img
-                    :src="work.actualResult"
+                    :src="work.actual_result_url"
                     alt="实际效果"
                     class="h-full w-full object-cover cursor-pointer"
                     @click="goToTryOn(work)"
@@ -135,10 +135,10 @@
       <div class="card mb-4">
         <div class="flex items-center justify-between mb-3">
           <h3 class="font-medium text-ink">网友点评</h3>
-          <span class="text-xs text-cocoa">{{ artist?.reviews?.length || 0 }}条评价</span>
+          <span class="text-xs text-cocoa">{{ reviews?.length || 0 }}条评价</span>
         </div>
         <div
-          v-for="review in artist?.reviews"
+          v-for="review in reviews"
           :key="review.id"
           class="border-b border-divider py-4 first:pt-0 last:border-0 last:pb-0"
         >
@@ -160,7 +160,7 @@
           </div>
           <p class="mt-2 text-sm leading-relaxed text-cocoa">{{ review.content }}</p>
         </div>
-        <div v-if="!artist?.reviews?.length" class="py-8 text-center text-sm text-cocoa">暂无评价</div>
+        <div v-if="!reviews?.length" class="py-8 text-center text-sm text-cocoa">暂无评价</div>
       </div>
 
       <div class="h-8"></div>
@@ -185,17 +185,34 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { nailArtists, salons } from '../data/mockData'
+import axios from 'axios'
 
 const router = useRouter()
 const route = useRoute()
 
 const artistId = parseInt(route.params.id)
-const artist = computed(() => nailArtists.find(a => a.id === artistId))
-const artistSalon = computed(() => salons.find(s => s.id === artist.value?.salonId))
+const artist = ref(null)
+const artistSalon = ref(null)
+const works = ref([])
+const reviews = ref([])
 const isFavorited = ref(false)
+
+onMounted(async () => {
+  try {
+    const res = await axios.get(`/v1/artists/${artistId}`)
+    const data = res.data?.data
+    if (data) {
+      artist.value = data.artist
+      artistSalon.value = data.salon
+      works.value = data.works || []
+      reviews.value = data.reviews || []
+    }
+  } catch (err) {
+    console.error('Failed to load artist:', err)
+  }
+})
 
 const specialtyTags = computed(() => {
   if (!artist.value?.specialty) return []
@@ -215,15 +232,14 @@ const toggleFavorite = () => {
 }
 
 const goToTryOn = (work) => {
-  // 跳转至试戴页面，自动加载该作品的实际效果图作为款式
-  router.push(`/tryon?workTitle=${encodeURIComponent(work.title)}&workImage=${encodeURIComponent(work.actualResult)}`)
+  router.push(`/tryon?workTitle=${encodeURIComponent(work.title)}&workImage=${encodeURIComponent(work.actual_result_url)}`)
 }
 
 const goToBooking = () => {
   if (artistSalon.value) {
-    router.push(`/booking/${artistSalon.value.id}`)
+    router.push(`/booking/${artistSalon.value.id}?artistId=${artistId}`)
   } else {
-    router.push('/booking/1')
+    router.push(`/booking/1?artistId=${artistId}`)
   }
 }
 </script>

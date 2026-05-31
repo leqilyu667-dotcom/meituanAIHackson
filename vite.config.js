@@ -8,5 +8,11 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  server: {
+    proxy: {
+      '/v1': 'http://localhost:8080',
+      '/health': 'http://localhost:8080'
+    }
   }
 })
