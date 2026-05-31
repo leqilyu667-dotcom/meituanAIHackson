@@ -7,3 +7,4 @@ node_modules
 .idea
 training/
 dist/
+backend/miaoshou-data.json
