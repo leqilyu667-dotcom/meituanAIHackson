@@ -19,7 +19,7 @@
         <div class="mx-auto mb-4 grid h-24 w-24 place-items-center rounded-4xl bg-gradient-to-br from-primary-400 to-primary-600 text-4xl font-bold text-white shadow-glow">
           N
         </div>
-        <h2 class="text-2xl font-bold text-ink">NAILIA</h2>
+        <h2 class="text-2xl font-bold text-ink">妙手</h2>
         <p class="mt-1 text-sm text-cocoa">AI 美甲试戴 · 发现你的专属美甲</p>
         <p class="mt-1 text-xs text-placeholder">Version 1.0.0</p>
       </div>
@@ -27,7 +27,7 @@
       <div class="card mb-4">
         <h3 class="mb-3 font-medium text-ink">我们的使命</h3>
         <p class="text-sm leading-relaxed text-cocoa">
-          NAILIA 致力于通过 AI 技术让每一位爱美人士都能轻松找到最适合自己的美甲款式。上传一张手部照片，即可实时预览上千款美甲效果，帮你做出最好的选择。
+          妙手 致力于通过 AI 技术让每一位爱美人士都能轻松找到最适合自己的美甲款式。上传一张手部照片，即可实时预览上千款美甲效果，帮你做出最好的选择。
         </p>
       </div>
 
@@ -54,7 +54,7 @@
               <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
               <polyline points="22,6 12,13 2,6"/>
             </svg>
-            <span>nailia@example.com</span>
+            <span>miaoshou@example.com</span>
           </div>
           <div class="flex items-center gap-3 text-cocoa">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -72,7 +72,7 @@
       </div>
 
       <p class="mt-6 text-center text-xs text-placeholder">
-        &copy; 2024 NAILIA. All rights reserved.
+        &copy; 2026 妙手. All rights reserved.
       </p>
     </main>
   </div>

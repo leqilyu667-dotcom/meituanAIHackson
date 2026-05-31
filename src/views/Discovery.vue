@@ -5,7 +5,7 @@
       <div class="relative">
         <div class="flex items-center justify-between">
           <div>
-            <p class="eyebrow">NAILIA AI</p>
+            <p class="eyebrow">妙手 AI</p>
             <h1 class="mt-1 text-[28px] font-semibold leading-9 text-ink">今天想做哪种美甲？</h1>
           </div>
           <button @click="showNotifications = true" class="relative grid h-11 w-11 place-items-center rounded-full bg-white/85 text-primary-500 shadow-soft" aria-label="通知">
@@ -215,7 +215,7 @@ const notifications = ref([
   { id: 1, title: '春日新款上线', content: '10款春季限定美甲已上线，快来试戴吧！', time: '1小时前', read: false },
   { id: 2, title: '预约提醒', content: '您明天下午2点在 Nail Moment 有预约', time: '2小时前', read: false },
   { id: 3, title: '优惠券到账', content: '新人专享券已发放到您的账户', time: '1天前', read: true },
-  { id: 4, title: '系统通知', content: 'NAILIA v1.0.0 已上线，欢迎体验 AI 试戴功能', time: '2天前', read: true }
+  { id: 4, title: '系统通知', content: '妙手 v1.0.0 已上线，欢迎体验 AI 试戴功能', time: '2天前', read: true }
 ])
 
 const filteredStyles = computed(() => {

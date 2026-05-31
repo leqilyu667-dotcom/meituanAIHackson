@@ -1,8 +1,8 @@
 {
-  "name": "nailia-app",
+  "name": "miaoshou-app",
   "version": "1.0.0",
   "type": "module",
-  "description": "AI美甲试戴应用",
+  "description": "妙手 AI美甲试戴应用",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

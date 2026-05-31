@@ -1,3 +1,33 @@
+// ═══════════════════════════════════════════
+// 全局标签体系（五维 — 与 merchant 端统一）
+// ═══════════════════════════════════════════
+export const labelSystem = {
+  shape: ['圆甲', '方圆甲', '尖甲', '梯形甲', '杏仁甲', '建构延长'],
+  tone: ['裸色', '红色系', '亮色', '冷色', '金属', '魔镜粉', '透色'],
+  craft: ['纯色', '跳色', '渐变', '晕染', '手绘', '猫眼', '魔镜粉'],
+  decor: ['无装饰', '碎钻', '珍珠/铆钉', '贴纸', '立体雕花', '波点', '手绘', '金/银碎箔'],
+  style: ['简约风', '法式', 'ins风', '甜酷风', '温柔风', '日式', '欧美风']
+}
+
+export const labelDimensions = [
+  { key: 'shape', name: '甲型' },
+  { key: 'tone', name: '色调' },
+  { key: 'craft', name: '工艺' },
+  { key: 'decor', name: '装饰元素' },
+  { key: 'style', name: '风格' }
+]
+
+// ═══════════════════════════════════════════
+// 预约状态枚举（与 merchant 端统一）
+// ═══════════════════════════════════════════
+export const appointmentStatus = {
+  PENDING: { value: 'pending', label: '待确认', color: 'warning' },
+  CONFIRMED: { value: 'confirmed', label: '已确认', color: 'primary-600' },
+  COMPLETED: { value: 'completed', label: '已完成', color: 'success' },
+  CHANGED: { value: 'changed', label: '已变更', color: 'cocoa' },
+  CANCELLED: { value: 'cancelled', label: '已取消', color: 'error' }
+}
+
 export const nailArtists = [
   {
     id: 1,
@@ -116,7 +146,7 @@ export const nailStyles = [
     description: '温柔气质，粉嫩花卉',
     image: '/images/nails/nail-01.jpg',
     category: '春日',
-    tags: ['日式', '花卉', '粉色'],
+    labels: { shape: '杏仁甲', tone: '裸色', craft: '手绘', decor: '立体雕花', style: '温柔风' },
     likes: 2341,
     isNew: true
   },
@@ -126,7 +156,7 @@ export const nailStyles = [
     description: '自然百搭，通勤首选',
     image: '/images/nails/nail-02.png',
     category: '裸色',
-    tags: ['裸色', '简约', '日常'],
+    labels: { shape: '方圆甲', tone: '裸色', craft: '纯色', decor: '无装饰', style: '简约风' },
     likes: 1892,
     isNew: false
   },
@@ -136,7 +166,7 @@ export const nailStyles = [
     description: '经典优雅，法式白边',
     image: '/images/nails/nail-03.png',
     category: '法式',
-    tags: ['法式', '经典', '优雅'],
+    labels: { shape: '方圆甲', tone: '裸色', craft: '纯色', decor: '无装饰', style: '法式' },
     likes: 3421,
     isNew: false
   },
@@ -146,7 +176,7 @@ export const nailStyles = [
     description: '闪耀夺目，派对必备',
     image: '/images/nails/nail-04.png',
     category: '闪粉',
-    tags: ['渐变', '闪粉', '延长甲'],
+    labels: { shape: '杏仁甲', tone: '亮色', craft: '渐变', decor: '碎钻', style: '甜酷风' },
     likes: 1567,
     isNew: true
   },
@@ -156,7 +186,7 @@ export const nailStyles = [
     description: '显白气质，秋冬经典',
     image: '/images/nails/nail-05.png',
     category: '红色',
-    tags: ['复古', '红色', '显白'],
+    labels: { shape: '梯形甲', tone: '红色系', craft: '纯色', decor: '金/银碎箔', style: '法式' },
     likes: 2156,
     isNew: false
   },
@@ -166,7 +196,7 @@ export const nailStyles = [
     description: '清凉夏日，绿意盎然',
     image: '/images/nails/nail-06.png',
     category: '绿色',
-    tags: ['清新', '薄荷', '夏日'],
+    labels: { shape: '圆甲', tone: '冷色', craft: '纯色', decor: '无装饰', style: '简约风' },
     likes: 1432,
     isNew: true
   }
@@ -380,53 +410,80 @@ export const chatMessages = {
 export const orders = [
   {
     id: 1,
+    orderNo: 'NM20260408001',
+    customerName: '小美',
     salonName: 'Nail Moment 美甲坊',
+    artistName: 'Luna',
     service: '日式美甲',
     price: 168,
+    actualReceivable: 168,
     status: 'completed',
     statusText: '已完成',
-    date: '2024-04-08',
-    image: '/images/nails/nail-02.png'
+    date: '2026-04-08',
+    createdAt: '2026-04-08 14:30',
+    image: '/images/nails/nail-02.png',
+    labels: { shape: '杏仁甲', tone: '裸色', craft: '手绘', decor: '立体雕花', style: '温柔风' }
   },
   {
     id: 2,
+    orderNo: 'HS20260325002',
+    customerName: '花花',
     salonName: 'Her Nail Studio',
+    artistName: '小雨',
     service: '法式美甲',
     price: 128,
+    actualReceivable: 128,
     status: 'completed',
     statusText: '已完成',
-    date: '2024-03-25',
-    image: '/images/nails/nail-03.png'
+    date: '2026-03-25',
+    createdAt: '2026-03-25 11:00',
+    image: '/images/nails/nail-03.png',
+    labels: { shape: '方圆甲', tone: '裸色', craft: '纯色', decor: '无装饰', style: '法式' }
   },
   {
     id: 3,
+    orderNo: 'NM20260515003',
+    customerName: '娜娜',
     salonName: 'Nail Moment 美甲坊',
+    artistName: 'Luna',
     service: '芭比美甲',
     price: 198,
+    actualReceivable: 198,
     status: 'upcoming',
     statusText: '待服务',
-    date: '2024-05-15',
-    image: '/images/nails/nail-04.png'
+    date: '2026-05-15',
+    createdAt: '2026-05-10 09:00',
+    image: '/images/nails/nail-04.png',
+    labels: { shape: '杏仁甲', tone: '亮色', craft: '渐变', decor: '碎钻', style: '甜酷风' }
   },
   {
     id: 4,
+    orderNo: 'MN20260310004',
+    customerName: '婷婷',
     salonName: 'Mia Nails',
+    artistName: 'Nicole',
     service: '鎏金美甲',
     price: 268,
+    actualReceivable: 268,
     status: 'cancelled',
     statusText: '已取消',
-    date: '2024-03-10',
-    image: '/images/nails/nail-05.png'
+    date: '2026-03-10',
+    createdAt: '2026-03-05 15:00',
+    image: '/images/nails/nail-05.png',
+    labels: { shape: '梯形甲', tone: '红色系', craft: '纯色', decor: '金/银碎箔', style: '法式' }
   }
 ]
 
 export const reservations = [
   {
     id: 1,
+    customer: '小美',
+    phone: '138****6789',
     salonId: 1,
     salonName: 'Nail Moment 美甲坊',
     chatId: 1,
-    artistName: '美甲师 Luna',
+    artistId: 1,
+    artistName: 'Luna',
     artistAvatar: 'L',
     nailStyleId: 3,
     nailStyleName: '奶油法式',
@@ -438,14 +495,18 @@ export const reservations = [
     status: 'confirmed',
     statusText: '已确认',
     location: '朝阳区 · 1.2km',
-    remark: '想做温柔一点的款式'
+    remark: '想做温柔一点的款式',
+    labels: { shape: '方圆甲', tone: '裸色', craft: '纯色', decor: '无装饰', style: '法式' }
   },
   {
     id: 2,
+    customer: '花花',
+    phone: '139****8901',
     salonId: 2,
     salonName: 'Her Nail Studio',
     chatId: 2,
-    artistName: '美甲师小雨',
+    artistId: 2,
+    artistName: '小雨',
     artistAvatar: 'Y',
     nailStyleId: 1,
     nailStyleName: '春日新款',
@@ -457,14 +518,18 @@ export const reservations = [
     status: 'pending',
     statusText: '待确认',
     location: '海淀区 · 2.5km',
-    remark: ''
+    remark: '',
+    labels: { shape: '杏仁甲', tone: '裸色', craft: '手绘', decor: '立体雕花', style: '温柔风' }
   },
   {
     id: 3,
+    customer: '娜娜',
+    phone: '136****0123',
     salonId: 1,
     salonName: 'Nail Moment 美甲坊',
     chatId: 1,
-    artistName: '美甲师 Luna',
+    artistId: 1,
+    artistName: 'Luna',
     artistAvatar: 'L',
     nailStyleId: 4,
     nailStyleName: '渐变闪粉',
@@ -473,17 +538,22 @@ export const reservations = [
     price: 198,
     date: '2026-06-15',
     time: '15:30',
-    status: 'confirmed',
-    statusText: '已确认',
+    status: 'changed',
+    statusText: '已变更',
     location: '朝阳区 · 1.2km',
-    remark: '闺蜜推荐的颜色'
+    remark: '闺蜜推荐的颜色，改到16:00',
+    changeReason: '客户要求调整时间',
+    labels: { shape: '杏仁甲', tone: '亮色', craft: '渐变', decor: '碎钻', style: '甜酷风' }
   },
   {
     id: 4,
+    customer: '婷婷',
+    phone: '135****7890',
     salonId: 3,
     salonName: 'Mia Nails',
     chatId: 3,
-    artistName: '美甲师 Nicole',
+    artistId: 3,
+    artistName: 'Nicole',
     artistAvatar: 'N',
     nailStyleId: 5,
     nailStyleName: '复古红棕',
@@ -495,14 +565,18 @@ export const reservations = [
     status: 'completed',
     statusText: '已完成',
     location: '西城区 · 3.1km',
-    remark: ''
+    remark: '',
+    labels: { shape: '梯形甲', tone: '红色系', craft: '纯色', decor: '金/银碎箔', style: '法式' }
   },
   {
     id: 5,
+    customer: '思思',
+    phone: '137****4567',
     salonId: 2,
     salonName: 'Her Nail Studio',
     chatId: 4,
-    artistName: '美甲师小雨',
+    artistId: 2,
+    artistName: '小雨',
     artistAvatar: 'Y',
     nailStyleId: 2,
     nailStyleName: '冰透裸色',
@@ -514,7 +588,9 @@ export const reservations = [
     status: 'cancelled',
     statusText: '已取消',
     location: '海淀区 · 2.5km',
-    remark: ''
+    remark: '',
+    cancelReason: '客户临时有事',
+    labels: { shape: '方圆甲', tone: '裸色', craft: '纯色', decor: '无装饰', style: '简约风' }
   }
 ]
 
@@ -525,56 +601,64 @@ export const inspirationThemes = [
     name: '春日花语',
     coverImage: '/images/nails/nail-01.jpg',
     count: 24,
-    category: '春日'
+    category: '春日',
+    labels: { shape: '杏仁甲', tone: '裸色', craft: '手绘', decor: '立体雕花', style: '温柔风' }
   },
   {
     id: 2,
     name: '法式经典',
     coverImage: '/images/nails/nail-03.png',
     count: 18,
-    category: '法式'
+    category: '法式',
+    labels: { shape: '方圆甲', tone: '裸色', craft: '纯色', decor: '无装饰', style: '法式' }
   },
   {
     id: 3,
     name: '闪粉派对',
     coverImage: '/images/nails/nail-04.png',
     count: 16,
-    category: '闪粉'
+    category: '闪粉',
+    labels: { shape: '杏仁甲', tone: '亮色', craft: '渐变', decor: '碎钻', style: '甜酷风' }
   },
   {
     id: 4,
     name: '极简裸色',
     coverImage: '/images/nails/nail-02.png',
     count: 22,
-    category: '裸色'
+    category: '裸色',
+    labels: { shape: '圆甲', tone: '裸色', craft: '纯色', decor: '无装饰', style: '简约风' }
   },
   {
     id: 5,
     name: '渐变星空',
     coverImage: '/images/nails/nail-06.png',
     count: 15,
-    category: '渐变'
+    category: '渐变',
+    labels: { shape: '梯形甲', tone: '冷色', craft: '渐变', decor: '金/银碎箔', style: 'ins风' }
   },
   {
     id: 6,
     name: '复古酒红',
     coverImage: '/images/nails/nail-05.png',
     count: 20,
-    category: '红色'
+    category: '红色',
+    labels: { shape: '梯形甲', tone: '红色系', craft: '纯色', decor: '金/银碎箔', style: '法式' }
   },
   {
     id: 7,
     name: '几何线条',
     coverImage: '/images/nails/nail-08.png',
     count: 12,
-    category: '设计'
+    category: '设计',
+    labels: { shape: '尖甲', tone: '金属', craft: '纯色', decor: '金/银碎箔', style: 'ins风' }
   },
   {
     id: 8,
     name: '樱花物语',
     coverImage: '/images/nails/nail-12.png',
     count: 19,
-    category: '日式'
+    category: '日式',
+    labels: { shape: '杏仁甲', tone: '透色', craft: '晕染', decor: '珍珠/铆钉', style: '日式' }
   }
 ]
 

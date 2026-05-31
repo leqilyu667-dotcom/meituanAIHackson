@@ -5,12 +5,20 @@
         <component :is="Component" />
       </transition>
     </router-view>
-    <nav-bar />
+    <nav-bar v-if="showNavBar" />
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import NavBar from './components/NavBar.vue'
+
+const route = useRoute()
+const showNavBar = computed(() => {
+  // 聊天详情页隐藏底部 Tab
+  return !route.path.startsWith('/chat/')
+})
 </script>
 
 <style>
