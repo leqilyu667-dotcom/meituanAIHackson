@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 import db from '../db.js'
 import { processMaterialImages } from '../services/imageProcessor.js'
 import { runAITagging, filterCoverImages } from '../services/aiTagger.js'
-import { openclawLoginAndSearch } from '../services/openclawScraper.js'
+import { batchScrape } from '../services/openclawScraper.js'
 
 const router = Router()
 
@@ -258,7 +258,7 @@ router.post('/xhs/trigger', async (req, res) => {
 
     // ── Phase 1: Scrape 20 posts with CDN cover downloads ──
     console.log('[OpenClaw] ===== Trigger: starting scrape + cover filter flow =====')
-    const notes = await openclawLoginAndSearch(config)
+    const notes = await batchScrape(config)
 
     if (!notes || notes.length === 0) {
       return res.json({

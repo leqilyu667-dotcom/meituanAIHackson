@@ -161,8 +161,8 @@
     <section class="card p-6">
       <div class="mb-4 flex items-center justify-between">
         <h2 class="text-lg font-medium text-ink">站外最热素材</h2>
-        <button @click="triggerNewScrape" :disabled="scraping" class="rounded-full bg-white px-4 py-2 text-xs font-medium text-primary-600 shadow-soft transition hover:bg-primary-50 disabled:opacity-50">
-          {{ scraping ? '抓取中...' : '刷新列表' }}
+        <button @click="triggerNewScrape" :disabled="scraping || poolExhausted" class="rounded-full bg-white px-4 py-2 text-xs font-medium text-primary-600 shadow-soft transition hover:bg-primary-50 disabled:opacity-50">
+          {{ scraping ? '加载中...' : poolExhausted ? '刷新列表' : `刷新列表（剩${poolRemaining + xhsMaterials.length}条）` }}
         </button>
       </div>
 
@@ -369,7 +369,7 @@ import {
   peerComparison,
   calcHeatScore
 } from '../../data/merchantMockData'
-import { fetchXhsMaterials, submitReview, deleteMaterials } from '../../data/api'
+import { fetchXhsMaterials, submitReview, deleteMaterials, poolRefreshMaterials } from '../../data/api'
 
 const scope = ref('门店')
 
@@ -487,16 +487,19 @@ async function batchDelete() {
 // Config editing
 const configEditing = ref(false)
 const scraping = ref(false)
+const poolExhausted = ref(false)
+const poolRemaining = ref(0)
 
 async function triggerNewScrape() {
   scraping.value = true
   try {
-    const { triggerScrape } = await import('../../data/api')
-    await triggerScrape()
+    const result = await poolRefreshMaterials()
+    xhsMaterials.value = result.materials
+    poolExhausted.value = result.exhausted
+    poolRemaining.value = result.remaining
     currentPage.value = 1
-    await loadMaterials()
   } catch (err) {
-    console.error('Failed to trigger scrape:', err)
+    console.error('Pool refresh failed:', err)
   } finally {
     scraping.value = false
   }

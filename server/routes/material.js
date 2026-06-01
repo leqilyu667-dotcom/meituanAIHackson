@@ -279,4 +279,66 @@ router.delete('/xhs/batch', (req, res) => {
   return res.json({ code: 0, message: 'ok', data: { deleted: ids.length } })
 })
 
+/**
+ * POST /api/merchant/material/xhs/pool-refresh
+ * Get next 9 materials from the raw pool, mark as displayed
+ */
+router.post('/xhs/pool-refresh', (req, res) => {
+  // Count remaining raw items
+  const remaining = db.prepare(
+    "SELECT COUNT(*) as cnt FROM xhs_external_material WHERE is_deleted = 0 AND pool_status = 'raw'"
+  ).get()?.cnt || 0
+
+  if (remaining === 0) {
+    return res.json({ code: 0, data: { materials: [], total: 0, remaining: 0, exhausted: true } })
+  }
+
+  // Get next 9 raw materials
+  const materials = db.prepare(`
+    SELECT m.*, t.shape, t.tone, t.craft, t.decor, t.style, t.tag_source, t.confidence,
+      (SELECT processed_url FROM xhs_material_image WHERE material_id=m.id AND is_cover=1 LIMIT 1) as image_url
+    FROM xhs_external_material m
+    JOIN material_tags t ON t.material_id = m.id AND t.is_current = 1
+    WHERE m.is_deleted = 0 AND m.pool_status = 'raw'
+    ORDER BY m.likes DESC
+    LIMIT 9
+  `).all()
+
+  // Mark as displayed
+  const ids = materials.map(m => m.id)
+  if (ids.length > 0) {
+    const ph = ids.map(() => '?').join(',')
+    db.prepare(`UPDATE xhs_external_material SET pool_status = 'displayed', updated_at = datetime('now','localtime')
+      WHERE id IN (${ph})`).run(...ids)
+  }
+
+  const formatted = materials.map(m => ({
+    id: m.id,
+    image: m.image_url || m.cover_image_url,
+    source: m.source_url,
+    title: m.title,
+    description: m.description,
+    author: m.author_nickname,
+    likes: m.likes,
+    heatScore: m.heat_score,
+    reviewStatus: m.review_status,
+    aiTags: {
+      shape: m.shape || '',
+      tone: m.tone || '',
+      craft: m.craft || '',
+      decor: m.decor || '',
+      style: m.style || ''
+    },
+    tagSource: m.tag_source,
+    confidence: m.confidence ? JSON.parse(m.confidence) : {},
+    publishTime: m.publish_time,
+    createdAt: m.created_at
+  }))
+
+  return res.json({
+    code: 0,
+    data: { materials: formatted, total: formatted.length, remaining: remaining - formatted.length, exhausted: false }
+  })
+})
+
 export default router

@@ -4,7 +4,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { v4 as uuidv4 } from 'uuid'
 import db from '../db.js'
-import { openclawLoginAndSearch } from '../services/openclawScraper.js'
+import { batchScrape } from '../services/openclawScraper.js'
 import { runAITagging, filterCoverImages } from '../services/aiTagger.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -67,9 +67,9 @@ router.post('/openclaw/config/trigger', async (req, res) => {
       return res.status(422).json({ code: 'SCRAPE_CONFIG_EMPTY', message: '请先配置抓取关键词' })
     }
 
-    // ── Phase 1: Scrape 20 posts with CDN cover downloads ──
-    console.log('[Config] ===== Trigger: starting scrape + cover filter flow =====')
-    const notes = await openclawLoginAndSearch(config)
+    // ── Phase 1: Batch scrape 2 keywords × 50 ──
+    console.log('[Config] ===== Trigger: batch scrape 开始 =====')
+    const notes = await batchScrape(config)
 
     if (!notes || notes.length === 0) {
       return res.json({
@@ -78,37 +78,32 @@ router.post('/openclaw/config/trigger', async (req, res) => {
       })
     }
 
-    // ── Phase 2: Filter covers — discard 9-grid collages, keep only single-hand covers ──
-    console.log(`[Config] Phase 2: Filtering ${notes.length} covers with vision model...`)
+    // ── Phase 2: Filter covers ──
+    console.log(`[Config] Phase 2: Filtering ${notes.length} covers...`)
     const imagePaths = notes.map(n => n.coverImage)
     const filterResults = await filterCoverImages(imagePaths)
 
     const goodNotes = notes.filter((_, i) => filterResults[i]?.keep)
-    console.log(`[Config] Cover filter: ${goodNotes.length}/${notes.length} covers passed`)
+    console.log(`[Config] Cover filter: ${goodNotes.length}/${notes.length} passed`)
 
     if (goodNotes.length === 0) {
       return res.json({
-        code: 0, message: '封面筛选后无可用素材（所有封面均为九宫格或非单手特写）',
+        code: 0, message: '封面筛选后无可用素材',
         data: { batch_id: null, received: notes.length, accepted: 0, materials: [] }
       })
     }
 
-    // ── Phase 3: Sort by likes, take top 9 ──
-    goodNotes.sort((a, b) => b.likes - a.likes)
-    const top9 = goodNotes.slice(0, 9)
-    console.log(`[Config] Phase 3: Top ${top9.length} by likes`)
-
-    // ── Phase 4: Insert to DB ──
+    // ── Phase 3: Insert all to DB (pool_status='raw' via column default) ──
     const batchId = uuidv4()
     db.prepare(`INSERT INTO xhs_scrape_batch (batch_id, status, total_scraped, after_filter, keyword_set, started_at)
       VALUES (?, 'running', ?, ?, ?, datetime('now','localtime'))`)
-      .run(batchId, notes.length, top9.length, JSON.stringify(JSON.parse(config.keywords || '["爆款美甲"]')))
+      .run(batchId, notes.length, goodNotes.length, JSON.stringify(['美甲', '春日美甲']))
 
     const insertMaterial = db.prepare(`
       INSERT OR IGNORE INTO xhs_external_material
       (batch_id, source_id, source_url, author_nickname, title, description, cover_image_url,
-       publish_time, xhs_tags, likes, collects, comments, shares, heat_score, review_status, sync_status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', 'pending')
+       publish_time, xhs_tags, likes, collects, comments, shares, heat_score, review_status, sync_status, pool_status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', 'pending', 'raw')
     `)
 
     const insertImage = db.prepare(`
@@ -126,7 +121,7 @@ router.post('/openclaw/config/trigger', async (req, res) => {
     const materialResults = []
 
     const txn = db.transaction(() => {
-      for (const note of top9) {
+      for (const note of goodNotes) {
         const heatScore = (note.likes || 0) * 1
 
         const result = insertMaterial.run(
@@ -147,7 +142,6 @@ router.post('/openclaw/config/trigger', async (req, res) => {
         const materialId = result.lastInsertRowid
         accepted++
 
-        // CDN original for AI tagging, local processed for display
         const cdnUrl = note.cdnCoverUrl || note.coverImage
         const hash = crypto.createHash('sha256').update(note.noteId).digest('hex').substring(0, 16)
         insertImage.run(materialId, 1, cdnUrl, note.coverImage, hash, 1)
@@ -164,7 +158,7 @@ router.post('/openclaw/config/trigger', async (req, res) => {
       received=?, duplicated=?, accepted=?, status='completed', completed_at=datetime('now','localtime')
       WHERE batch_id=?`).run(accepted + duplicated, duplicated, accepted, batchId)
 
-    // ── Phase 5: AI tagging (async) ──
+    // ── Phase 4: AI tagging (async) ──
     if (accepted > 0) {
       setImmediate(async () => {
         try {
@@ -184,7 +178,7 @@ router.post('/openclaw/config/trigger', async (req, res) => {
       data: {
         batch_id: batchId,
         received: notes.length,
-        after_filter: top9.length,
+        after_filter: goodNotes.length,
         duplicated,
         accepted,
         materials: materialResults

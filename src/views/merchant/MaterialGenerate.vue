@@ -457,7 +457,6 @@ function changePage(p) {
 
 async function loadXhsInspirations() {
   try {
-    // Fetch all approved materials sorted by likes, up to 60 (10 pages × 6)
     const result = await fetchXhsMaterials({ reviewStatus: 'approved', limit: pageSize * maxPages, sort: 'likes' })
     allXhsItems.value = result.materials.map(m => ({
       id: m.id,
@@ -465,7 +464,6 @@ async function loadXhsInspirations() {
       likes: m.likes,
       aiTags: m.aiTags
     }))
-    // Reset to page 1 on fresh load
     currentPage.value = 1
   } catch (err) {
     console.warn('Failed to load XHS inspirations:', err.message)

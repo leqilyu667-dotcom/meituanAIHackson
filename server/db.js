@@ -61,6 +61,7 @@ export function initDatabase() {
       shares INTEGER NOT NULL DEFAULT 0,
       heat_score REAL NOT NULL DEFAULT 0.0,
       review_status TEXT NOT NULL DEFAULT 'pending',
+      pool_status TEXT NOT NULL DEFAULT 'raw',
       reviewed_by TEXT,
       reviewed_at TEXT,
       reject_reason TEXT,

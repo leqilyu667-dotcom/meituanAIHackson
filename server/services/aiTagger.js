@@ -372,22 +372,30 @@ function fillWithRules(materialId, tags, labelEnum) {
 }
 
 function buildFilterPrompt() {
-  return `你是一个图片内容审核助手。请判断这张图片是否适合作为美甲标签识别的素材。
+  return `你是一个美甲图片质量评估助手。请对这张图片的「美甲特写质量」打分（1-10分）。
 
-适合（回复 KEEP）：
-- 图片展示1只手或1双手的美甲特写
-- 手指和指甲清晰可见
-- 美甲款式是画面主体
+评分标准：
+  - 是否展示1只手或1双手的美甲特写（手指和指甲清晰可见）
+  - 美甲是否画面唯一主体
+  - 背景是否干净简洁
+  - 图片是否清晰、无遮挡
 
-不适合（回复 DISCARD）：
-- 九宫格拼图（多张图片拼接在一起）
-- 多图组合、拼贴画
-- 只有产品照片、没有真人手
-- 对比图（before/after左右对比）
-- 手部太小或距离太远看不清指甲细节
-- 插画、卡通、纯文字图片
+扣分项：
+  - 含人脸：-5
+  - 含身体部位（非手）：-4
+  - 复杂背景（户外/商场/街道等）：-3
+  - 多人出镜或多双手：-4
+  - 文字/边框遮挡：-3
+  - 手指不清晰、距离太远：-2
+  - 九宫格拼图或多图组合：-5
 
-只回复 KEEP 或 DISCARD，不要包含其他文字。`
+只回复一个数字（1-10），不要包含其他文字。`
+}
+
+function parseFilterScore(content) {
+  const match = content.trim().match(/\b(10|[1-9])\b/)
+  if (!match) return 0
+  return parseInt(match[1])
 }
 
 /**
@@ -428,7 +436,7 @@ export async function filterCoverImages(imagePaths) {
               { type: 'text', text: buildFilterPrompt() }
             ]
           }],
-          max_tokens: 16,
+          max_tokens: 8,
           temperature: 0.1
         }),
         signal: controller.signal
@@ -445,9 +453,10 @@ export async function filterCoverImages(imagePaths) {
 
       const data = await resp.json()
       const content = (data.choices?.[0]?.message?.content || '').trim().toUpperCase()
-      const keep = content.includes('KEEP')
-      console.log(`[CoverFilter] ${path.basename(imagePath)} → ${keep ? 'KEEP' : 'DISCARD'} (${content.slice(0, 30)})`)
-      results.push({ keep, reason: content })
+      const score = parseFilterScore(content)
+      const keep = score >= 8
+      console.log(`[CoverFilter] ${path.basename(imagePath)} → 评分${score} ${keep ? 'KEEP' : 'DISCARD'} (${content.slice(0, 30)})`)
+      results.push({ keep, reason: `score:${score}` })
 
     } catch (err) {
       const reason = err.name === 'AbortError' ? 'timeout' : err.message

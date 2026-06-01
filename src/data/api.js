@@ -8,6 +8,12 @@ const api = axios.create({
 
 // ============ XHS Material APIs ============
 
+/** Get next batch of 9 materials from the raw pool */
+export async function poolRefreshMaterials() {
+  const { data } = await api.post('/merchant/material/xhs/pool-refresh')
+  return data.data
+}
+
 /** Get XHS material list with optional filters */
 export async function fetchXhsMaterials({ reviewStatus, search, offset, limit } = {}) {
   const { data } = await api.get('/merchant/material/xhs/list', {
