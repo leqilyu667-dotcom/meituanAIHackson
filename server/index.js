@@ -25,9 +25,12 @@ initDatabase()
 const app = express()
 
 // Middleware
-const allowedOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['http://localhost:5173']
+const allowedOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : true
 app.use(cors({ origin: allowedOrigins, credentials: true }))
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }))
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: false
+}))
 app.use(express.json({ limit: '10mb' }))
 
 // Rate limiting
