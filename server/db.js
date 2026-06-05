@@ -352,6 +352,75 @@ export function initDatabase() {
     seedDesigns()
   }
 
+  // Seed demo XHS materials if empty (for deployment demo)
+  const xhsCount = db.prepare('SELECT COUNT(*) as c FROM xhs_external_material WHERE is_deleted=0').get()
+  if (xhsCount.c === 0) {
+    const demoBatchId = 'demo-seed-batch'
+    db.prepare(`INSERT INTO xhs_scrape_batch (batch_id, status, total_scraped, after_filter, keyword_set, started_at, completed_at)
+      VALUES (?, 'completed', 30, 30, ?, datetime('now','localtime'), datetime('now','localtime'))`)
+      .run(demoBatchId, JSON.stringify(['美甲']))
+
+    const insertM = db.prepare(`INSERT OR IGNORE INTO xhs_external_material
+      (batch_id, source_id, source_url, author_nickname, title, likes, heat_score, review_status, pool_status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', 'raw')`)
+    const insertImg = db.prepare(`INSERT INTO xhs_material_image (material_id, seq, original_url, processed_url, image_hash, image_status, is_cover)
+      VALUES (?, 1, ?, ?, ?, 'processed', 1)`)
+    const insertTag = db.prepare(`INSERT INTO material_tags (material_id, material_type, shape, tone, craft, decor, style, tag_source, confidence, is_current)
+      VALUES (?, 'xhs', ?, ?, ?, ?, ?, 'ai_prescan', '{}', 1)`)
+
+    const colors = ['f5e6d8','e8d5f0','d5e8f0','f0e8d5','e8f0d5','f0d5e8','d8f0e8','f0d8d5','d5f0e8','e8d8f0',
+      'f8e8d0','d0e8f8','f0d8e0','e0f0d8','d8e0f0','f8d8e0','e0f8d8','d8f0e0','f0e0d8','e8f0e0',
+      'ffe8d0','d0e8ff','ffd8e8','e8ffd8','d8e8ff','ffd0e0','e0ffd0','d0ffe0','ffe0d0','e0ffe0']
+    const svg = (c) => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect fill="#${c}" width="400" height="400"/><text x="200" y="210" text-anchor="middle" font-size="80">💅</text></svg>`)}`
+
+    const demos = [
+      ['xhs_demo_01','美甲达人Lily','春日郁金香美甲温柔到骨子里',23400,['杏仁甲','裸色','渐变','碎钻','温柔风']],
+      ['xhs_demo_02','NailArt_CC','冰透裸色美甲黄皮显白天花板',18900,['方圆甲','裸色','纯色','无装饰','简约风']],
+      ['xhs_demo_03','指尖魔法师','法式猫眼美甲高级感拉满',32100,['梯形甲','红色系','猫眼','金/银碎箔','法式']],
+      ['xhs_demo_04','美甲师小雨','渐变闪粉美甲指尖星河',15600,['圆甲','亮色','魔镜粉','碎钻','甜酷风']],
+      ['xhs_demo_05','小红薯美甲控','复古红棕美甲秋冬必备',21200,['杏仁甲','红色系','纯色','无装饰','欧美风']],
+      ['xhs_demo_06','指尖日记','ins风简约美甲通勤百搭款',27800,['圆甲','冷色','跳色','无装饰','ins风']],
+      ['xhs_demo_07','NailsDaily','甜酷风黑色系美甲又A又飒',19800,['方圆甲','冷色','纯色','无装饰','甜酷风']],
+      ['xhs_demo_08','BeautyNails','裸色杏仁甲温柔气质本命美甲',26500,['杏仁甲','裸色','渐变','无装饰','温柔风']],
+      ['xhs_demo_09','美甲控小圆','魔镜粉延长甲未来感十足',14300,['建构延长','魔镜粉','魔镜粉','立体雕花','ins风']],
+      ['xhs_demo_10','春日美甲日记','手绘花朵美甲把春天画在指尖',18700,['圆甲','亮色','手绘','贴纸','日式']],
+      ['xhs_demo_11','NailStudio','纯色跳色美甲简约不简单',12500,['方圆甲','亮色','跳色','无装饰','简约风']],
+      ['xhs_demo_12','指尖美学','珍珠铆钉美甲轻奢质感',29100,['杏仁甲','透色','晕染','珍珠/铆钉','日式']],
+      ['xhs_demo_13','Luna_Nail','日式晕染美甲如水墨画般温柔',22300,['杏仁甲','冷色','晕染','无装饰','日式']],
+      ['xhs_demo_14','MeiJiaDiary','欧美风金属纯色美甲气场全开',16700,['尖甲','金属','纯色','金/银碎箔','欧美风']],
+      ['xhs_demo_15','NailsByCoco','碎钻波点美甲精致到指尖',25400,['梯形甲','亮色','猫眼','碎钻','ins风']],
+      ['xhs_demo_16','美甲日记本','透色猫眼美甲清冷感绝了',31200,['方圆甲','透色','猫眼','无装饰','简约风']],
+      ['xhs_demo_17','ArtNail','建构延长美甲完美甲型',13800,['建构延长','裸色','纯色','无装饰','简约风']],
+      ['xhs_demo_18','指尖童话','韩系温柔风渐变美甲约会首选',27900,['杏仁甲','裸色','渐变','碎钻','温柔风']],
+      ['xhs_demo_19','NailQueen','立体雕花美甲极致奢华',19200,['杏仁甲','金属','魔镜粉','立体雕花','欧美风']],
+      ['xhs_demo_20','DailyNails','冷色调纯色美甲气质款',24100,['圆甲','冷色','纯色','无装饰','简约风']],
+      ['xhs_demo_21','美甲日记','春日清新小雏菊美甲',49000,['杏仁甲','亮色','手绘','贴纸','日式']],
+      ['xhs_demo_22','NailArt_YY','镜面魔镜粉美甲',38000,['梯形甲','魔镜粉','魔镜粉','无装饰','甜酷风']],
+      ['xhs_demo_23','指尖艺术家','棋盘格甜酷美甲',51000,['方圆甲','冷色','纯色','无装饰','甜酷风']],
+      ['xhs_demo_24','NailsByAmy','晕染大理石纹美甲高级',27000,['杏仁甲','透色','晕染','金/银碎箔','日式']],
+      ['xhs_demo_25','BeautyHand','猫眼渐变美甲极光色',34000,['圆甲','冷色','猫眼','无装饰','ins风']],
+      ['xhs_demo_26','美甲控小A','法式白边杏仁甲永不过时',42000,['杏仁甲','裸色','纯色','无装饰','法式']],
+      ['xhs_demo_27','NailDiary','金箔碎钻美甲轻奢名媛风',18000,['梯形甲','亮色','渐变','金/银碎箔','温柔风']],
+      ['xhs_demo_28','HandArt','裸粉渐变温柔美甲新娘款',31000,['杏仁甲','裸色','渐变','碎钻','温柔风']],
+      ['xhs_demo_29','美甲师Luna','冰蓝透色美甲夏日降温神器',26000,['圆甲','冷色','猫眼','无装饰','ins风']],
+      ['xhs_demo_30','LittleNail','mini手绘爱心美甲少女心',22000,['杏仁甲','亮色','手绘','贴纸','甜酷风']]
+    ]
+
+    db.transaction(() => {
+      for (const [sid, author, title, likes, tags] of demos) {
+        const url = `https://www.xiaohongshu.com/explore/${sid}`
+        const r = insertM.run(demoBatchId, sid, url, author, title, likes, likes)
+        if (r.changes > 0) {
+          const mid = r.lastInsertRowid
+          const img = svg(colors[Math.floor(Math.random() * colors.length)])
+          const hash = `demo_${sid}`
+          insertImg.run(mid, img, img, hash)
+          insertTag.run(mid, tags[0], tags[1], tags[2], tags[3], tags[4])
+        }
+      }
+    })()
+  }
+
   // Seed default conversations if empty
   const convCount = db.prepare('SELECT COUNT(*) as c FROM customer_conversation WHERE is_deleted = 0').get()
   if (convCount.c === 0) {

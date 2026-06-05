@@ -10,7 +10,7 @@
     <div class="mb-6 grid gap-6 lg:grid-cols-2">
       <!-- 站内爆款标签 -->
       <section class="card flex flex-col p-5">
-        <h3 class="text-sm font-medium text-ink">站内爆款标签 TOP5</h3>
+        <h3 class="text-sm font-medium text-ink">站内热门</h3>
         <p class="mt-1 text-xs text-cocoa">近7天高热标签组合，点击快速填入</p>
         <div class="mt-3 flex flex-1 flex-col gap-2">
           <button
@@ -39,9 +39,9 @@
         </div>
       </section>
 
-      <!-- 站外热门素材 -->
+      <!-- 站外灵感 -->
       <section class="card flex flex-col p-5">
-        <h3 class="text-sm font-medium text-ink">站外热门素材</h3>
+        <h3 class="text-sm font-medium text-ink">站外灵感</h3>
         <p class="mt-1 text-xs text-cocoa">小红书高互动美甲笔记，点击填入标签（{{ totalItems }} 条，第 {{ currentPage }}/{{ totalPages }} 页）</p>
         <div class="mt-3 grid flex-1 auto-rows-fr gap-4 sm:grid-cols-3">
           <div
@@ -139,7 +139,7 @@
           @click="generateMode = 'formula'"
           class="rounded-xl px-4 py-2 text-sm font-medium transition-all"
           :class="generateMode === 'formula' ? 'bg-white text-ink shadow-sm' : 'text-cocoa hover:text-ink'"
-        >爆款配方生成</button>
+        >热门配方生成</button>
         <button
           @click="generateMode = 'inspire'"
           class="rounded-xl px-4 py-2 text-sm font-medium transition-all"
@@ -168,7 +168,7 @@
       <!-- 灵感同款生成：无图片提示 -->
       <div v-if="generateMode === 'inspire' && !inspireImage" class="mb-4 rounded-xl bg-cream/30 py-12 text-center">
         <p class="text-3xl mb-3">🖼️</p>
-        <p class="text-sm text-cocoa">从上方「站外热门素材」点击「灵感填入」选择参考图</p>
+        <p class="text-sm text-cocoa">从上方「站外灵感」点击「灵感填入」选择参考图</p>
         <p class="mt-1 text-xs text-cocoa/60">直接参考图片样式生成同款美甲素材</p>
       </div>
 
@@ -347,10 +347,13 @@
     <!-- 5. 素材库 -->
     <section class="card p-6">
       <div class="mb-4 flex items-center justify-between">
-        <h2 class="text-lg font-medium text-ink">
-          素材库
-          <span class="text-sm font-normal text-cocoa">（{{ libraryTotal }}）</span>
-        </h2>
+        <div>
+          <h2 class="text-lg font-medium text-ink">
+            素材库
+            <span class="text-sm font-normal text-cocoa">（{{ libraryTotal }}）</span>
+          </h2>
+          <p class="mt-1 text-xs text-cocoa">AI 生成素材后点击收藏，即自动存入素材库，方便随时取用</p>
+        </div>
         <button
           @click="loadLibrary"
           class="text-xs text-primary-600 underline"

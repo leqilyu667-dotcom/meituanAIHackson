@@ -3,7 +3,10 @@ import axios from 'axios'
 const api = axios.create({
   baseURL: '/api',
   timeout: 15000,
-  headers: { 'Content-Type': 'application/json' }
+  headers: {
+    'Content-Type': 'application/json',
+    'x-merchant-token': 'nailia_merchant_2026_prod'
+  }
 })
 
 // ============ XHS Material APIs ============

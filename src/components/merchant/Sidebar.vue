@@ -63,15 +63,15 @@ const menuGroups = [
     items: [
       { label: '营收计算器', path: '/merchant/revenue-calc' },
       { label: '爆款素材生成', path: '/merchant/material-generate' },
-      { label: '货架管理', path: '/merchant/product-manage' },
-      { label: '订单记录', path: '/merchant/order-history' }
+      { label: '货架管理', path: '/merchant/product-manage' }
     ]
   },
   {
     name: '客服小二',
     items: [
       { label: '消息管理', path: '/merchant/messages' },
-      { label: '预约管理', path: '/merchant/appointment' }
+      { label: '预约管理', path: '/merchant/appointment' },
+      { label: '订单记录', path: '/merchant/order-history' }
     ]
   }
 ]

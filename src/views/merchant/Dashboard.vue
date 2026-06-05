@@ -16,14 +16,14 @@
             class="rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-300"
             :class="viewMode === 'daily' ? 'bg-white text-ink shadow-soft' : 'text-cocoa'"
           >
-            日报
+            日数据
           </button>
           <button
             @click="viewMode = 'weekly'"
             class="rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-300"
             :class="viewMode === 'weekly' ? 'bg-white text-ink shadow-soft' : 'text-cocoa'"
           >
-            周报
+            周数据
           </button>
         </div>
       </div>
@@ -41,30 +41,56 @@
         <p>暂无数据</p>
       </div>
       <div v-else class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <MetricCard
-          title="营收总额"
-          :current="reportData.revenue.current"
-          :previous="reportData.revenue.previous"
-          unit="元"
-        />
-        <MetricCard
-          title="客流量"
-          :current="reportData.traffic.current"
-          :previous="reportData.traffic.previous"
-          unit="人"
-        />
-        <MetricCard
-          title="客单价"
-          :current="reportData.avgTicket.current"
-          :previous="reportData.avgTicket.previous"
-          unit="元"
-        />
-        <MetricCard
-          title="订单完成率"
-          :current="reportData.completionRate.current"
-          :previous="reportData.completionRate.previous"
-          unit="%"
-        />
+        <button
+          v-for="m in metrics"
+          :key="m.key"
+          @click="activeMetric = m.key"
+          class="text-left rounded-2xl border-2 transition-all"
+          :class="activeMetric === m.key ? 'border-primary-400 bg-primary-50/50' : 'border-transparent bg-white'"
+        >
+          <div class="px-4 py-3">
+            <p class="text-xs text-cocoa">{{ m.label }}</p>
+            <p class="mt-1 text-2xl font-bold text-ink">
+              {{ m.fmt(reportData[m.key].current) }}<span class="text-sm font-normal text-cocoa">{{ m.unit }}</span>
+            </p>
+            <p class="mt-1 text-xs" :class="changePct(m.key) >= 0 ? 'text-success' : 'text-error'">
+              {{ changePct(m.key) >= 0 ? '↑' : '↓' }} {{ Math.abs(changePct(m.key)) }}% 环比
+            </p>
+          </div>
+        </button>
+      </div>
+
+      <!-- 周趋势图 -->
+      <div class="mt-5 border-t border-divider pt-5">
+        <div class="mb-3 flex items-center gap-2">
+          <h3 class="text-sm font-medium text-cocoa">
+            {{ activeMetricLabel }} · 近7天趋势
+          </h3>
+          <span class="text-[11px] text-cocoa/50">点击卡片切换指标</span>
+        </div>
+        <div class="flex items-end gap-2" style="height:140px">
+          <div class="flex shrink-0 flex-col justify-between h-full pb-6 mr-1">
+            <span class="text-[10px] text-cocoa/50">{{ formatTrendVal(maxTrend) }}</span>
+            <span class="text-[10px] text-cocoa/50">{{ formatTrendVal(maxTrend / 2) }}</span>
+            <span class="text-[10px] text-cocoa/50">0</span>
+          </div>
+          <div
+            v-for="(d, i) in trendData"
+            :key="i"
+            class="flex flex-1 flex-col items-center justify-end"
+            style="height:100%"
+          >
+            <span class="mb-0.5 text-[10px] font-medium text-ink">{{ formatTrendVal(d[activeMetric]) }}</span>
+            <span v-if="d.woW[activeMetric] !== undefined" class="mb-1 text-[9px]" :class="d.woW[activeMetric] >= 0 ? 'text-success' : 'text-error'">
+              {{ d.woW[activeMetric] >= 0 ? '↑' : '↓' }}{{ Math.abs(d.woW[activeMetric]) }}%
+            </span>
+            <div
+              class="w-full max-w-[40px] rounded-t-md bg-primary-400 transition-all duration-500"
+              :style="{ height: Math.max((d[activeMetric] / maxTrend) * 110, 2) + 'px' }"
+            />
+            <span class="mt-1.5 text-[11px] text-cocoa">{{ d.day }}</span>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -260,13 +286,37 @@ import AnomalyAlert from '../../components/merchant/AnomalyAlert.vue'
 import {
   dailyReportData,
   weeklyReportData,
+  weekTrend,
   tagRevenueRanking,
   tryOnData as tryOnMockData,
   anomalyAlerts as anomalyMockData
 } from '../../data/merchantMockData'
 
-const viewMode = ref('daily')
+const viewMode = ref('weekly')
 const loading = ref(false)
+const trendData = ref(weekTrend)
+const activeMetric = ref('revenue')
+
+const metrics = [
+  { key: 'revenue', label: '营收总额', unit: '元', fmt: (v) => v },
+  { key: 'traffic', label: '客流量', unit: '人', fmt: (v) => v },
+  { key: 'avgTicket', label: '客单价', unit: '元', fmt: (v) => v },
+  { key: 'completionRate', label: '订单完成率', unit: '%', fmt: (v) => v }
+]
+
+const activeMetricLabel = computed(() => metrics.find(m => m.key === activeMetric.value)?.label || '')
+const maxTrend = computed(() => Math.max(1, ...trendData.value.map(d => d[activeMetric.value] || 0)))
+function changePct(key) {
+  const cur = reportData.value[key]?.current || 1
+  const prev = reportData.value[key]?.previous || 1
+  return Math.round((cur - prev) / prev * 100)
+}
+
+function formatTrendVal(n) {
+  if (n >= 10000) return (n / 10000).toFixed(1) + 'w'
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'k'
+  return String(n)
+}
 const exportMsg = ref(null)
 const pushMsg = ref('')
 

@@ -82,7 +82,6 @@ router.post('/openclaw/config/trigger', async (req, res) => {
     console.log(`[Config] Phase 2: Filtering ${notes.length} covers...`)
     const imagePaths = notes.map(n => n.coverImage)
     const filterResults = await filterCoverImages(imagePaths)
-
     const goodNotes = notes.filter((_, i) => filterResults[i]?.keep)
     console.log(`[Config] Cover filter: ${goodNotes.length}/${notes.length} passed`)
 

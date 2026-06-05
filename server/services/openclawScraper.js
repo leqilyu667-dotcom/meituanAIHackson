@@ -79,6 +79,36 @@ async function downloadCoverImage(page, cdnUrl, noteId) {
  * Search one keyword on XHS, extract top N results with covers + descriptions.
  * Returns array of { noteId, sourceUrl, description, likes, coverImage, cdnCoverUrl }
  */
+/** Extract cards from current page without navigating */
+async function extractCards(page) {
+  await page.evaluate(() => window.scrollTo(0, 0))
+  await page.waitForTimeout(500)
+  return page.evaluate(() => {
+    const results = []
+    document.querySelectorAll('section.note-item').forEach((section) => {
+      const exploreA = section.querySelector('a[href*="/explore/"]')
+      const href = exploreA?.getAttribute('href') || ''
+      const noteIdMatch = href.match(/\/explore\/([a-zA-Z0-9]+)/)
+      if (!noteIdMatch) return
+      const noteId = noteIdMatch[1]
+      const img = section.querySelector('img')
+      let cdnCoverUrl = img?.src || img?.getAttribute('data-src') || ''
+      if (cdnCoverUrl) cdnCoverUrl = cdnCoverUrl.replace(/\?.*$/, '')
+      let likes = 0
+      for (const span of section.querySelectorAll('span')) {
+        if (span.children.length > 0) continue
+        const text = span.textContent.trim()
+        const m = text.match(/^([\d,.]+)\s*(万|w)?$/)
+        if (m) { const num = parseFloat(m[1].replace(/,/g, '')); if (!isNaN(num)) { likes = m[2] ? Math.round(num * 10000) : Math.round(num); break } }
+      }
+      if (!likes) { const nums = (section.textContent || '').match(/\d{3,}/g); if (nums) likes = parseInt(nums[nums.length - 1]) || 0 }
+      const titleEl = section.querySelector('.title, [class*="title"], h3')
+      results.push({ noteId, cdnCoverUrl, likes, title: titleEl?.textContent?.trim() || '' })
+    })
+    return results
+  })
+}
+
 async function searchKeyword(page, keyword, targetCount) {
   const searchUrl = `${XHS_BASE}/search_result?keyword=${encodeURIComponent(keyword)}&source=web_search_result_notes&type=51`
   console.log(`[Scraper] 搜索: "${keyword}" → ${searchUrl}`)
@@ -152,8 +182,8 @@ async function searchKeyword(page, keyword, targetCount) {
  * 4. Return merged results
  */
 export async function batchScrape(config) {
-  const keywords = ['美甲', '春日美甲']
-  const perKeyword = 10
+  const keywords = ['美甲']
+  const perKeyword = 30
 
   console.log('[Scraper] ===== 批量抓取模式 =====')
   console.log(`[Scraper] 关键词: ${keywords.join(' + ')} × ${perKeyword}`)
@@ -187,8 +217,14 @@ export async function batchScrape(config) {
     await waitForLogin(page, 300000)
 
     // ── Search each keyword ──
-    const allCards = []
-    for (const kw of keywords) {
+    // First keyword: already on search page after login, extract directly (avoid re-navigation)
+    const firstCards = await extractCards(page)
+    console.log(`[Scraper] "${keywords[0]}": ${firstCards.length} 条提取`)
+    firstCards.sort((a, b) => b.likes - a.likes)
+    const allCards = firstCards.slice(0, perKeyword).map(c => ({ ...c, keyword: keywords[0] }))
+
+    // Subsequent keywords: navigate and extract
+    for (const kw of keywords.slice(1)) {
       const cards = await searchKeyword(page, kw, perKeyword)
       allCards.push(...cards.map(c => ({ ...c, keyword: kw })))
     }

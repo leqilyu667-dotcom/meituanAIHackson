@@ -47,6 +47,23 @@ export const weeklyReportData = {
   completionRate: { current: 90, previous: 86, unit: '%' }
 }
 
+export const weekTrend = [
+  { day: '周一', revenue: 6800, traffic: 38, avgTicket: 179, completionRate: 88,
+    woW: { revenue: 12, traffic: 8, avgTicket: 5, completionRate: 2 } },
+  { day: '周二', revenue: 7200, traffic: 42, avgTicket: 171, completionRate: 91,
+    woW: { revenue: 8, traffic: 14, avgTicket: -3, completionRate: 4 } },
+  { day: '周三', revenue: 9100, traffic: 48, avgTicket: 190, completionRate: 93,
+    woW: { revenue: 15, traffic: 10, avgTicket: 6, completionRate: 3 } },
+  { day: '周四', revenue: 8500, traffic: 46, avgTicket: 185, completionRate: 89,
+    woW: { revenue: -3, traffic: -2, avgTicket: 2, completionRate: -1 } },
+  { day: '周五', revenue: 10200, traffic: 55, avgTicket: 185, completionRate: 92,
+    woW: { revenue: 6, traffic: 12, avgTicket: 0, completionRate: 3 } },
+  { day: '周六', revenue: 9600, traffic: 52, avgTicket: 185, completionRate: 87,
+    woW: { revenue: -5, traffic: -8, avgTicket: 4, completionRate: -2 } },
+  { day: '周日', revenue: 4800, traffic: 31, avgTicket: 155, completionRate: 90,
+    woW: { revenue: -12, traffic: -10, avgTicket: -8, completionRate: 1 } }
+]
+
 // 标签营收TOP10
 export const tagRevenueRanking = [
   { tags: { shape: '杏仁甲', tone: '裸色', craft: '渐变', decor: '碎钻', style: '温柔风' }, revenue: 12800, orders: 64, share: 22.8 },
@@ -70,8 +87,9 @@ export const tryOnData = {
 
 // 异常预警
 export const anomalyAlerts = [
-  { id: 1, metric: '营收总额', change: -35, period: '本周 vs 上周', reason: '本周工作日订单量下滑明显，热门标签「猫眼」款式转化率下降12%', link: '/merchant/operation-advice' },
-  { id: 2, metric: '预约爽约率', change: 42, period: '本周 vs 上周', reason: '近7天爽约率从8%升至11.4%，主要集中在周末时段', link: '/merchant/appointment' }
+  { id: 1, metric: '营收总额', change: -35, period: '本周 vs 上周', reason: '工作日订单量明显下滑，「猫眼」款式转化率下降12%，建议调整推荐位', link: '/merchant/operation-advice' },
+  { id: 2, metric: '预约爽约率', change: 42, period: '本周 vs 上周', reason: '爽约率从8%升至11.4%，集中在周末下午时段，建议增加确认提醒', link: '/merchant/appointment' },
+  { id: 6, metric: '热门款式转化率', change: -22, period: '本周 vs 上周', reason: '「裸色渐变温柔风」试戴量第一但转化下降22%，图片效果可能不及预期', link: '/merchant/operation-advice' }
 ]
 
 // 各维度单项热度（用于综合热度分计算）

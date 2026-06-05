@@ -37,7 +37,8 @@ const breadcrumbMap = {
   '/merchant/material-generate': ['运营小二', '爆款素材生成'],
   '/merchant/product-manage': ['运营小二', '货架管理'],
   '/merchant/appointment': ['客服小二', '预约管理'],
-  '/merchant/messages': ['客服小二', '消息管理']
+  '/merchant/messages': ['客服小二', '消息管理'],
+  '/merchant/order-history': ['客服小二', '订单记录']
 }
 
 const breadcrumbs = computed(() => {

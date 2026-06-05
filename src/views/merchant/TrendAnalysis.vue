@@ -10,17 +10,6 @@
     <section class="card mb-6 p-6">
       <div class="mb-5 flex items-center justify-between">
         <h2 class="text-lg font-medium text-ink">站内最热试戴标签</h2>
-        <div class="flex gap-1 rounded-full bg-cream p-1">
-            <button
-              v-for="dim in ['门店', '平台']"
-              :key="dim"
-              @click="scope = dim"
-              class="rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-300"
-              :class="scope === dim ? 'bg-white text-ink shadow-soft' : 'text-cocoa'"
-            >
-              {{ dim }}
-            </button>
-          </div>
       </div>
 
       <p class="mb-4 text-sm font-medium text-cocoa">
@@ -88,8 +77,6 @@
       </div>
 
       <div class="mt-6">
-        <p class="mb-3 text-sm font-medium text-cocoa">近7天试戴 & 订单趋势</p>
-        <TrendChart :data="trendData" />
       </div>
     </section>
 
@@ -157,66 +144,16 @@
       </div>
     </section>
 
-    <!-- 3. 站外最热素材 -->
+    <!-- 3. 站外爆款素材 -->
     <section class="card p-6">
-      <div class="mb-4 flex items-center justify-between">
-        <h2 class="text-lg font-medium text-ink">站外最热素材</h2>
+      <div class="mb-5 flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-medium text-ink">站外爆款素材</h2>
+          <p class="mt-1 text-xs text-cocoa">平台自动抓取小红书近7天热门美甲帖子，精选高互动爆款进行展示</p>
+        </div>
         <button @click="triggerNewScrape" :disabled="scraping || poolExhausted" class="rounded-full bg-white px-4 py-2 text-xs font-medium text-primary-600 shadow-soft transition hover:bg-primary-50 disabled:opacity-50">
           {{ scraping ? '加载中...' : poolExhausted ? '刷新列表' : `刷新列表（剩${poolRemaining + xhsMaterials.length}条）` }}
         </button>
-      </div>
-
-      <!-- Config bar: display mode -->
-      <div v-if="!configEditing" class="mb-5 rounded-2xl bg-cream/40 p-4">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-ink">小龙虾素材助手🦞</p>
-            <p class="mt-1 text-xs text-cocoa">
-              抓取周期：每周限用1次 · 关键词：{{ configKeywords.join('、') }} · 高互动优先
-            </p>
-          </div>
-          <button @click="openConfigEdit" class="rounded-full bg-white px-4 py-2 text-xs font-medium text-primary-600 shadow-soft transition hover:bg-primary-50">
-            修改配置
-          </button>
-        </div>
-      </div>
-
-      <!-- Config bar: edit mode -->
-      <div v-else class="mb-5 rounded-2xl bg-cream/40 p-4">
-        <p class="text-sm font-medium text-ink">修改抓取配置</p>
-        <div class="mt-3 space-y-3">
-          <div>
-            <label class="text-xs text-cocoa">搜索关键词（最多3个，空格分隔组合搜索）</label>
-            <div class="mt-1 flex flex-wrap gap-2">
-              <span v-for="(kw, i) in editKeywords" :key="i"
-                class="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-xs shadow-sm">
-                {{ kw }}
-                <button @click="removeKeyword(i)" class="text-cocoa/50 hover:text-error">&times;</button>
-              </span>
-              <input
-                v-if="editKeywords.length < 3"
-                v-model="newKeyword"
-                @keydown.enter="addKeyword"
-                placeholder="输入关键词回车添加"
-                class="rounded-full border border-divider bg-white px-3 py-1 text-xs outline-none focus:border-primary-400 w-40"
-              />
-            </div>
-          </div>
-          <div class="flex items-center gap-4">
-            <label class="flex items-center gap-1.5 text-xs text-cocoa">
-              最低点赞
-              <input v-model.number="editMinLikes" type="number" class="w-20 rounded-lg border border-divider px-2 py-1 text-xs" />
-            </label>
-          </div>
-          <div class="flex items-center gap-2">
-            <button @click="saveConfig" class="rounded-full bg-primary-500 px-4 py-1.5 text-xs font-medium text-white transition hover:bg-primary-600">
-              保存
-            </button>
-            <button @click="cancelConfigEdit" class="rounded-full bg-white px-4 py-1.5 text-xs text-cocoa transition hover:bg-cream">
-              取消
-            </button>
-          </div>
-        </div>
       </div>
 
       <!-- Material action bar -->
@@ -360,21 +297,17 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import TagBadge from '../../components/merchant/TagBadge.vue'
-import TrendChart from '../../components/merchant/TrendChart.vue'
 import ReviewModal from '../../components/merchant/ReviewModal.vue'
 import {
   storeInfo,
   hotTags as hotTagsData,
-  trendData as trendMockData,
   peerComparison,
   calcHeatScore
 } from '../../data/merchantMockData'
 import { fetchXhsMaterials, submitReview, deleteMaterials, poolRefreshMaterials } from '../../data/api'
 
-const scope = ref('门店')
 
 const hotTags = ref(hotTagsData)
-const trendData = ref(trendMockData)
 
 const displayList = computed(() => {
   return [...hotTags.value]
@@ -485,7 +418,6 @@ async function batchDelete() {
 }
 
 // Config editing
-const configEditing = ref(false)
 const scraping = ref(false)
 const poolExhausted = ref(false)
 const poolRemaining = ref(0)
@@ -502,61 +434,6 @@ async function triggerNewScrape() {
     console.error('Pool refresh failed:', err)
   } finally {
     scraping.value = false
-  }
-}
-const scrapeConfig = ref({ keywords: ['美甲爆款', '显白美甲', '春日美甲'], min_likes: 300 })
-const editKeywords = ref([])
-const newKeyword = ref('')
-const editMinLikes = ref(300)
-const configKeywords = computed(() => scrapeConfig.value.keywords || ['美甲爆款', '显白美甲', '春日美甲'])
-
-async function loadConfig() {
-  try {
-    const { fetchScrapeConfig } = await import('../../data/api')
-    const config = await fetchScrapeConfig()
-    scrapeConfig.value = config
-  } catch (err) {
-    console.warn('Failed to load scrape config:', err.message)
-  }
-}
-
-function openConfigEdit() {
-  editKeywords.value = [...scrapeConfig.value.keywords]
-  editMinLikes.value = scrapeConfig.value.min_likes || 300
-  newKeyword.value = ''
-  configEditing.value = true
-}
-
-function cancelConfigEdit() {
-  configEditing.value = false
-}
-
-function addKeyword() {
-  const kw = newKeyword.value.trim()
-  if (kw && editKeywords.value.length < 3) {
-    editKeywords.value.push(kw)
-    newKeyword.value = ''
-  }
-}
-
-function removeKeyword(i) {
-  editKeywords.value.splice(i, 1)
-}
-
-async function saveConfig() {
-  try {
-    const { updateScrapeConfig } = await import('../../data/api')
-    const merged = {
-      ...scrapeConfig.value,
-      keywords: editKeywords.value.length ? editKeywords.value : ['美甲爆款', '春日美甲'],
-      min_likes: editMinLikes.value,
-      updated_by: 'admin'
-    }
-    await updateScrapeConfig(merged)
-    scrapeConfig.value = merged
-    configEditing.value = false
-  } catch (err) {
-    console.error('Failed to save config:', err.message)
   }
 }
 
@@ -612,6 +489,5 @@ async function handleReview(result) {
 
 onMounted(() => {
   loadMaterials()
-  loadConfig()
 })
 </script>

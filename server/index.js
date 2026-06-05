@@ -1,5 +1,8 @@
+import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
+import helmet from 'helmet'
+import rateLimit from 'express-rate-limit'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { initDatabase } from './db.js'
@@ -23,25 +26,50 @@ initDatabase()
 const app = express()
 
 // Middleware
-app.use(cors())
+const allowedOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['http://localhost:5173']
+app.use(cors({ origin: allowedOrigins, credentials: true }))
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }))
 app.use(express.json({ limit: '10mb' }))
+
+// Rate limiting
+const globalLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 500, standardHeaders: true, legacyHeaders: false })
+const aiLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 30, standardHeaders: true, legacyHeaders: false, message: { code: 'RATE_LIMITED', message: '请求过于频繁，请稍后重试' } })
+app.use(globalLimiter)
+app.use('/api/merchant/design/generate', aiLimiter)
+app.use('/api/merchant/design/detect-tags', aiLimiter)
 
 // Serve processed images
 app.use('/processed', express.static(path.join(__dirname, 'public', 'processed')))
 
+// Auth middleware
+import { requireMerchantAuth } from './middleware/auth.js'
+
 // API Routes
-app.use('/api/common/openclaw', openclawRoutes)
-app.use('/api/merchant/material', materialRoutes)
-app.use('/api/merchant/label', labelRoutes)
-app.use('/api/merchant', configRoutes)
-app.use('/api/merchant/design', designRoutes)
-app.use('/api/merchant/messages', messagesRoutes)
-app.use('/api/merchant/order', orderRoutes)
-app.use('/api/merchant/material-library', materialLibraryRoutes)
+app.use('/api/common/openclaw', openclawRoutes) // external webhook, no auth (uses signature)
+
+// All merchant routes require auth token
+const merchantRouter = express.Router()
+merchantRouter.use(requireMerchantAuth)
+merchantRouter.use('/material', materialRoutes)
+merchantRouter.use('/label', labelRoutes)
+merchantRouter.use('/', configRoutes)
+merchantRouter.use('/design', designRoutes)
+merchantRouter.use('/messages', messagesRoutes)
+merchantRouter.use('/order', orderRoutes)
+merchantRouter.use('/material-library', materialLibraryRoutes)
+app.use('/api/merchant', merchantRouter)
 
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
+})
+
+// Serve frontend static files in production
+const distPath = path.join(__dirname, '..', 'dist')
+app.use(express.static(distPath))
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api/') || req.path.startsWith('/processed/')) return next()
+  res.sendFile(path.join(distPath, 'index.html'))
 })
 
 // Start server

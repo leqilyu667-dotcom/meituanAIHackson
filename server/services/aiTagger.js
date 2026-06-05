@@ -4,9 +4,9 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const ARK_BASE = 'https://ark.cn-beijing.volces.com/api/v3'
-const ARK_KEY = 'ark-0cae034f-bc13-4ac0-b78d-038a1cf63050-b8046'
-const MODEL = 'doubao-seed-1-6-vision-250815'
+const ARK_BASE = process.env.ARK_BASE_URL || 'https://ark.cn-beijing.volces.com/api/v3'
+const ARK_KEY = process.env.ARK_API_KEY || ''
+const MODEL = process.env.ARK_MODEL || 'doubao-seed-1-6-vision-250815'
 
 /** Convert local image path to base64 data URL for ARK vision API */
 function resolveImageUrl(imageUrl) {
@@ -406,68 +406,59 @@ function parseFilterScore(content) {
  * @param {string[]} imagePaths — array of local file paths (e.g. /processed/xxx.jpg)
  * @returns {Promise<{keep: boolean, reason: string}[]>}
  */
-export async function filterCoverImages(imagePaths) {
-  const results = []
-
-  for (const imagePath of imagePaths) {
-    const imageUrl = resolveImageUrl(imagePath)
-    if (!imageUrl) {
-      console.log(`[CoverFilter] ${imagePath}: no image, DISCARD`)
-      results.push({ keep: false, reason: 'no_image' })
-      continue
-    }
-
-    try {
-      const controller = new AbortController()
-      const timeout = setTimeout(() => controller.abort(), 60000)
-
-      const resp = await fetch(`${ARK_BASE}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${ARK_KEY}`
-        },
-        body: JSON.stringify({
-          model: MODEL,
-          messages: [{
-            role: 'user',
-            content: [
-              { type: 'image_url', image_url: { url: imageUrl } },
-              { type: 'text', text: buildFilterPrompt() }
-            ]
-          }],
-          max_tokens: 8,
-          temperature: 0.1
-        }),
-        signal: controller.signal
-      })
-
-      clearTimeout(timeout)
-
-      if (!resp.ok) {
-        const errBody = await resp.text().catch(() => '')
-        console.log(`[CoverFilter] ${imagePath.slice(0, 50)}... API ${resp.status}: ${errBody.slice(0, 80)}`)
-        results.push({ keep: false, reason: `api_error_${resp.status}` })
-        continue
-      }
-
-      const data = await resp.json()
-      const content = (data.choices?.[0]?.message?.content || '').trim().toUpperCase()
-      const score = parseFilterScore(content)
-      const keep = score >= 8
-      console.log(`[CoverFilter] ${path.basename(imagePath)} → 评分${score} ${keep ? 'KEEP' : 'DISCARD'} (${content.slice(0, 30)})`)
-      results.push({ keep, reason: `score:${score}` })
-
-    } catch (err) {
-      const reason = err.name === 'AbortError' ? 'timeout' : err.message
-      console.log(`[CoverFilter] ${path.basename(imagePath)}: error (${reason})`)
-      results.push({ keep: false, reason })
-    }
+async function filterOne(imagePath) {
+  const imageUrl = resolveImageUrl(imagePath)
+  if (!imageUrl) {
+    console.log(`[CoverFilter] ${imagePath}: no image, DISCARD`)
+    return { keep: false, reason: 'no_image' }
   }
+  try {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 30000)
+    const resp = await fetch(`${ARK_BASE}/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ARK_KEY}` },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [{ role: 'user', content: [
+          { type: 'image_url', image_url: { url: imageUrl } },
+          { type: 'text', text: buildFilterPrompt() }
+        ]}],
+        max_tokens: 8,
+        temperature: 0.1
+      }),
+      signal: controller.signal
+    })
+    clearTimeout(timeout)
+    if (!resp.ok) {
+      const errBody = await resp.text().catch(() => '')
+      console.log(`[CoverFilter] ${path.basename(imagePath)} API ${resp.status}: ${errBody.slice(0, 60)}`)
+      return { keep: false, reason: `api_${resp.status}` }
+    }
+    const data = await resp.json()
+    const content = (data.choices?.[0]?.message?.content || '').trim()
+    const score = parseFilterScore(content)
+    const keep = score >= 6
+    console.log(`[CoverFilter] ${path.basename(imagePath)} → ${score} ${keep ? 'KEEP' : 'DISCARD'}`)
+    return { keep, reason: `score:${score}` }
+  } catch (err) {
+    console.log(`[CoverFilter] ${path.basename(imagePath)}: ${err.message.slice(0, 40)}`)
+    return { keep: false, reason: err.message }
+  }
+}
 
-  const kept = results.filter(r => r.keep).length
-  console.log(`[CoverFilter] Complete: ${kept}/${imagePaths.length} covers kept`)
-  return results
+export async function filterCoverImages(imagePaths) {
+  const CONCURRENCY = 5
+  const results = new Array(imagePaths.length)
+  for (let i = 0; i < imagePaths.length; i += CONCURRENCY) {
+    const batch = imagePaths.slice(i, i + CONCURRENCY)
+    const batchResults = await Promise.all(batch.map((path, j) => filterOne(path).then(r => { results[i + j] = r; return r })))
+    const done = Math.min(i + CONCURRENCY, imagePaths.length)
+    console.log(`[CoverFilter] batch ${Math.floor(i/CONCURRENCY)+1}: ${done}/${imagePaths.length}`)
+  }
+  const kept = results.filter(r => r?.keep).length
+  console.log(`[CoverFilter] Complete: ${kept}/${imagePaths.length} kept`)
+  return results.filter(Boolean)
 }
 
 export { tagSingleImage }
