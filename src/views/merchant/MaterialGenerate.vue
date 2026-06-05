@@ -612,16 +612,6 @@ const generate = async () => {
       published: false,
       favorited: false
     }
-    // Auto-save to library, store ID for favorite toggle
-    try {
-      const libResult = await saveToLibrary({
-        name: generatedItem.value.name,
-        imageUrl: result.imageUrl,
-        tags: generatedItem.value.tags
-      })
-      generatedItem.value.libraryId = libResult.id
-    } catch (e) { console.warn('Library save failed:', e.message) }
-    loadLibrary()
   } catch (err) {
     timeoutError.value = '素材生成失败，请重试'
     console.error('Generate failed:', err.message)
