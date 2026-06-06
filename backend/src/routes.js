@@ -2,6 +2,7 @@ import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import db from './database.js';
 import { authRequired, optionalAuth, merchantOnly, JWT_SECRET } from './middleware/auth.js';
+import { generateTryOn } from './tryon.js';
 
 const router = Router();
 
@@ -222,8 +223,23 @@ router.get('/v1/users/me', authRequired, (req, res) => {
 });
 
 // ═══ TryOn ═══
-router.post('/v1/tryon/generate', authRequired, (req, res) => {
-  ok(res, { result_url: req.body.design_image_url || '/images/nails/nail-01.jpg', match_score: 96, message: '试戴生成成功（演示模式）' });
+router.post('/v1/tryon/generate', authRequired, async (req, res) => {
+  const { hand_image_url, design_image_url, labels } = req.body;
+  const designLabel = labels ? Object.values(labels).filter(Boolean).join('·') : '';
+
+  const result = await generateTryOn({
+    handImageUrl: hand_image_url,
+    designImageUrl: design_image_url,
+    designLabel,
+    labels: labels || {},
+  });
+
+  ok(res, {
+    result_url: result.resultUrl,
+    match_score: result.matchScore,
+    mode: result.mode,
+    message: result.mode === 'demo' ? '试戴生成成功（演示模式：设 OPENAI_API_KEY 启用真实 AI）' : 'AI 试戴完成',
+  });
 });
 
 router.post('/v1/tryon/log', authRequired, (req, res) => {

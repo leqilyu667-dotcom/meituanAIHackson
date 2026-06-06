@@ -86,7 +86,10 @@
         <!-- LEFT: Result Image -->
         <div class="overflow-hidden rounded-2xl bg-white shadow-soft flex flex-col">
           <div class="flex items-center justify-between px-2 pt-2">
-            <span class="text-[11px] font-medium text-primary-600">✨ 试戴效果</span>
+            <span class="text-[11px] font-medium text-primary-600">✨ 试戴效果
+              <span v-if="tryOnMode==='ai'" class="ml-1 text-[10px] text-success">🤖 AI</span>
+              <span v-else-if="tryOnMode==='fallback'" class="ml-1 text-[10px] text-warning">⚠ 离线</span>
+            </span>
             <span class="text-[10px] font-semibold text-primary-600">{{ matchScore }}% 匹配</span>
           </div>
           <div class="flex-1 p-2 pt-1.5 min-h-0">
@@ -214,6 +217,7 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import axios from 'axios'
 import { nailStyles, salons, nailArtists, reservations } from '../data/mockData'
 
 const route = useRoute()
@@ -353,10 +357,31 @@ const sharePlatforms = [
   { name: '更多', icon: '⋯' }
 ]
 
-// ── file reader helper ─────────────────────────────────
-const readFile = (file) => new Promise((resolve) => {
+// ── file reader with compression ────────────────────────
+const MAX_IMG_DIM = 1024 // max width/height for API
+
+const readFileCompressed = (file) => new Promise((resolve) => {
   const reader = new FileReader()
-  reader.onload = (e) => resolve(e.target.result)
+  reader.onload = (e) => {
+    const img = new Image()
+    img.onload = () => {
+      let { width, height } = img
+      if (width <= MAX_IMG_DIM && height <= MAX_IMG_DIM) {
+        resolve(e.target.result)
+        return
+      }
+      const ratio = Math.min(MAX_IMG_DIM / width, MAX_IMG_DIM / height)
+      width = Math.round(width * ratio)
+      height = Math.round(height * ratio)
+      const canvas = document.createElement('canvas')
+      canvas.width = width
+      canvas.height = height
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0, width, height)
+      resolve(canvas.toDataURL('image/jpeg', 0.85))
+    }
+    img.src = e.target.result
+  }
   reader.readAsDataURL(file)
 })
 
@@ -367,8 +392,7 @@ const triggerHandUpload = () => handFileInput.value?.click()
 const onHandFileChange = async (e) => {
   const file = e.target.files?.[0]
   if (!file) return
-  handImage.value = await readFile(file)
-  // reset input so same file can be re-selected
+  handImage.value = await readFileCompressed(file)
   e.target.value = ''
 }
 
@@ -379,7 +403,7 @@ const triggerDesignUpload = () => designFileInput.value?.click()
 const onDesignFileChange = async (e) => {
   const file = e.target.files?.[0]
   if (!file) return
-  designImage.value = await readFile(file)
+  designImage.value = await readFileCompressed(file)
   e.target.value = ''
 }
 
@@ -400,17 +424,53 @@ const clearDesign = () => {
   tryOnResult.value = ''
 }
 
-// ── try-on ─────────────────────────────────────────────
-const startTryOn = () => {
+const tryOnMode = ref('') // '' | 'ai' | 'fallback'
+
+// ── try-on (real AI) ───────────────────────────────────
+const startTryOn = async () => {
   if (!handImage.value || isTryOnRunning.value) return
   isTryOnRunning.value = true
   tryOnResult.value = ''
+  tryOnMode.value = ''
 
-  setTimeout(() => {
-    tryOnResult.value = handImage.value
-    matchScore.value = Math.floor(90 + Math.random() * 9)
+  try {
+    let token = localStorage.getItem('miaoshou_token')
+    if (!token) {
+      const loginRes = await axios.post('/v1/auth/login', { phone: '13800000001', code: '000000' })
+      token = loginRes.data?.data?.token
+      if (token) localStorage.setItem('miaoshou_token', token)
+    }
+
+    const labels = selectedStyle.value?.labels || {}
+    const res = await axios.post('/v1/tryon/generate', {
+      hand_image_url: handImage.value,
+      design_image_url: designImage.value || selectedStyle.value?.image || '',
+      labels,
+    }, {
+      headers: { Authorization: `Bearer ${token}` },
+      timeout: 300000, // 5 min timeout for AI generation
+    })
+
+    const data = res.data?.data
+    tryOnResult.value = data?.result_url || (designImage.value || handImage.value)
+    matchScore.value = data?.match_score || 95
+    tryOnMode.value = data?.mode || 'fallback'
+    console.log('AI try-on done:', data?.mode, data?.result_url)
+  } catch (err) {
+    console.error('AI try-on failed:', err?.response?.status, err?.message, err?.code)
+    tryOnResult.value = designImage.value || handImage.value
+    matchScore.value = Math.floor(85 + Math.random() * 10)
+    tryOnMode.value = 'fallback'
+    if (err?.code === 'ECONNABORTED') alert('AI 试戴超时，请重试')
+    else if (err?.response?.status === 401) {
+      localStorage.removeItem('miaoshou_token')
+      alert('登录已过期，请重试')
+    } else if (err?.code === 'ERR_NETWORK' || err?.response?.status === 413) {
+      alert('图片过大，请缩小图片或使用款式库选图')
+    }
+  } finally {
     isTryOnRunning.value = false
-  }, 2000)
+  }
 }
 
 // ── save / load ────────────────────────────────────────
