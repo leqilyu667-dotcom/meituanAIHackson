@@ -35,6 +35,72 @@ const routes = [
     path: '/design',
     name: 'Design',
     component: () => import('../views/Design.vue')
+  },
+  // --- Merchant Routes ---
+  {
+    path: '/merchant',
+    name: 'MerchantHome',
+    component: () => import('../views/merchant/Home.vue')
+  },
+  {
+    path: '/merchant/daily-report',
+    name: 'MerchantDashboard',
+    component: () => import('../views/merchant/Dashboard.vue')
+  },
+  {
+    path: '/merchant/trend-analysis',
+    name: 'MerchantTrendAnalysis',
+    component: () => import('../views/merchant/TrendAnalysis.vue')
+  },
+  {
+    path: '/merchant/operation-advice',
+    name: 'MerchantOperationAdvice',
+    component: () => import('../views/merchant/OperationAdvice.vue')
+  },
+  {
+    path: '/merchant/revenue-calc',
+    name: 'MerchantRevenueCalc',
+    component: () => import('../views/merchant/RevenueCalc.vue')
+  },
+  {
+    path: '/merchant/material-generate',
+    name: 'MerchantMaterialGenerate',
+    component: () => import('../views/merchant/MaterialGenerate.vue')
+  },
+  {
+    path: '/merchant/appointment',
+    name: 'MerchantAppointment',
+    component: () => import('../views/merchant/Appointment.vue')
+  },
+  {
+    path: '/merchant/product-manage',
+    name: 'MerchantProductManage',
+    component: () => import('../views/merchant/ProductManage.vue')
+  },
+  {
+    path: '/merchant/product-manage/:id',
+    name: 'MerchantProductDetail',
+    component: () => import('../views/merchant/ProductDetail.vue')
+  },
+  {
+    path: '/merchant/messages',
+    name: 'MerchantMessages',
+    component: () => import('../views/merchant/Messages.vue')
+  },
+  {
+    path: '/merchant/profile',
+    name: 'MerchantProfile',
+    component: () => import('../views/merchant/Profile.vue')
+  },
+  {
+    path: '/merchant/order-history',
+    name: 'MerchantOrderHistory',
+    component: () => import('../views/merchant/OrderHistory.vue')
+  },
+  {
+    path: '/merchant/material-library',
+    name: 'MerchantMaterialLibrary',
+    component: () => import('../views/merchant/MaterialLibrary.vue')
   }
 ]
 
