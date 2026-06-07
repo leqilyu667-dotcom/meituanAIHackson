@@ -1,17 +1,20 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
+import https from 'https';
 import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = join(__dirname, '..', 'public', 'tryon');
-const FRONTEND_DIR = join(__dirname, '..', '..', 'public');
+const FRONTEND_PUBLIC = join(__dirname, '..', 'public');
 if (!existsSync(PUBLIC_DIR)) mkdirSync(PUBLIC_DIR, { recursive: true });
 
 const apiKey = process.env.OPENAI_API_KEY || '';
 const baseURL = (process.env.OPENAI_BASE_URL || 'https://www.zzshu.cc/v1').replace(/\/$/, '');
 const model = process.env.OPENAI_MODEL || 'gpt-image-2';
+
+const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
 const hasKey = apiKey && apiKey !== 'sk-your-key-here';
 if (hasKey) {
@@ -24,13 +27,13 @@ async function toBase64(url) {
   if (url.startsWith('data:')) return url;
   let buf;
   if (url.startsWith('/')) {
-    for (const base of [FRONTEND_DIR, join(__dirname, '..', 'public')]) {
-      const p = join(base, url);
-      if (existsSync(p)) { buf = readFileSync(p); break; }
+    const filePath = join(FRONTEND_PUBLIC, url);
+    if (existsSync(filePath)) {
+      buf = readFileSync(filePath);
     }
   }
   if (!buf) {
-    const r = await fetch(url);
+    const r = await fetch(url, { agent: httpsAgent });
     if (!r.ok) throw new Error(`fetch ${url}: HTTP ${r.status}`);
     buf = Buffer.from(await r.arrayBuffer());
   }
@@ -59,6 +62,7 @@ export async function generateTryOn({ handImageUrl, designImageUrl, designLabel 
 
     const res = await fetch(`${baseURL}/chat/completions`, {
       method: 'POST',
+      agent: httpsAgent,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,

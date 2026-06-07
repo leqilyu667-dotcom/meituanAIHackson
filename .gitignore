@@ -8,3 +8,5 @@ node_modules
 training/
 dist/
 backend/miaoshou-data.json
+.env
+miaoshou-data.json
