@@ -165,7 +165,7 @@ export async function detectTags(file) {
   formData.append('file', file)
   const { data } = await api.post('/merchant/design/detect-tags', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
-    timeout: 30000
+    timeout: 120000
   })
   return data.data
 }

@@ -22,6 +22,10 @@ const PORT = process.env.PORT || 3001
 // Initialize database
 initDatabase()
 
+// Ensure upload directories exist
+import fs from 'fs'
+fs.mkdirSync(path.join(__dirname, 'public', 'processed', 'designs'), { recursive: true })
+
 const app = express()
 
 // Middleware
