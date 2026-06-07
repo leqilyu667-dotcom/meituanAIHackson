@@ -1,0 +1,121 @@
+export function seedAll() {
+  const data = {
+    users: [
+      { id: 1, phone: '13800000001', nickname: '小亲亲', avatar_url: 'Q', role: 'customer', tryon_count: 12, reservation_count: 3, favorite_count: 36, record_count: 8 },
+      { id: 2, phone: '13800000002', nickname: '小美', avatar_url: 'M', role: 'customer', tryon_count: 0, reservation_count: 0, favorite_count: 0 },
+      { id: 3, phone: '13800000003', nickname: '花花', avatar_url: 'H', role: 'customer', tryon_count: 0, reservation_count: 0, favorite_count: 0 },
+      { id: 4, phone: '13900000001', nickname: 'Nail Moment', avatar_url: 'N', role: 'merchant', salon_id: 1 },
+    ],
+
+    salons: [
+      { id: 1, name: 'Nail Moment', rating: 4.9, review_count: 1280, image_url: 'https://picsum.photos/seed/salon1/400/300', location: '朝阳区', distance: '1.2km', description: 'Nail Moment是一家专业的美甲沙龙，提供高品质的美甲服务。', status: 'active' },
+      { id: 2, name: 'Her Nail Studio', rating: 4.8, review_count: 960, image_url: 'https://picsum.photos/seed/salon2/400/300', location: '海淀区', distance: '2.5km', status: 'active' },
+      { id: 3, name: 'Mia Nails', rating: 4.7, review_count: 780, image_url: 'https://picsum.photos/seed/salon3/400/300', location: '西城区', distance: '3.1km', status: 'active' },
+      { id: 4, name: '指尖花语 Nail Art', rating: 4.9, review_count: 1560, image_url: 'https://picsum.photos/seed/salon4/400/300', location: '东城区', distance: '2.8km', status: 'active' },
+      { id: 5, name: '闪耀美甲坊', rating: 4.6, review_count: 620, image_url: 'https://picsum.photos/seed/salon5/400/300', location: '丰台区', distance: '4.5km', status: 'active' },
+      { id: 6, name: 'J&J Nail Lounge', rating: 4.8, review_count: 890, image_url: 'https://picsum.photos/seed/salon6/400/300', location: '朝阳区', distance: '1.8km', status: 'active' },
+    ],
+
+    service_items: [
+      { id: 1, salon_id: 1, name: '日式美甲', description: '精致日式工艺', image_url: '/images/nails/nail-01.jpg', price: 168, original_price: 268, discount_text: '6.3折', status: 'active' },
+      { id: 2, salon_id: 1, name: '芭比美甲', description: '甜美芭比风', image_url: '/images/nails/nail-02.png', price: 198, original_price: 298, discount_text: '6.6折', status: 'active' },
+      { id: 3, salon_id: 1, name: '延长甲', description: '自然延长塑形', image_url: '/images/nails/nail-03.png', price: 268, original_price: 398, discount_text: '6.7折', status: 'active' },
+      { id: 4, salon_id: 1, name: '美甲款式', description: '时尚潮流款式', image_url: '/images/nails/nail-04.png', price: 98, original_price: 168, discount_text: '5.8折', status: 'active' },
+      { id: 5, salon_id: 1, name: '法式美甲', description: '经典优雅法式', image_url: '/images/nails/nail-05.png', price: 128, original_price: 218, discount_text: '5.9折', status: 'active' },
+      { id: 6, salon_id: 1, name: '足部美甲', description: '精致足部护理', image_url: '/images/nails/nail-06.png', price: 188, original_price: 288, discount_text: '6.5折', status: 'active' },
+      { id: 7, salon_id: 1, name: '猫眼美甲', description: '磁石猫眼效果', image_url: '/images/nails/nail-07.png', price: 228, original_price: 358, discount_text: '6.4折', status: 'active' },
+      { id: 8, salon_id: 1, name: '手部护理', description: '深层滋润护理', image_url: '/images/nails/nail-08.png', price: 88, original_price: 158, discount_text: '5.6折', status: 'active' },
+      { id: 9, salon_id: 2, name: '法式美甲', description: '经典法式', image_url: '/images/nails/nail-03.png', price: 128, original_price: 218, discount_text: '5.9折', status: 'active' },
+      { id: 10, salon_id: 2, name: '轻奢风格', description: '高级轻奢', image_url: '/images/nails/nail-04.png', price: 258, original_price: 388, discount_text: '6.6折', status: 'active' },
+      { id: 11, salon_id: 3, name: '鎏金美甲', description: '奢华鎏金', image_url: '/images/nails/nail-07.png', price: 268, original_price: 398, discount_text: '6.7折', status: 'active' },
+      { id: 12, salon_id: 3, name: '新娘美甲', description: '婚礼定制', image_url: '/images/nails/nail-01.jpg', price: 398, original_price: 598, discount_text: '6.7折', status: 'active' },
+    ],
+
+    artists: [
+      { id: 1, salon_id: 1, salon_name: 'Nail Moment', name: 'Luna', title: '高级美甲师', role: '资深美甲师', avatar: 'L', avatar_bg: 'linear-gradient(135deg,#D9B8A0,#B98D72)', bio: '从业8年，擅长日式精细美甲与法式经典系列', intro: '从业8年，曾在日本东京深造2年', specialty: '日式 / 法式', years: 8, service_count: 5200, rating_attitude: 4.9, rating_effect: 4.9, rating_appearance: 4.9, rating: 4.9, review_count: 512, good_reviews: 328, status: 'active' },
+      { id: 2, salon_id: 1, salon_name: 'Nail Moment', name: '小雨', title: '资深美甲师', role: '高级美甲师', avatar: 'Y', avatar_bg: 'linear-gradient(135deg,#c4a882,#9c725a)', bio: '从业5年，色彩感极强', intro: '从业5年，擅长甜美风格', specialty: '渐变 / 闪粉', years: 5, service_count: 3100, rating_attitude: 4.8, rating_effect: 4.8, rating_appearance: 4.7, rating: 4.8, review_count: 289, good_reviews: 512, status: 'active' },
+      { id: 3, salon_id: 1, salon_name: 'Nail Moment', name: 'Nicole', title: '美甲设计师', role: '创意总监', avatar: 'N', avatar_bg: 'linear-gradient(135deg,#bfa98e,#8B6D5A)', bio: '毕业于设计专业', intro: '从业8年，曾在韩国首尔担任创意总监', specialty: '复古 / 艺术', years: 6, service_count: 4500, rating_attitude: 4.9, rating_effect: 4.9, rating_appearance: 4.9, rating: 4.9, review_count: 356, good_reviews: 447, status: 'active' },
+      { id: 4, salon_id: 2, salon_name: 'Her Nail Studio', name: '思思', title: '高级美甲师', role: '高级美甲师', avatar: 'S', specialty: '猫眼 / 闪粉', years: 5, rating: 4.8, good_reviews: 289, status: 'active' },
+      { id: 5, salon_id: 2, salon_name: 'Her Nail Studio', name: '安安', title: '资深美甲师', role: '资深美甲师', avatar: 'A', specialty: '手部护理 / 足部美甲', years: 7, rating: 4.8, good_reviews: 356, status: 'active' },
+      { id: 6, salon_id: 3, salon_name: 'Mia Nails', name: 'Mia', title: '创始人', role: '创始人', avatar: 'M', specialty: '鎏金 / 新娘甲', years: 10, rating: 5.0, good_reviews: 820, status: 'active' },
+    ],
+
+    artist_works: [
+      { id: 1, artist_id: 1, title: '春日花语', customer_ref_url: '/images/nails/nail-10.png', actual_result_url: '/images/nails/nail-01.jpg' },
+      { id: 2, artist_id: 1, title: '经典法式', customer_ref_url: '/images/nails/nail-11.png', actual_result_url: '/images/nails/nail-03.png' },
+      { id: 3, artist_id: 1, title: '渐变星空', customer_ref_url: '/images/nails/nail-12.png', actual_result_url: '/images/nails/nail-06.png' },
+      { id: 4, artist_id: 2, title: '鎏金闪粉', customer_ref_url: '/images/nails/nail-08.png', actual_result_url: '/images/nails/nail-04.png' },
+      { id: 5, artist_id: 2, title: '裸感冰透', customer_ref_url: '/images/nails/nail-09.png', actual_result_url: '/images/nails/nail-02.png' },
+      { id: 6, artist_id: 3, title: '复古酒红', customer_ref_url: '/images/nails/nail-05.png', actual_result_url: '/images/nails/nail-05.png' },
+    ],
+
+    products: [
+      { id: 1, salon_id: 1, name: '春日新款', description: '温柔气质，粉嫩花卉', image_url: '/images/nails/nail-01.jpg', category: '春日', label_shape: '杏仁甲', label_tone: '裸色', label_craft: '手绘', label_decor: '立体雕花', label_style: '温柔风', likes: 2341, is_new: 1, shelf_status: 'active' },
+      { id: 2, salon_id: 1, name: '冰透裸色', description: '自然百搭，通勤首选', image_url: '/images/nails/nail-02.png', category: '裸色', label_shape: '方圆甲', label_tone: '裸色', label_craft: '纯色', label_decor: '无装饰', label_style: '简约风', likes: 1892, is_new: 0, shelf_status: 'active' },
+      { id: 3, salon_id: 1, name: '奶油法式', description: '经典优雅，法式白边', image_url: '/images/nails/nail-03.png', category: '法式', label_shape: '方圆甲', label_tone: '裸色', label_craft: '纯色', label_decor: '无装饰', label_style: '法式', likes: 3421, is_new: 0, shelf_status: 'active' },
+      { id: 4, salon_id: 1, name: '渐变闪粉', description: '闪耀夺目，派对必备', image_url: '/images/nails/nail-04.png', category: '闪粉', label_shape: '杏仁甲', label_tone: '亮色', label_craft: '渐变', label_decor: '碎钻', label_style: '甜酷风', likes: 1567, is_new: 1, shelf_status: 'active' },
+      { id: 5, salon_id: 1, name: '复古红棕', description: '显白气质，秋冬经典', image_url: '/images/nails/nail-05.png', category: '红色', label_shape: '梯形甲', label_tone: '红色系', label_craft: '纯色', label_decor: '金/银碎箔', label_style: '法式', likes: 2156, is_new: 0, shelf_status: 'active' },
+      { id: 6, salon_id: 1, name: '清新薄荷', description: '清凉夏日，绿意盎然', image_url: '/images/nails/nail-06.png', category: '绿色', label_shape: '圆甲', label_tone: '冷色', label_craft: '纯色', label_decor: '无装饰', label_style: '简约风', likes: 1432, is_new: 1, shelf_status: 'active' },
+    ],
+
+    inspiration_themes: [
+      { id: 1, name: '春日花语', cover_image_url: '/images/nails/nail-01.jpg', product_count: 24, category: '春日', label_shape: '杏仁甲', label_tone: '裸色', label_craft: '手绘', label_decor: '立体雕花', label_style: '温柔风' },
+      { id: 2, name: '法式经典', cover_image_url: '/images/nails/nail-03.png', product_count: 18, category: '法式', label_shape: '方圆甲', label_tone: '裸色', label_craft: '纯色', label_decor: '无装饰', label_style: '法式' },
+      { id: 3, name: '闪粉派对', cover_image_url: '/images/nails/nail-04.png', product_count: 16, category: '闪粉', label_shape: '杏仁甲', label_tone: '亮色', label_craft: '渐变', label_decor: '碎钻', label_style: '甜酷风' },
+      { id: 4, name: '极简裸色', cover_image_url: '/images/nails/nail-02.png', product_count: 22, category: '裸色', label_shape: '圆甲', label_tone: '裸色', label_craft: '纯色', label_decor: '无装饰', label_style: '简约风' },
+      { id: 5, name: '渐变星空', cover_image_url: '/images/nails/nail-06.png', product_count: 15, category: '渐变', label_shape: '梯形甲', label_tone: '冷色', label_craft: '渐变', label_decor: '金/银碎箔', label_style: 'ins风' },
+      { id: 6, name: '复古酒红', cover_image_url: '/images/nails/nail-05.png', product_count: 20, category: '红色', label_shape: '梯形甲', label_tone: '红色系', label_craft: '纯色', label_decor: '金/银碎箔', label_style: '法式' },
+      { id: 7, name: '几何线条', cover_image_url: '/images/nails/nail-08.png', product_count: 12, category: '设计', label_shape: '尖甲', label_tone: '金属', label_craft: '纯色', label_decor: '金/银碎箔', label_style: 'ins风' },
+      { id: 8, name: '樱花物语', cover_image_url: '/images/nails/nail-12.png', product_count: 19, category: '日式', label_shape: '杏仁甲', label_tone: '透色', label_craft: '晕染', label_decor: '珍珠/铆钉', label_style: '日式' },
+    ],
+
+    reservations: [
+      { id: 1, user_id: 1, salon_id: 1, artist_id: 1, customer: '小美', phone: '138****6789', salon_name: 'Nail Moment 美甲坊', artist_name: 'Luna', artist_avatar: 'L', chat_id: 1, nail_style_id: 3, nail_style_name: '奶油法式', nail_image_url: '/images/nails/nail-03.png', service_name: '法式美甲', service_price: 128, date: '2026-05-28', time: '14:00', status: 'confirmed', status_text: '已确认', location: '朝阳区 · 1.2km', remark: '想做温柔一点的款式' },
+      { id: 2, user_id: 1, salon_id: 2, artist_id: 2, customer: '花花', phone: '139****8901', salon_name: 'Her Nail Studio', artist_name: '小雨', artist_avatar: 'Y', chat_id: 2, nail_style_id: 1, nail_style_name: '春日新款', nail_image_url: '/images/nails/nail-01.jpg', service_name: '日式美甲', service_price: 168, date: '2026-06-02', time: '10:00', status: 'pending', status_text: '待确认', location: '海淀区 · 2.5km', remark: '' },
+      { id: 3, user_id: 1, salon_id: 1, artist_id: 1, customer: '娜娜', phone: '136****0123', salon_name: 'Nail Moment 美甲坊', artist_name: 'Luna', artist_avatar: 'L', chat_id: 1, nail_style_id: 4, nail_style_name: '渐变闪粉', nail_image_url: '/images/nails/nail-04.png', service_name: '芭比美甲', service_price: 198, date: '2026-06-15', time: '15:30', status: 'changed', status_text: '已变更', location: '朝阳区 · 1.2km', change_reason: '客户要求调整时间' },
+    ],
+
+    orders: [
+      { id: 1, order_no: 'NM20260408001', user_id: 1, salon_id: 1, artist_id: 1, customer_name: '小美', salon_name: 'Nail Moment 美甲坊', artist_name: 'Luna', service_name: '日式美甲', actual_receivable: 168, price: 168, image_url: '/images/nails/nail-02.png', status: 'completed', status_text: '已完成', date: '2026-04-08' },
+      { id: 2, order_no: 'HS20260325002', user_id: 2, salon_id: 2, artist_id: 2, customer_name: '花花', salon_name: 'Her Nail Studio', artist_name: '小雨', service_name: '法式美甲', actual_receivable: 128, price: 128, image_url: '/images/nails/nail-03.png', status: 'completed', status_text: '已完成', date: '2026-03-25' },
+      { id: 3, order_no: 'NM20260515003', user_id: 3, salon_id: 1, artist_id: 1, customer_name: '娜娜', salon_name: 'Nail Moment 美甲坊', artist_name: 'Luna', service_name: '芭比美甲', actual_receivable: 198, price: 198, image_url: '/images/nails/nail-04.png', status: 'upcoming', status_text: '待服务', date: '2026-05-15' },
+    ],
+
+    conversations: [
+      { id: 1, salon_id: 1, artist_id: 1, user_id: 1, name: 'Nail Moment · Luna 群聊', avatar: 'N', artist_name: 'Luna', last_message: 'Luna：您的预约已通过，明天下午2点见~', time: '09:21', unread_count: 1, type: 'group', updated_at: new Date().toISOString() },
+      { id: 2, salon_id: 2, artist_id: 2, user_id: 1, name: 'Her Nail Studio · 小雨 群聊', avatar: 'H', artist_name: '小雨', last_message: '小雨：您好，请问有什么可以帮您？', time: '昨天', unread_count: 0, type: 'group', updated_at: new Date(Date.now()-86400000).toISOString() },
+      { id: 3, salon_id: 3, artist_id: 3, user_id: 2, name: 'Mia Nails · Nicole 群聊', avatar: 'M', artist_name: 'Nicole', last_message: 'Nicole：感谢您的光临，期待下次再见~', time: '04/10', unread_count: 0, type: 'group', updated_at: new Date(Date.now()-172800000).toISOString() },
+    ],
+
+    chat_messages: [
+      { id: 1, conversation_id: 1, sender_type: 'salon', sender_name: 'Nail Moment', content: '欢迎光临 Nail Moment 美甲坊！我是店长，已为您安排美甲师 Luna 为您服务~', time: '09:15' },
+      { id: 2, conversation_id: 1, sender_type: 'artist', sender_name: 'Luna', content: '您好，我是美甲师 Luna，很高兴为您服务！', time: '09:16' },
+      { id: 3, conversation_id: 1, sender_type: 'salon', sender_name: 'Nail Moment', content: '您的预约已通过，明天下午2点见~', time: '09:17' },
+      { id: 4, conversation_id: 1, sender_type: 'user', sender_name: '', content: '好的，谢谢！我想做一款日式美甲', time: '09:18' },
+      { id: 5, conversation_id: 1, sender_type: 'artist', sender_name: 'Luna', content: '日式美甲很适合您！到店后我给您看一些款式参考~', time: '09:20' },
+      { id: 6, conversation_id: 2, sender_type: 'artist', sender_name: '小雨', content: '您好，我是美甲师小雨！欢迎来到 Her Nail Studio~', time: '昨天 14:30' },
+      { id: 7, conversation_id: 2, sender_type: 'user', sender_name: '', content: '你好！我想做一个法式美甲', time: '昨天 14:32' },
+      { id: 8, conversation_id: 2, sender_type: 'salon', sender_name: 'Her Nail Studio', content: '法式美甲是我们店的热门项目！', time: '昨天 14:33' },
+      { id: 9, conversation_id: 3, sender_type: 'salon', sender_name: 'Mia Nails', content: '感谢您的光临！您做的款式真好看~', time: '04/10 16:20' },
+      { id: 10, conversation_id: 3, sender_type: 'user', sender_name: '', content: '谢谢！Nicole老师服务很好', time: '04/10 16:22' },
+    ],
+
+    reviews: [
+      { id: 1, artist_id: 1, salon_id: 1, user_id: 2, name: '小美', rating: 5, content: '手法非常细腻，做出来的款式和参考图一模一样！', date: '3天前', style_image_url: '/images/nails/nail-01.jpg', result_image_url: '/images/nails/nail-03.png', status: 'approved' },
+      { id: 2, artist_id: 1, salon_id: 1, user_id: 3, name: '花花', rating: 5, content: 'Luna 姐人超好，会根据手型推荐合适款式，非常专业。', date: '1周前', status: 'approved' },
+      { id: 3, artist_id: 2, salon_id: 2, user_id: 1, name: '晴晴', rating: 5, content: '渐变做得超好看，颜色过渡自然！', date: '2天前', status: 'approved' },
+    ],
+
+    favorites: [],
+
+    coupons: [
+      { id: 1, title: '新人专享券', discount_text: '满100减30', condition_text: '新用户首次下单可用', amount: 30, expire_date: '2026-06-30', used: 0 },
+      { id: 2, title: '春日美甲券', discount_text: '满200减50', condition_text: '限春日系列款式', amount: 50, expire_date: '2026-05-31', used: 0 },
+      { id: 3, title: '会员专属券', discount_text: '8折优惠', condition_text: '全场通用，最高减80元', amount: 80, expire_date: '2026-07-15', used: 0 },
+    ],
+
+    tryon_logs: [],
+  };
+
+  return data;
+}

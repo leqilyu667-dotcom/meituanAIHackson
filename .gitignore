@@ -5,3 +5,8 @@ node_modules
 .env.local
 .vscode
 .idea
+training/
+dist/
+backend/miaoshou-data.json
+.env
+miaoshou-data.json

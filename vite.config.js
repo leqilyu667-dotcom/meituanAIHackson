@@ -8,5 +8,20 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  server: {
+    proxy: {
+      '/v1': {
+        target: 'http://localhost:8080',
+        timeout: 300000,
+        proxyTimeout: 300000,
+      },
+      '/health': 'http://localhost:8080',
+      '/tryon': {
+        target: 'http://localhost:8080',
+        timeout: 300000,
+        proxyTimeout: 300000,
+      }
+    }
   }
 })
