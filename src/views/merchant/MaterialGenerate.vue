@@ -607,8 +607,10 @@ const generate = async () => {
   generating.value = true
 
   try {
-    const prompt = generateMode.value === 'inspire' ? buildInspirePrompt() : buildPrompt()
-    const result = await generateDesignImage(prompt)
+    const isInspire = generateMode.value === 'inspire'
+    const prompt = isInspire ? buildInspirePrompt() : buildPrompt()
+    const refImage = isInspire ? inspireImage.value : null
+    const result = await generateDesignImage(prompt, refImage)
     generatedItem.value = {
       name: customName.value || autoName.value,
       tags: { ...tags.value },

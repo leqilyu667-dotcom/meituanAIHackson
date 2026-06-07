@@ -158,9 +158,10 @@ router.post('/detect-tags', upload.single('file'), async (req, res) => {
 })
 
 // Shared helpers (reused from aiTagger pattern)
-const ARK_BASE = 'https://ark.cn-beijing.volces.com/api/v3'
-const ARK_KEY = 'ark-0cae034f-bc13-4ac0-b78d-038a1cf63050-b8046'
-const MODEL = 'doubao-seed-1-6-vision-250815'
+const ARK_BASE = process.env.ARK_BASE_URL || 'https://ark.cn-beijing.volces.com/api/v3'
+const ARK_KEY = process.env.ARK_API_KEY || ''
+const SEEDREAM_MODEL = process.env.SEEDREAM_MODEL || 'doubao-seedream-5-0-260128'
+const MODEL = process.env.ARK_MODEL || 'doubao-seed-1-6-vision-250815'
 
 function loadLabelEnum() {
   const rows = db.prepare(
@@ -749,7 +750,7 @@ router.post('/work', (req, res) => {
  * Generate nail design image using doubao-seedream model
  */
 router.post('/generate', async (req, res) => {
-  const { prompt } = req.body
+  const { prompt, referenceImage } = req.body
   if (!prompt) {
     return res.status(422).json({ code: 'INVALID_PARAMS', message: 'prompt is required' })
   }
@@ -758,18 +759,21 @@ router.post('/generate', async (req, res) => {
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 60000)
 
+    const body = {
+      model: SEEDREAM_MODEL,
+      prompt,
+      size: '2K',
+      n: 1
+    }
+    if (referenceImage) body.image = referenceImage
+
     const resp = await fetch(`${ARK_BASE}/images/generations`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${ARK_KEY}`
       },
-      body: JSON.stringify({
-        model: 'doubao-seedream-5-0-260128',
-        prompt,
-        size: '1920x1920',
-        n: 1
-      }),
+      body: JSON.stringify(body),
       signal: controller.signal
     })
 

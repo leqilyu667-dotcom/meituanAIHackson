@@ -154,8 +154,8 @@ export async function saveWork(payload) {
 }
 
 /** Generate nail design image via seedream model */
-export async function generateDesignImage(prompt) {
-  const { data } = await api.post('/merchant/design/generate', { prompt }, { timeout: 60000 })
+export async function generateDesignImage(prompt, referenceImage) {
+  const { data } = await api.post('/merchant/design/generate', { prompt, referenceImage }, { timeout: 60000 })
   return data.data
 }
 
