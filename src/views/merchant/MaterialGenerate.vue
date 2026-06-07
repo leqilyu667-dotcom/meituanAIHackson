@@ -567,6 +567,7 @@ const fillTags = (newTags) => {
 const fillFromXhs = (item) => {
   generateMode.value = 'inspire'
   inspireImage.value = item.image
+  fillTags(item.aiTags)
 }
 
 const isTagFilled = (t) => {
@@ -597,12 +598,16 @@ function buildPrompt() {
   return `小红书ins风美甲款式主图，高清商业摄影，奶白色哑光ins风桌面背景，带极淡的肌理质感，暖调柔光打光，带轻微柔焦氛围感，光影柔和通透，无刺眼硬阴影。模特双手平行自然放置、掌心向下，双手不交叉、不重叠，10根手指完整舒展、均匀分开，指缝间距一致，无手指扭曲、粘连、缺失或遮挡；（手部解剖结构完全正确，关节、指骨比例协调自然），无关节肿大、手指畸形、皮肤扭曲；皮肤细腻均匀，无多余纹理或瑕疵。画面焦点100%锁定在美甲款式上，清晰展示美甲细节；甲型为${t.shape}，整体主色调为${t.tone}，风格定位${t.style}，带有${craftDecor}工艺细节；美甲色彩通透还原准确，光泽感自然高级，碎钻/闪粉的反光细腻真实，指甲边缘干净利落，无溢胶、毛边等瑕疵；无多余饰品、水印、文字或杂乱元素，构图居中，画面干净清爽，适配美甲店铺上架与小红书分享场景。`
 }
 
+function buildInspirePrompt() {
+  return '以参考图中的美甲款式、甲型、配色与工艺细节为灵感，生成全新原创的小红书ins风美甲款式图，适配店铺上架与分享场景。要求：高清商业摄影，奶白色哑光极简桌面背景，暖调柔光打光，带轻微柔焦氛围感，光影柔和通透；模特**双手自然轻搭在一起**，完整舒展十只手指，清晰展示美甲细节；美甲色彩通透还原准确，光泽感自然高级，碎钻/闪粉反光细腻真实，指甲边缘干净利落，无溢胶、毛边瑕疵；手部为100%原创生成，**不复用参考图的任何手部特征、背景元素或细节**，无版权纠纷风险；画面无水印、无文字、无杂乱元素，构图居中清爽。'
+}
+
 const generate = async () => {
   timeoutError.value = ''
   generating.value = true
 
   try {
-    const prompt = buildPrompt()
+    const prompt = generateMode.value === 'inspire' ? buildInspirePrompt() : buildPrompt()
     const result = await generateDesignImage(prompt)
     generatedItem.value = {
       name: customName.value || autoName.value,
