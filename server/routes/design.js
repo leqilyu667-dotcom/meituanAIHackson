@@ -765,7 +765,13 @@ router.post('/generate', async (req, res) => {
       size: '2K',
       n: 1
     }
-    if (referenceImage) body.image = referenceImage
+    if (referenceImage) {
+      // Resolve local paths to full URLs for seedream API access
+      const img = referenceImage.startsWith('http') ? referenceImage
+        : referenceImage.startsWith('/') ? `${req.protocol}://${req.get('host')}${referenceImage}`
+        : referenceImage
+      body.image = img
+    }
 
     const resp = await fetch(`${ARK_BASE}/images/generations`, {
       method: 'POST',
