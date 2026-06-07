@@ -609,7 +609,10 @@ const generate = async () => {
   try {
     const isInspire = generateMode.value === 'inspire'
     const prompt = isInspire ? buildInspirePrompt() : buildPrompt()
-    const refImage = isInspire ? inspireImage.value : null
+    let refImage = isInspire ? inspireImage.value : null
+    if (refImage && refImage.startsWith('/')) {
+      refImage = window.location.origin + refImage
+    }
     const result = await generateDesignImage(prompt, refImage)
     generatedItem.value = {
       name: customName.value || autoName.value,
