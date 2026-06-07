@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import { existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import routes from './routes.js';
@@ -34,7 +35,12 @@ app.get('*', (req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  const keyStatus = process.env.OPENAI_API_KEY ? '✓ OpenAI API 已配置' : '⚠ Demo 模式（设 OPENAI_API_KEY 启用 AI 试戴）';
   console.log(`\n  妙手 Backend → http://localhost:${PORT}`);
+  console.log(`  OPENAI_API_KEY: ${process.env.OPENAI_API_KEY ? 'SET (length=' + process.env.OPENAI_API_KEY.length + ')' : 'MISSING'}`);
+  console.log(`  OPENAI_BASE_URL: ${process.env.OPENAI_BASE_URL || 'MISSING'}`);
+  console.log(`  OPENAI_MODEL: ${process.env.OPENAI_MODEL || 'MISSING'}`);
+  console.log(`  TLS_REJECT: ${process.env.NODE_TLS_REJECT_UNAUTHORIZED}`);
+  console.log(`  dist exists: ${existsSync(distPath)}`);
+  const keyStatus = process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.length > 10 ? '✓ AI 已配置' : '⚠ Demo 模式（OPENAI_API_KEY 未设置）';
   console.log(`  ${keyStatus}\n`);
 });
