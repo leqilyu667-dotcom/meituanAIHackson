@@ -252,8 +252,12 @@ function parseTagResponse(text, labelEnum) {
 router.post('/', (req, res) => {
   const { name, price, description, tags, coverImage, operator = 'merchant_owner' } = req.body
 
-  if (!name || !tags || !tags.shape || !tags.tone || !tags.style) {
-    return res.status(422).json({ code: 'INVALID_PARAMS', message: '名称、甲型、色调、风格为必填项' })
+  if (!name) {
+    return res.status(422).json({ code: 'INVALID_PARAMS', message: '名称为必填项' })
+  }
+  // Tag validation: required for formula mode, optional for inspire mode
+  if (tags && (!tags.shape || !tags.tone || !tags.style) && !coverImage) {
+    return res.status(422).json({ code: 'TAGS_REQUIRED', message: '甲型、色调、风格为必填项' })
   }
 
   // Get next sort order
